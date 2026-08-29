@@ -31,4 +31,6 @@ tinycare/backend/vendor/
 tinycare/backend/storage/
 tinycare/backend/bootstrap/cache/
 tinycare/web/dist/
+tinycare/web/dist-single/
 tinycare/web/.next/
+*.zip
