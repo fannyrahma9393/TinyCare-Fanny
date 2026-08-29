@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+vendor/
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+
+# Build outputs
+tinycare/mobile/build/
+tinycare/backend/vendor/
+tinycare/backend/storage/
+tinycare/backend/bootstrap/cache/
+tinycare/web/dist/
+tinycare/web/.next/

@@ -1,0 +1,867 @@
+@import "tailwindcss";
+
+/* ============================================
+   TinyCare — Premium Soft Green Daycare
+   Design System v2.0
+   ============================================ */
+
+/* --- Light Theme (default) --- */
+:root,
+[data-theme="light"] {
+  /* Primary — Deep forest green */
+  --color-primary: #3a7059;
+  --color-primary-light: #4a8c6f;
+  --color-primary-lighter: #e8f4ed;
+  --color-primary-dark: #2c5a47;
+  --color-primary-hover: #347056;
+  --color-primary-subtle: #f0f7f3;
+
+  /* Secondary — Sage / Muted */
+  --color-secondary: #6b8f7e;
+  --color-secondary-light: #93b3a5;
+  --color-secondary-lighter: #f4f7f5;
+
+  /* Backgrounds */
+  --color-bg: #f6f7f5;
+  --color-bg-alt: #edeef0;
+  --color-bg-warm: #faf9f7;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafbfa;
+  --color-surface-elevated: #ffffff;
+
+  /* Borders */
+  --color-border: #e2e4e0;
+  --color-border-light: #edeeec;
+
+  /* Text — Dark charcoal hierarchy */
+  --color-text: #1b2a22;
+  --color-text-secondary: #566b5e;
+  --color-text-muted: #8a9b91;
+  --color-text-inverse: #ffffff;
+
+  /* Status */
+  --color-success: #3a7059;
+  --color-success-bg: #edf5f0;
+  --color-warning: #b8862d;
+  --color-warning-bg: #fdf5e6;
+  --color-error: #b84040;
+  --color-error-bg: #fbe9e9;
+  --color-info: #3a6fa0;
+  --color-info-bg: #eaf1f8;
+
+  /* Accent — Warm gold */
+  --color-accent: #a68540;
+  --color-accent-light: #f5f0e4;
+
+  /* Shadows — Very subtle */
+  --shadow-xs: 0 1px 2px rgba(20,40,30,0.03);
+  --shadow-sm: 0 1px 3px rgba(20,40,30,0.05), 0 1px 2px rgba(20,40,30,0.03);
+  --shadow-md: 0 4px 12px rgba(20,40,30,0.06), 0 1px 3px rgba(20,40,30,0.04);
+  --shadow-lg: 0 8px 24px rgba(20,40,30,0.08), 0 2px 6px rgba(20,40,30,0.04);
+  --shadow-xl: 0 16px 48px rgba(20,40,30,0.10), 0 4px 12px rgba(20,40,30,0.05);
+
+  /* Radius — Modern, elegant */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e8eae7;
+  --sidebar-text: #566b5e;
+  --sidebar-text-active: #2c5a47;
+  --sidebar-bg-active: #edf5f0;
+  --sidebar-hover: #f4f7f5;
+
+  /* Header */
+  --header-bg: rgba(255,255,255,0.85);
+  --header-border: #e8eae7;
+}
+
+/* --- Dark Theme --- */
+[data-theme="dark"] {
+  /* Primary */
+  --color-primary: #6aad8f;
+  --color-primary-light: #8cc4a7;
+  --color-primary-lighter: #1a2e23;
+  --color-primary-dark: #4a8c6f;
+  --color-primary-hover: #5a9d7f;
+  --color-primary-subtle: #152219;
+
+  /* Secondary */
+  --color-secondary: #6a8f7e;
+  --color-secondary-light: #3d544a;
+  --color-secondary-lighter: #162119;
+
+  /* Backgrounds */
+  --color-bg: #0e1510;
+  --color-bg-alt: #121b15;
+  --color-bg-warm: #111a14;
+  --color-surface: #162019;
+  --color-surface-alt: #1a251e;
+  --color-surface-elevated: #1e2a22;
+
+  /* Borders */
+  --color-border: #223028;
+  --color-border-light: #1c2820;
+
+  /* Text */
+  --color-text: #e4ece6;
+  --color-text-secondary: #9cb0a2;
+  --color-text-muted: #5e7569;
+  --color-text-inverse: #0e1510;
+
+  /* Status */
+  --color-success: #6aad8f;
+  --color-success-bg: #152520;
+  --color-warning: #d4a04e;
+  --color-warning-bg: #252015;
+  --color-error: #d46060;
+  --color-error-bg: #251515;
+  --color-info: #5a9fc5;
+  --color-info-bg: #152025;
+
+  /* Accent */
+  --color-accent: #c8a66a;
+  --color-accent-light: #252015;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.15);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.35), 0 4px 12px rgba(0,0,0,0.25);
+
+  /* Sidebar */
+  --sidebar-bg: #131c16;
+  --sidebar-border: #223028;
+  --sidebar-text: #8fa89a;
+  --sidebar-text-active: #6aad8f;
+  --sidebar-bg-active: #1a2e23;
+  --sidebar-hover: #1a251e;
+
+  /* Header */
+  --header-bg: rgba(19,28,22,0.88);
+  --header-border: #223028;
+}
+
+/* ============================================
+   Global Reset & Base
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ============================================
+   Custom Scrollbar
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.tc-page-enter {
+  animation: slideUp 0.25s ease-out;
+}
+
+/* ============================================
+   Loading Spinner
+   ============================================ */
+
+.tc-spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.tc-spinner-sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+}
+
+.tc-spinner-lg {
+  width: 40px;
+  height: 40px;
+  border-width: 3px;
+}
+
+/* ============================================
+   Skeleton Loading
+   ============================================ */
+
+.tc-skeleton {
+  background: linear-gradient(90deg,
+    var(--color-bg-alt) 25%,
+    var(--color-border-light) 37%,
+    var(--color-bg-alt) 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: var(--radius-sm);
+}
+
+.tc-skeleton-text {
+  height: 14px;
+  border-radius: var(--radius-xs);
+}
+
+.tc-skeleton-heading {
+  height: 22px;
+  width: 60%;
+  border-radius: var(--radius-sm);
+}
+
+.tc-skeleton-circle {
+  border-radius: 50%;
+}
+
+/* ============================================
+   Card System
+   ============================================ */
+
+.tc-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.tc-card-hover:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border);
+}
+
+.tc-card-interactive:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.tc-card-elevated {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.tc-card-flat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+}
+
+/* ============================================
+   Button System
+   ============================================ */
+
+.tc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tc-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.tc-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.tc-btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.tc-btn-primary:active {
+  transform: scale(0.98);
+}
+
+.tc-btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.tc-btn-secondary:hover {
+  background: var(--color-bg-alt);
+  border-color: var(--color-text-muted);
+}
+
+.tc-btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.tc-btn-ghost:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.tc-btn-danger {
+  background: var(--color-error);
+  color: white;
+}
+
+.tc-btn-danger:hover {
+  background: #a33535;
+}
+
+.tc-btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: var(--radius-md);
+}
+
+.tc-btn-lg {
+  padding: 12px 28px;
+  font-size: 15px;
+  border-radius: var(--radius-lg);
+}
+
+.tc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ============================================
+   Form Elements
+   ============================================ */
+
+.tc-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  line-height: 1.5;
+}
+
+.tc-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+.tc-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.tc-input-sm {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+.tc-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.tc-helper {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.tc-select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 0.15s ease;
+  outline: none;
+  appearance: auto;
+}
+
+.tc-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+.tc-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.tc-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+/* ============================================
+   Badge System
+   ============================================ */
+
+.tc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tc-badge-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.tc-badge-warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.tc-badge-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.tc-badge-info {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.tc-badge-neutral {
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+}
+
+.tc-badge-primary {
+  background: var(--color-primary-lighter);
+  color: var(--color-primary);
+}
+
+/* ============================================
+   Table System
+   ============================================ */
+
+.tc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tc-table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-warm);
+}
+
+.tc-table tbody td {
+  padding: 14px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text);
+}
+
+.tc-table tbody tr {
+  transition: background 0.1s ease;
+}
+
+.tc-table tbody tr:hover {
+  background: var(--color-surface-alt);
+}
+
+.tc-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================
+   Section & Title Utilities
+   ============================================ */
+
+.tc-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  padding: 8px 14px 4px;
+  margin-top: 8px;
+}
+
+.tc-page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.tc-page-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Modal System
+   ============================================ */
+
+.tc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,20,14,0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 0.15s ease;
+}
+
+.tc-modal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px;
+  animation: slideUp 0.2s ease;
+}
+
+/* ============================================
+   Empty / Error States
+   ============================================ */
+
+.tc-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.tc-empty-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--color-text-muted);
+}
+
+.tc-empty-state-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.tc-empty-state-desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+.tc-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.tc-error-state-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl);
+  background: var(--color-error-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: var(--color-error);
+}
+
+.tc-loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tc-loading-screen .tc-spinner {
+  width: 32px;
+  height: 32px;
+}
+
+.tc-loading-screen p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+/* ============================================
+   Sidebar Responsive
+   ============================================ */
+
+.tc-sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .tc-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,20,14,0.4);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    animation: fadeIn 0.15s ease;
+  }
+}
+
+/* ============================================
+   Layout Responsive
+   ============================================ */
+
+.tc-main-content {
+  padding: 28px 32px;
+}
+
+@media (max-width: 768px) {
+  .tc-main-content {
+    padding: 20px 16px;
+  }
+
+  .tc-table thead {
+    display: none;
+  }
+
+  .tc-table tbody td {
+    display: block;
+    padding: 8px 16px;
+    text-align: right;
+  }
+
+  .tc-table tbody td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-muted);
+  }
+}
+
+/* ============================================
+   Nav Link (shared by both layouts)
+   ============================================ */
+
+.tc-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  position: relative;
+  color: var(--sidebar-text);
+  background: transparent;
+}
+
+.tc-nav-link:hover {
+  background: var(--sidebar-hover);
+}
+
+.tc-nav-link-active {
+  color: var(--sidebar-text-active);
+  background: var(--sidebar-bg-active);
+  font-weight: 600;
+}
+
+.tc-nav-link-active:hover {
+  background: var(--sidebar-bg-active);
+}
+
+/* ============================================
+   Page Header Helper
+   ============================================ */
+
+.tc-page-header {
+  margin-bottom: 28px;
+}
+
+.tc-page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.tc-page-header p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+/* ============================================
+   Utility Helpers
+   ============================================ */
+
+.tc-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tc-text-center {
+  text-align: center;
+}
+
+.tc-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   Import Inter font (optional, safe fallback)
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
