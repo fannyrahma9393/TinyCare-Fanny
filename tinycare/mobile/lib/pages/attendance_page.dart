@@ -93,7 +93,6 @@ class _AttendancePageState extends State<AttendancePage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Absensi')),
       floatingActionButton: (isAdmin && _children.isNotEmpty) ? FloatingActionButton(
         onPressed: () async {
@@ -130,15 +129,15 @@ class _AttendancePageState extends State<AttendancePage> {
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surface,
+                                  color: ThemeHelper.surface(context),
                                   borderRadius: AppRadius.mdAll,
-                                  border: Border.all(color: AppColors.border),
+                                  border: Border.all(color: ThemeHelper.border(context)),
                                 ),
                                 child: DropdownButton<int>(
                                   value: _selectedChildId,
                                   isExpanded: true,
                                   underline: const SizedBox(),
-                                  hint: const Text('Pilih Anak'),
+                                  hint: Text('Pilih Anak', style: TextStyle(color: ThemeHelper.textMuted(context))),
                                   items: _children.map<DropdownMenuItem<int>>((child) =>
                                     DropdownMenuItem(value: child['id'], child: Text(child['name'] ?? '-'))
                                   ).toList(),
@@ -152,20 +151,20 @@ class _AttendancePageState extends State<AttendancePage> {
                               ),
 
                             if (_attendanceData != null) ...[
-                              const Text('Ringkasan Bulan Ini', style: AppTypography.h3),
+                              Text('Ringkasan Bulan Ini', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                               const SizedBox(height: 14),
                               Builder(
                                 builder: (context) {
                                   final summary = _computeSummary();
                                   return Row(
                                     children: [
-                                      _buildSummaryCard('Hadir', '${summary['hadir']}', AppColors.successBg, AppColors.success),
+                                      _buildSummaryCard('Hadir', '${summary['hadir']}', ThemeHelper.successBg(context), AppColors.success),
                                       const SizedBox(width: 8),
-                                      _buildSummaryCard('Izin', '${summary['izin']}', AppColors.infoBg, AppColors.info),
+                                      _buildSummaryCard('Izin', '${summary['izin']}', ThemeHelper.infoBg(context), AppColors.info),
                                       const SizedBox(width: 8),
-                                      _buildSummaryCard('Sakit', '${summary['sakit']}', AppColors.warningBg, AppColors.warning),
+                                      _buildSummaryCard('Sakit', '${summary['sakit']}', ThemeHelper.warningBg(context), AppColors.warning),
                                       const SizedBox(width: 8),
-                                      _buildSummaryCard('Alpa', '${summary['tidak_hadir']}', AppColors.errorBg, AppColors.error),
+                                      _buildSummaryCard('Alpa', '${summary['tidak_hadir']}', ThemeHelper.errorBg(context), AppColors.error),
                                     ],
                                   );
                                 },
@@ -173,7 +172,7 @@ class _AttendancePageState extends State<AttendancePage> {
                               const SizedBox(height: 28),
                             ],
 
-                            const Text('Riwayat', style: AppTypography.h3),
+                            Text('Riwayat', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                             const SizedBox(height: 14),
                             ..._buildAttendanceList(isAdmin),
                           ],
@@ -231,7 +230,7 @@ class _AttendancePageState extends State<AttendancePage> {
         'izin': AppColors.info,
         'sakit': AppColors.warning,
         'tidak_hadir': AppColors.error,
-      }[item['status']] ?? AppColors.textMuted;
+      }[item['status']] ?? ThemeHelper.textMuted(context);
 
       final statusLabel = {
         'hadir': 'Hadir',
@@ -244,9 +243,9 @@ class _AttendancePageState extends State<AttendancePage> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ThemeHelper.surface(context),
           borderRadius: AppRadius.mdAll,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: ThemeHelper.border(context)),
         ),
         child: Row(
           children: [
@@ -256,17 +255,17 @@ class _AttendancePageState extends State<AttendancePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['date'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: AppColors.text)),
+                  Text(item['date'] ?? '-', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: ThemeHelper.text(context))),
                   const SizedBox(height: 2),
                   Text(statusLabel, style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
             if (item['check_in_time'] != null)
-              Text(item['check_in_time'] ?? '', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+              Text(item['check_in_time'] ?? '', style: TextStyle(color: ThemeHelper.textMuted(context), fontSize: 12)),
             if (isAdmin)
               PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textMuted),
+                icon: Icon(Icons.more_vert, size: 18, color: ThemeHelper.textMuted(context)),
                 onSelected: (value) async {
                   if (value == 'edit' && item['id'] != null) {
                     final result = await Navigator.push(context,
@@ -390,7 +389,6 @@ class _AttendanceFormPageState extends State<_AttendanceFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Absensi' : 'Catat Absensi')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -427,7 +425,7 @@ class _AttendanceFormPageState extends State<_AttendanceFormPage> {
               const SizedBox(height: 16),
 
               // Status selector
-              const Text('Status', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Status', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8, runSpacing: 8,
@@ -481,12 +479,12 @@ class _AttendanceFormPageState extends State<_AttendanceFormPage> {
   Widget _buildStatusChip(String value, String label, Color color) {
     final selected = _status == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _status = value),
       selectedColor: color,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

@@ -138,7 +138,6 @@ class _ChildrenPageState extends State<ChildrenPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Anak'),
         actions: [
@@ -174,14 +173,14 @@ class _ChildrenPageState extends State<ChildrenPage> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.mdAll,
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: ThemeHelper.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.mdAll,
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: ThemeHelper.border(context)),
                   ),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: ThemeHelper.surface(context),
                 ),
               ),
             ),
@@ -222,15 +221,15 @@ class _ChildrenPageState extends State<ChildrenPage> {
     final packages = child['child_packages'] ?? [];
     final activePackage = packages.isNotEmpty ? packages.first['package'] : null;
     final status = child['status'] ?? 'active';
-    final statusColor = status == 'active' ? AppColors.success : AppColors.textMuted;
+    final statusColor = status == 'active' ? AppColors.success : ThemeHelper.textMuted(context);
     final initial = (child['name'] ?? '?')[0].toUpperCase();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -271,11 +270,11 @@ class _ChildrenPageState extends State<ChildrenPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(child['name'] ?? '-', style: AppTypography.h3),
+                        Text(child['name'] ?? '-', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                         const SizedBox(height: 4),
                         Text(
                           '${child['gender'] == 'male' ? 'Laki-laki' : child['gender'] == 'female' ? 'Perempuan' : '-'} · ${child['birth_date'] ?? '-'}',
-                          style: AppTypography.caption,
+                          style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)),
                         ),
                       ],
                     ),
@@ -291,7 +290,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.bgAlt,
+                  color: ThemeHelper.bgAlt(context),
                   borderRadius: AppRadius.mdAll,
                 ),
                 child: Column(
@@ -542,7 +541,6 @@ class _ChildFormPageState extends State<_ChildFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Anak' : 'Tambah Anak'),
       ),
@@ -567,7 +565,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               const SizedBox(height: 16),
 
               // Gender
-              const Text('Jenis Kelamin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Jenis Kelamin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -577,21 +575,21 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: _gender == 'male' ? AppColors.primarySubtle : AppColors.surface,
+                          color: _gender == 'male' ? AppColors.primarySubtle : ThemeHelper.surface(context),
                           borderRadius: AppRadius.mdAll,
                           border: Border.all(
-                            color: _gender == 'male' ? AppColors.primary : AppColors.border,
+                            color: _gender == 'male' ? AppColors.primary : ThemeHelper.border(context),
                             width: _gender == 'male' ? 2 : 1,
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.boy, color: _gender == 'male' ? AppColors.primary : AppColors.textMuted),
+                            Icon(Icons.boy, color: _gender == 'male' ? AppColors.primary : ThemeHelper.textMuted(context)),
                             const SizedBox(width: 8),
                             Text('Laki-laki', style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: _gender == 'male' ? AppColors.primary : AppColors.textSecondary,
+                              color: _gender == 'male' ? AppColors.primary : ThemeHelper.textSecondary(context),
                             )),
                           ],
                         ),
@@ -605,21 +603,21 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                       child: Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: _gender == 'female' ? AppColors.primarySubtle : AppColors.surface,
+                          color: _gender == 'female' ? AppColors.primarySubtle : ThemeHelper.surface(context),
                           borderRadius: AppRadius.mdAll,
                           border: Border.all(
-                            color: _gender == 'female' ? AppColors.primary : AppColors.border,
+                            color: _gender == 'female' ? AppColors.primary : ThemeHelper.border(context),
                             width: _gender == 'female' ? 2 : 1,
                           ),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.girl, color: _gender == 'female' ? AppColors.primary : AppColors.textMuted),
+                            Icon(Icons.girl, color: _gender == 'female' ? AppColors.primary : ThemeHelper.textMuted(context)),
                             const SizedBox(width: 8),
                             Text('Perempuan', style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: _gender == 'female' ? AppColors.primary : AppColors.textSecondary,
+                              color: _gender == 'female' ? AppColors.primary : ThemeHelper.textSecondary(context),
                             )),
                           ],
                         ),
@@ -662,21 +660,21 @@ class _ChildFormPageState extends State<_ChildFormPage> {
 
               // Package selector
               const SizedBox(height: 8),
-              const Text('Paket (Opsional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Paket (Opsional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               if (_isLoadingPackages)
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: ThemeHelper.surface(context),
                     borderRadius: AppRadius.mdAll,
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: ThemeHelper.border(context)),
                   ),
-                  child: const Row(
+                  child: Row(
                     children: [
-                      SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                      SizedBox(width: 12),
-                      Text('Memuat paket...', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                      const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                      const SizedBox(width: 12),
+                      Text('Memuat paket...', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                     ],
                   ),
                 )
@@ -684,7 +682,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.errorBg,
+                    color: ThemeHelper.errorBg(context),
                     borderRadius: AppRadius.mdAll,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
                   ),
@@ -707,11 +705,11 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: ThemeHelper.surface(context),
                     borderRadius: AppRadius.mdAll,
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: ThemeHelper.border(context)),
                   ),
-                  child: const Text('Belum ada paket aktif. Tambahkan paket terlebih dahulu.', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                  child: Text('Belum ada paket aktif. Tambahkan paket terlebih dahulu.', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                 )
               else
                 DropdownButtonFormField<int>(
@@ -728,7 +726,8 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                         children: [
                           Text(pkg['name'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 2),
-                          Text('$pkgPrice · $pkgDuration hari', style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                          Text(
+                            '$pkgPrice · $pkgDuration hari', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                         ],
                       ),
                     );

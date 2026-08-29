@@ -84,7 +84,6 @@ class _PackagesPageState extends State<PackagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Paket'),
         actions: [
@@ -121,9 +120,9 @@ class _PackagesPageState extends State<PackagesPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -136,26 +135,26 @@ class _PackagesPageState extends State<PackagesPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(package['name'] ?? '-', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(package['name'] ?? '-', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                     const SizedBox(height: 4),
                     Text(CurrencyHelper.formatRupiah(package['price']), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primary)),
                   ],
                 ),
               ),
-              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : AppColors.textMuted),
+              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : ThemeHelper.textMuted(context)),
             ],
           ),
           if (package['description'] != null && package['description'].toString().isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(package['description'], style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5)),
+            Text(package['description'], style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context), height: 1.5)),
           ],
           if (package['duration_days'] != null) ...[
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.access_time, size: 14, color: AppColors.textMuted),
+                Icon(Icons.access_time, size: 14, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 6),
-                Text('${package['duration_days']} hari', style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                Text('${package['duration_days']} hari', style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
               ],
             ),
           ],
@@ -288,7 +287,6 @@ class _PackageFormPageState extends State<_PackageFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Paket' : 'Tambah Paket')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -301,7 +299,7 @@ class _PackageFormPageState extends State<_PackageFormPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.errorBg,
+                    color: ThemeHelper.errorBg(context),
                     borderRadius: AppRadius.smAll,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
                   ),

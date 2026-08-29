@@ -865,3 +865,73 @@ a {
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ============================================
+   Landing Page (Public Home)
+   ============================================ */
+
+@keyframes lpFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-18px); }
+}
+
+@keyframes lpDrift {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(24px, -32px) scale(1.06); }
+  66% { transform: translate(-18px, 22px) scale(0.96); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes lpShimmerText {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes lpPulseRing {
+  0% { transform: scale(0.92); opacity: 0.65; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+
+@keyframes lpWrinkle {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.12); }
+}
+
+@keyframes lpTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.lp-serif {
+  font-family: 'Playfair Display', 'Inter', Georgia, serif;
+}
+
+.lp-nav-desktop {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .lp-nav-desktop {
+    display: flex;
+  }
+
+  .lp-menu-btn {
+    display: none;
+  }
+}
+
+.lp-gold-text {
+  background: linear-gradient(100deg, #8a6a2f 0%, #d6b26a 30%, #a8853f 55%, #e8cf94 75%, #8a6a2f 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: lpShimmerText 6s ease-in-out infinite;
+}
+
+.lp-shimmer-line {
+  background: linear-gradient(100deg, rgba(201,164,92,0) 0%, rgba(201,164,92,0.9) 50%, rgba(201,164,92,0) 100%);
+  background-size: 220% auto;
+  animation: lpShimmerText 4s ease-in-out infinite;
+}

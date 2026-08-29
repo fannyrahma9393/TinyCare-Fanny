@@ -54,7 +54,6 @@ class _ProfilePageState extends State<ProfilePage> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Profil'),
         actions: [
@@ -105,6 +104,11 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     }
 
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final textColor = ThemeHelper.text(context);
+    final textSecColor = ThemeHelper.textSecondary(context);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
@@ -114,9 +118,9 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: surfaceColor,
               borderRadius: AppRadius.xlAll,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: borderColor),
               boxShadow: AppColors.cardShadow,
             ),
             child: Column(
@@ -124,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.primaryLighter,
                     shape: BoxShape.circle,
                   ),
@@ -142,13 +146,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 16),
                 Text(
                   user['name'] ?? '-',
-                  style: AppTypography.h2,
+                  style: AppTypography.h2.copyWith(color: textColor),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   user['email'] ?? '-',
-                  style: AppTypography.bodySmall,
+                  style: AppTypography.bodySmall.copyWith(color: textSecColor),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
@@ -166,15 +170,15 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: surfaceColor,
               borderRadius: AppRadius.lgAll,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: borderColor),
               boxShadow: AppColors.cardShadow,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Informasi Akun', style: AppTypography.h3),
+                Text('Informasi Akun', style: AppTypography.h3.copyWith(color: textColor)),
                 const SizedBox(height: 16),
                 AppWidgets.infoRow('Nama', user['name'] ?? '-'),
                 AppWidgets.infoRow('Email', user['email'] ?? '-'),
@@ -191,14 +195,14 @@ class _ProfilePageState extends State<ProfilePage> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: surfaceColor,
               borderRadius: AppRadius.lgAll,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: borderColor),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Tentang Aplikasi', style: AppTypography.h3),
+                Text('Tentang Aplikasi', style: AppTypography.h3.copyWith(color: textColor)),
                 const SizedBox(height: 16),
                 AppWidgets.infoRow('Aplikasi', 'TinyCare'),
                 AppWidgets.infoRow('Versi', '1.0.0'),

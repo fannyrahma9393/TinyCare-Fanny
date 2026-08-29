@@ -55,7 +55,6 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Hari Ini di Daycare')),
       floatingActionButton: (isAdmin && _children.isNotEmpty) ? FloatingActionButton(
         onPressed: () async {
@@ -92,9 +91,9 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surface,
+                                  color: ThemeHelper.surface(context),
                                   borderRadius: AppRadius.mdAll,
-                                  border: Border.all(color: AppColors.border),
+                                  border: Border.all(color: ThemeHelper.border(context)),
                                 ),
                                 child: DropdownButton<int>(
                                   value: _selectedChildId,
@@ -137,9 +136,9 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -163,8 +162,8 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(story['child']?['name'] ?? '-',
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppColors.text)),
-                    Text(story['date'] ?? '-', style: AppTypography.caption),
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: ThemeHelper.text(context))),
+                    Text(story['date'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
@@ -174,7 +173,7 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
           const SizedBox(height: 16),
           if (story['summary'] != null) ...[
             Text(story['summary'],
-                style: const TextStyle(fontSize: 14, height: 1.6, color: AppColors.text)),
+                style: TextStyle(fontSize: 14, height: 1.6, color: ThemeHelper.text(context))),
             const SizedBox(height: 14),
           ],
           Row(
@@ -186,11 +185,11 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
           ),
           if (story['meal_notes'] != null) ...[
             const SizedBox(height: 10),
-            Text('🍽️ ${story['meal_notes']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+            Text('🍽️ ${story['meal_notes']}', style: TextStyle(color: ThemeHelper.textSecondary(context), fontSize: 12)),
           ],
           if (story['sleep_notes'] != null) ...[
             const SizedBox(height: 4),
-            Text('😴 ${story['sleep_notes']}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+            Text('😴 ${story['sleep_notes']}', style: TextStyle(color: ThemeHelper.textSecondary(context), fontSize: 12)),
           ],
         ],
       ),
@@ -200,14 +199,14 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
   Widget _buildInfoChip(String label, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: AppColors.bgAlt, borderRadius: AppRadius.smAll),
+      decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.smAll),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.textMuted),
+          Icon(icon, size: 14, color: ThemeHelper.textMuted(context)),
           const SizedBox(width: 6),
           Text('$label: $value',
-              style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+              style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context), fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -300,7 +299,6 @@ class _StoryFormPageState extends State<_StoryFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Tambah Cerita Hari Ini')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -341,7 +339,7 @@ class _StoryFormPageState extends State<_StoryFormPage> {
               const SizedBox(height: 16),
 
               // Mood selector
-              const Text('Mood', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Mood', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8, runSpacing: 8,
@@ -400,12 +398,12 @@ class _StoryFormPageState extends State<_StoryFormPage> {
   Widget _buildMoodChip(String value, String label) {
     final selected = _mood == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _mood = value),
       selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

@@ -45,7 +45,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: _buildAppBar(auth),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
@@ -112,10 +111,13 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildBottomNav() {
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final mutedColor = ThemeHelper.textMuted(context);
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        border: Border(top: BorderSide(color: borderColor, width: 1)),
       ),
       child: SafeArea(
         child: BottomNavigationBar(
@@ -125,7 +127,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           backgroundColor: Colors.transparent,
           elevation: 0,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
+          unselectedItemColor: mutedColor,
           selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
           items: const [
@@ -196,9 +198,9 @@ class _DashboardHomeTab extends StatelessWidget {
                     style: AppTypography.h1.copyWith(color: AppColors.primaryDark),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Kelola TinyCare dengan mudah.',
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+                    style: TextStyle(fontSize: 14, color: ThemeHelper.textSecondary(context), height: 1.5),
                   ),
                 ],
               ),
@@ -226,7 +228,7 @@ class _DashboardHomeTab extends StatelessWidget {
               children: [
                 _buildQuickStat(context, 'Hadir Hari Ini', '$todayPresent', AppColors.info, Icons.check_circle_outline, '/attendance'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Total Absensi', '$todayAttendance', AppColors.textSecondary, Icons.calendar_today, '/attendance'),
+                _buildQuickStat(context, 'Total Absensi', '$todayAttendance', ThemeHelper.textSecondary(context), Icons.calendar_today, '/attendance'),
               ],
             ),
             if (totalRevenue > 0) ...[
@@ -236,7 +238,7 @@ class _DashboardHomeTab extends StatelessWidget {
             const SizedBox(height: 28),
 
             // Quick Actions (Compact)
-            const Text('Akses Cepat', style: AppTypography.h3),
+            Text('Akses Cepat', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
             const SizedBox(height: 14),
             _buildQuickActions(context),
           ],
@@ -246,15 +248,18 @@ class _DashboardHomeTab extends StatelessWidget {
   }
 
   Widget _buildQuickStat(BuildContext context, String label, String value, Color color, IconData icon, String route) {
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final labelColor = ThemeHelper.textMuted(context);
     return Expanded(
       child: GestureDetector(
         onTap: () => Navigator.pushNamed(context, route),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: surfaceColor,
             borderRadius: AppRadius.lgAll,
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: borderColor),
             boxShadow: AppColors.cardShadow,
           ),
           child: Column(
@@ -264,7 +269,7 @@ class _DashboardHomeTab extends StatelessWidget {
                 children: [
                   Icon(icon, size: 16, color: color),
                   const SizedBox(width: 6),
-                  Text(label.toUpperCase(), style: AppTypography.label),
+                  Text(label.toUpperCase(), style: AppTypography.label.copyWith(color: labelColor)),
                 ],
               ),
               const SizedBox(height: 8),
@@ -316,6 +321,9 @@ class _DashboardHomeTab extends StatelessWidget {
       _QuickAction('Invoice', Icons.receipt_long_outlined, '/invoices'),
       _QuickAction('Laporan', Icons.assessment_outlined, '/reports'),
     ];
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final labelColor = ThemeHelper.textSecondary(context);
 
     return Row(
       children: actions.map((action) {
@@ -326,15 +334,15 @@ class _DashboardHomeTab extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 4),
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: surfaceColor,
                 borderRadius: AppRadius.mdAll,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: borderColor),
               ),
               child: Column(
                 children: [
                   Icon(action.icon, color: AppColors.primary, size: 24),
                   const SizedBox(height: 8),
-                  Text(action.label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+                  Text(action.label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: labelColor)),
                 ],
               ),
             ),
@@ -363,7 +371,7 @@ class _DataManagementTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppWidgets.sectionHeader('Pengguna & Keluarga'),
+          AppWidgets.sectionHeader('Pengguna & Keluarga', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Pengguna', 'icon': Icons.people_outline, 'route': '/users', 'subtitle': 'Kelola semua pengguna'},
@@ -372,7 +380,7 @@ class _DataManagementTab extends StatelessWidget {
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Operasional'),
+          AppWidgets.sectionHeader('Operasional', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Absensi', 'icon': Icons.calendar_today_outlined, 'route': '/attendance', 'subtitle': 'Kelola kehadiran'},
@@ -382,7 +390,7 @@ class _DataManagementTab extends StatelessWidget {
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Komunikasi'),
+          AppWidgets.sectionHeader('Komunikasi', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Pengumuman', 'icon': Icons.campaign_outlined, 'route': '/announcements', 'subtitle': 'Kelola pengumuman'},
@@ -406,7 +414,7 @@ class _FinanceTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppWidgets.sectionHeader('Keuangan'),
+          AppWidgets.sectionHeader('Keuangan', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Invoice', 'icon': Icons.receipt_long_outlined, 'route': '/invoices', 'subtitle': 'Kelola tagihan'},
@@ -414,7 +422,7 @@ class _FinanceTab extends StatelessWidget {
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Produk & Promosi'),
+          AppWidgets.sectionHeader('Produk & Promosi', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Paket', 'icon': Icons.inventory_2_outlined, 'route': '/packages', 'subtitle': 'Paket langganan'},
@@ -422,7 +430,7 @@ class _FinanceTab extends StatelessWidget {
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Laporan'),
+          AppWidgets.sectionHeader('Laporan', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Laporan', 'icon': Icons.assessment_outlined, 'route': '/reports', 'subtitle': 'Laporan mingguan & bulanan'},
@@ -446,7 +454,7 @@ class _MenuTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (auth.isAdminMaster) ...[
-            AppWidgets.sectionHeader('Pengaturan Admin'),
+            AppWidgets.sectionHeader('Pengaturan Admin', context: context),
             const SizedBox(height: 12),
             _buildMenuGroup(context, [
               {'label': 'Kelola Admin', 'icon': Icons.shield_outlined, 'route': '/admin-management', 'subtitle': 'Aktifkan/nonaktifkan admin'},
@@ -454,14 +462,14 @@ class _MenuTab extends StatelessWidget {
             const SizedBox(height: 24),
           ],
 
-          AppWidgets.sectionHeader('Aplikasi'),
+          AppWidgets.sectionHeader('Aplikasi', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Profil', 'icon': Icons.person_outline, 'route': '/profile', 'subtitle': 'Lihat profil admin'},
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Tampilan'),
+          AppWidgets.sectionHeader('Tampilan', context: context),
           const SizedBox(height: 12),
           _ThemeSwitcher(),
           const SizedBox(height: 32),
@@ -480,9 +488,13 @@ class _MenuTab extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text('TinyCare Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text)),
+                Builder(
+                  builder: (context) => Text('TinyCare Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+                ),
                 const SizedBox(height: 4),
-                const Text('v1.0.0', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                Builder(
+                  builder: (context) => Text('v1.0.0', style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
+                ),
               ],
             ),
           ),
@@ -499,52 +511,83 @@ class _ThemeSwitcher extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
-    final current = themeProvider.themeMode;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final options = [
-      {'mode': ThemeModeOption.light, 'label': 'Terang', 'icon': Icons.light_mode_outlined},
-      {'mode': ThemeModeOption.dark, 'label': 'Gelap', 'icon': Icons.dark_mode_outlined},
-      {'mode': ThemeModeOption.system, 'label': 'Sistem', 'icon': Icons.settings_brightness_outlined},
-    ];
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final textColor = ThemeHelper.text(context);
+    final mutedColor = ThemeHelper.textMuted(context);
 
     return Container(
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderColor),
         boxShadow: AppColors.cardShadow,
       ),
-      child: Column(
-        children: List.generate(options.length, (index) {
-          final opt = options[index];
-          final isSelected = current == opt['mode'];
-          final isLast = index == options.length - 1;
-          return Column(
-            children: [
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
-                leading: Container(
-                  width: 40, height: 40,
-                  decoration: BoxDecoration(
-                    color: (isSelected ? AppColors.primary : AppColors.bgAlt).withValues(alpha: isSelected ? 0.1 : 1),
-                    borderRadius: AppRadius.smAll,
-                  ),
-                  child: Icon(opt['icon'] as IconData, color: isSelected ? AppColors.primary : AppColors.textMuted, size: 20),
+      child: Row(
+        children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: AppRadius.smAll,
+            ),
+            child: Icon(
+              isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+              color: AppColors.primary,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Mode Tampilan', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor)),
+                const SizedBox(height: 2),
+                Text(
+                  isDark ? 'Mode Gelap' : 'Mode Terang',
+                  style: TextStyle(fontSize: 12, color: mutedColor),
                 ),
-                title: Text(opt['label'] as String, style: TextStyle(
-                  fontWeight: FontWeight.w600, fontSize: 14,
-                  color: isSelected ? AppColors.primary : AppColors.text,
-                )),
-                trailing: isSelected
-                    ? const Icon(Icons.check_circle, color: AppColors.primary, size: 20)
-                    : const Icon(Icons.circle_outlined, color: AppColors.border, size: 20),
-                onTap: () => themeProvider.setThemeMode(opt['mode'] as ThemeModeOption),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              themeProvider.setThemeMode(
+                isDark ? ThemeModeOption.light : ThemeModeOption.dark,
+              );
+            },
+            child: Container(
+              width: 52, height: 28,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.primary : ThemeHelper.border(context),
+                borderRadius: BorderRadius.circular(14),
               ),
-              if (!isLast)
-                const Divider(height: 1, indent: 72, endIndent: 18, color: AppColors.borderLight),
-            ],
-          );
-        }),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 200),
+                alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  width: 22, height: 22,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      isDark ? Icons.dark_mode : Icons.light_mode,
+                      size: 12,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -554,11 +597,14 @@ class _ThemeSwitcher extends StatelessWidget {
 
 /// Local helper that wraps AppWidgets.menuGroup with route navigation
 Widget _buildMenuGroup(BuildContext context, List<Map<String, dynamic>> items) {
+  final surfaceColor = ThemeHelper.surface(context);
+  final borderColor = ThemeHelper.border(context);
+  final borderLightColor = ThemeHelper.borderLight(context);
   return Container(
     decoration: BoxDecoration(
-      color: AppColors.surface,
+      color: surfaceColor,
       borderRadius: AppRadius.lgAll,
-      border: Border.all(color: AppColors.border),
+      border: Border.all(color: borderColor),
       boxShadow: AppColors.cardShadow,
     ),
     child: Column(
@@ -573,9 +619,10 @@ Widget _buildMenuGroup(BuildContext context, List<Map<String, dynamic>> items) {
               icon: item['icon'] as IconData,
               onTap: () => Navigator.pushNamed(context, route),
               subtitle: item['subtitle'] as String?,
+              context: context,
             ),
             if (!isLast)
-              const Divider(height: 1, indent: 72, endIndent: 18, color: AppColors.borderLight),
+              Divider(height: 1, indent: 72, endIndent: 18, color: borderLightColor),
           ],
         );
       }),

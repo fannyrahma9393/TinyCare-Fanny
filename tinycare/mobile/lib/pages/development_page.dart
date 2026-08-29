@@ -105,7 +105,6 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Perkembangan Anak')),
       floatingActionButton: (isAdmin && _selectedChildId != null && _categories.isNotEmpty) ? FloatingActionButton(
         onPressed: () async {
@@ -143,9 +142,9 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: AppColors.surface,
+                                  color: ThemeHelper.surface(context),
                                   borderRadius: AppRadius.mdAll,
-                                  border: Border.all(color: AppColors.border),
+                                  border: Border.all(color: ThemeHelper.border(context)),
                                 ),
                                 child: DropdownButton<int>(
                                   value: _selectedChildId,
@@ -177,7 +176,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                                     style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.primaryDark, fontSize: 14)),
                               ),
 
-                            const Text('Kategori Perkembangan', style: AppTypography.h3),
+                            Text('Kategori Perkembangan', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                             const SizedBox(height: 14),
 
                             // Use enriched categories from development endpoint (has assessment data)
@@ -212,9 +211,9 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -228,9 +227,9 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(category['name'] ?? '-', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text)),
+                    Text(category['name'] ?? '-', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                     const SizedBox(height: 2),
-                    Text('$total penilaian', style: AppTypography.caption),
+                    Text('$total penilaian', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
@@ -246,7 +245,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                   borderRadius: BorderRadius.circular(8),
                   child: LinearProgressIndicator(
                     value: avgProgress / 100,
-                    backgroundColor: AppColors.border,
+                    backgroundColor: ThemeHelper.border(context),
                     valueColor: AlwaysStoppedAnimation(_getProgressColor(avgProgress)),
                     minHeight: 8,
                   ),
@@ -254,20 +253,20 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
               ),
               const SizedBox(width: 14),
               Text('${avgProgress.toStringAsFixed(0)}%',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.text)),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: ThemeHelper.text(context))),
             ],
           ),
 
           if (category['recent_assessments'] != null && (category['recent_assessments'] as List).isNotEmpty) ...[
             const SizedBox(height: 14),
-            const Divider(color: AppColors.border),
+            Divider(color: ThemeHelper.border(context)),
             const SizedBox(height: 10),
             ...List.generate((category['recent_assessments'] as List).length, (i) {
               final a = (category['recent_assessments'] as List)[i];
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.bgAlt, borderRadius: AppRadius.smAll),
+                decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.smAll),
                 child: Row(
                   children: [
                     Expanded(
@@ -275,9 +274,9 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(a['indicator'] ?? '-',
-                              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: AppColors.text)),
+                              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: ThemeHelper.text(context))),
                           const SizedBox(height: 2),
-                          Text(a['observation_date'] ?? '', style: AppTypography.caption),
+                          Text(a['observation_date'] ?? '', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                         ],
                       ),
                     ),
@@ -380,7 +379,6 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Tambah Penilaian Perkembangan')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -425,7 +423,7 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
               const SizedBox(height: 16),
 
               // Progress (backend enum: belum, mulai, berkembang, baik, sangat_baik)
-              const Text('Progres', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Progres', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8, runSpacing: 8,
@@ -465,12 +463,12 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
   Widget _buildProgressChip(String value, String label) {
     final selected = _progress == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _progress = value),
       selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

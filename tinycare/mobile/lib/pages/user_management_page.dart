@@ -124,7 +124,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       case 'active': return AppColors.success;
       case 'pending': return AppColors.warning;
       case 'rejected': return AppColors.error;
-      default: return AppColors.textMuted;
+      default: return ThemeHelper.textMuted(context);
     }
   }
 
@@ -141,7 +141,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Pengguna')),
       body: Column(
         children: [
@@ -207,15 +206,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ThemeHelper.surface(context),
           borderRadius: AppRadius.smAll,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: ThemeHelper.border(context)),
         ),
         child: Column(
           children: [
             Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: color)),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+            Text(label, style: TextStyle(fontSize: 10, color: ThemeHelper.textMuted(context))),
           ],
         ),
       ),
@@ -229,7 +228,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       child: ChoiceChip(
         label: Text(label, style: TextStyle(
           fontSize: 12,
-          color: isSelected ? Colors.white : AppColors.textSecondary,
+          color: isSelected ? Colors.white : ThemeHelper.textSecondary(context),
         )),
         selected: isSelected,
         onSelected: (_) {
@@ -237,8 +236,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
           _loadUsers();
         },
         selectedColor: AppColors.primary,
-        backgroundColor: AppColors.surface,
-        side: const BorderSide(color: AppColors.border),
+        backgroundColor: ThemeHelper.surface(context),
+        side: BorderSide(color: ThemeHelper.border(context)),
       ),
     );
   }
@@ -252,9 +251,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,9 +265,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(user['name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    Text(user['name'] ?? '-', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: ThemeHelper.text(context))),
                     const SizedBox(height: 2),
-                    Text(user['email'] ?? '-', style: AppTypography.caption),
+                    Text(user['email'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
@@ -280,7 +279,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             children: [
               AppWidgets.statusBadge(
                 role == 'admin_master' ? 'Admin Master' : role == 'admin' ? 'Admin' : 'Orang Tua',
-                role == 'admin_master' ? AppColors.primary : role == 'admin' ? AppColors.info : AppColors.textMuted,
+                role == 'admin_master' ? AppColors.primary : role == 'admin' ? AppColors.info : ThemeHelper.textMuted(context),
               ),
               const Spacer(),
               if (isPending) ...[

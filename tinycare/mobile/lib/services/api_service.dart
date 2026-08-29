@@ -9,7 +9,16 @@ class ApiService {
   factory ApiService() => _instance;
   ApiService._internal();
 
+  // Change this to your server IP/URL for production
+  static const String _customBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: '',
+  );
+
   static String get _baseUrl {
+    // User-defined override (via --dart-define=API_BASE_URL=...)
+    if (_customBaseUrl.isNotEmpty) return _customBaseUrl;
+
     // Flutter Web
     if (kIsWeb) return 'http://localhost:8000/api';
 

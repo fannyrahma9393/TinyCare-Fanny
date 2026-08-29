@@ -50,7 +50,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -151,10 +150,15 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
-                            decoration: const InputDecoration(
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
                               labelText: 'Email',
                               hintText: 'Masukkan email Anda',
-                              prefixIcon: Icon(Icons.email_outlined),
+                              prefixIcon: const Icon(Icons.email_outlined, color: Colors.black),
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: const TextStyle(color: Colors.black),
+                              hintStyle: const TextStyle(color: Colors.black54),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -173,15 +177,21 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordController,
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.next,
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               labelText: 'Password',
                               hintText: 'Masukkan password Anda',
-                              prefixIcon: const Icon(Icons.lock_outlined),
+                              prefixIcon: const Icon(Icons.lock_outlined, color: Colors.black),
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: const TextStyle(color: Colors.black),
+                              hintStyle: const TextStyle(color: Colors.black54),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
+                                  color: Colors.black,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -206,15 +216,21 @@ class _LoginPageState extends State<LoginPage> {
                             obscureText: _obscureAdminCode,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) => _handleLogin(),
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               labelText: 'Kode Akses Admin',
                               hintText: 'Kosongkan jika tidak diperlukan',
-                              prefixIcon: const Icon(Icons.vpn_key_outlined),
+                              prefixIcon: const Icon(Icons.vpn_key_outlined, color: Colors.black),
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: const TextStyle(color: Colors.black),
+                              hintStyle: const TextStyle(color: Colors.black54),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureAdminCode
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
+                                  color: Colors.black,
                                 ),
                                 onPressed: () {
                                   setState(() {

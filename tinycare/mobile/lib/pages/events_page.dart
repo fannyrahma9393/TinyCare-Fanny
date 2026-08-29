@@ -86,7 +86,7 @@ class _EventsPageState extends State<EventsPage> {
       case 'holiday': return AppColors.info;
       case 'special': return Colors.purple;
       case 'meeting': return AppColors.warning;
-      default: return AppColors.textMuted;
+      default: return ThemeHelper.textMuted(context);
     }
   }
 
@@ -126,7 +126,6 @@ class _EventsPageState extends State<EventsPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Acara'),
         actions: [
@@ -174,9 +173,9 @@ class _EventsPageState extends State<EventsPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -207,18 +206,18 @@ class _EventsPageState extends State<EventsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(event['title'] ?? 'Tanpa judul',
-                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text)),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                        Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                         const SizedBox(width: 4),
-                        Text(_formatDate(startDate), style: AppTypography.caption),
+                        Text(_formatDate(startDate), style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                         if (event['start_time'] != null) ...[
                           const SizedBox(width: 8),
-                          const Icon(Icons.access_time, size: 12, color: AppColors.textMuted),
+                          Icon(Icons.access_time, size: 12, color: ThemeHelper.textMuted(context)),
                           const SizedBox(width: 4),
-                          Text(event['start_time'] ?? '', style: AppTypography.caption),
+                          Text(event['start_time'] ?? '', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                         ],
                       ],
                     ),
@@ -226,9 +225,9 @@ class _EventsPageState extends State<EventsPage> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 12, color: AppColors.textMuted),
+                          Icon(Icons.location_on, size: 12, color: ThemeHelper.textMuted(context)),
                           const SizedBox(width: 4),
-                          Text(event['location'] ?? '', style: AppTypography.caption),
+                          Text(event['location'] ?? '', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                         ],
                       ),
                     ],
@@ -241,7 +240,7 @@ class _EventsPageState extends State<EventsPage> {
                 children: [
                   if (isAdmin)
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textMuted),
+                      icon: Icon(Icons.more_vert, size: 18, color: ThemeHelper.textMuted(context)),
                       onSelected: (value) async {
                         if (value == 'edit') {
                           final result = await Navigator.push(context,
@@ -256,7 +255,7 @@ class _EventsPageState extends State<EventsPage> {
                         const PopupMenuItem(value: 'delete', child: Text('Hapus')),
                       ],
                     ),
-                  const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                  Icon(Icons.chevron_right, color: ThemeHelper.textMuted(context)),
                 ],
               ),
             ],
@@ -285,7 +284,7 @@ class _EventsPageState extends State<EventsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(child: Container(width: 40, height: 4,
-                      decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
+                      decoration: BoxDecoration(color: ThemeHelper.border(context), borderRadius: BorderRadius.circular(2)))),
                   const SizedBox(height: 20),
                   Row(
                     children: [
@@ -295,7 +294,7 @@ class _EventsPageState extends State<EventsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(event['title'] ?? 'Tanpa judul', style: AppTypography.h2),
+                            Text(event['title'] ?? 'Tanpa judul', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
                             const SizedBox(height: 6),
                             AppWidgets.statusBadge(_getTypeLabel(type), _getTypeColor(type)),
                           ],
@@ -307,12 +306,12 @@ class _EventsPageState extends State<EventsPage> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(color: AppColors.bgAlt, borderRadius: AppRadius.lgAll),
+                    decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.lgAll),
                     child: Column(
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, size: 18, color: AppColors.textMuted),
+                            Icon(Icons.calendar_today, size: 18, color: ThemeHelper.textMuted(context)),
                             const SizedBox(width: 12),
                             Text(_formatDate(event['date'])),
                           ],
@@ -321,7 +320,7 @@ class _EventsPageState extends State<EventsPage> {
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              const Icon(Icons.access_time, size: 18, color: AppColors.textMuted),
+                              Icon(Icons.access_time, size: 18, color: ThemeHelper.textMuted(context)),
                               const SizedBox(width: 12),
                               Text('${event['start_time']}${event['end_time'] != null ? ' - ${event['end_time']}' : ''}'),
                             ],
@@ -331,7 +330,7 @@ class _EventsPageState extends State<EventsPage> {
                           const SizedBox(height: 10),
                           Row(
                             children: [
-                              const Icon(Icons.location_on, size: 18, color: AppColors.textMuted),
+                              Icon(Icons.location_on, size: 18, color: ThemeHelper.textMuted(context)),
                               const SizedBox(width: 12),
                               Expanded(child: Text(event['location'])),
                             ],
@@ -342,10 +341,10 @@ class _EventsPageState extends State<EventsPage> {
                   ),
                   if (event['description'] != null && event['description'].toString().isNotEmpty) ...[
                     const SizedBox(height: 24),
-                    const Text('Deskripsi', style: AppTypography.h3),
+                    Text('Deskripsi', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                     const SizedBox(height: 10),
                     Text(event['description'],
-                        style: const TextStyle(fontSize: 14, height: 1.7, color: AppColors.text)),
+                        style: TextStyle(fontSize: 14, height: 1.7, color: ThemeHelper.text(context))),
                   ],
                 ],
               ),
@@ -461,7 +460,6 @@ class EventFormPageState extends State<EventFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Acara' : 'Tambah Acara')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -501,7 +499,7 @@ class EventFormPageState extends State<EventFormPage> {
                 decoration: const InputDecoration(labelText: 'Lokasi'),
               ),
               const SizedBox(height: 16),
-              const Text('Tipe Acara', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Tipe Acara', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8, runSpacing: 8,
@@ -553,12 +551,12 @@ class EventFormPageState extends State<EventFormPage> {
   Widget _buildTypeChip(String value, String label) {
     final selected = _type == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _type = value),
       selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

@@ -53,7 +53,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       case 'failed':
         return AppColors.error;
       default:
-        return AppColors.textMuted;
+        return ThemeHelper.textMuted(context);
     }
   }
 
@@ -117,7 +117,6 @@ class _InvoicesPageState extends State<InvoicesPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Tagihan'),
       ),
@@ -176,9 +175,9 @@ class _InvoicesPageState extends State<InvoicesPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -196,10 +195,10 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   Flexible(
                     child: Text(
                       inv['invoice_number'] ?? '-',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: AppColors.text,
+                        color: ThemeHelper.text(context),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -213,19 +212,19 @@ class _InvoicesPageState extends State<InvoicesPage> {
               AppWidgets.infoRow('Anak', inv['child']?['name'] ?? '-'),
               AppWidgets.infoRow('Paket', inv['package']?['name'] ?? '-'),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Divider(height: 1, color: AppColors.border),
+              Divider(
+                height: 17,
+                color: ThemeHelper.border(context),
               ),
 
               // Total
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Total', style: TextStyle(
+                  Text('Total', style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: AppColors.text,
+                    color: ThemeHelper.text(context),
                   )),
                   Text(
                     CurrencyHelper.formatRupiah(inv['total']),
@@ -245,7 +244,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   'Jatuh tempo: ${dueDate.day}/${dueDate.month}/${dueDate.year}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isOverdue ? AppColors.error : AppColors.textMuted,
+                    color: isOverdue ? AppColors.error : ThemeHelper.textMuted(context),
                     fontWeight: isOverdue ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),
@@ -409,7 +408,6 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
     final isPaid = status == 'paid';
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: Text(inv['invoice_number'] ?? 'Detail Invoice'),
       ),
@@ -428,12 +426,12 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
                     children: [
                       Text(
                         inv['invoice_number'] ?? '-',
-                        style: AppTypography.h1,
+                        style: AppTypography.h1.copyWith(color: ThemeHelper.text(context)),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         '${inv['child']?['name'] ?? '-'} · ${inv['package']?['name'] ?? '-'}',
-                        style: AppTypography.bodySmall,
+                        style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
                       ),
                     ],
                   ),
@@ -459,9 +457,9 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
                       'Diskon',
                       '- ${CurrencyHelper.formatRupiah(inv['discount'])}',
                     ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Divider(color: AppColors.border),
+                  Divider(
+                    height: 17,
+                    color: ThemeHelper.border(context),
                   ),
                   AppWidgets.infoRow('Total', CurrencyHelper.formatRupiah(inv['total']), isTotal: true),
                   const SizedBox(height: 4),
@@ -488,7 +486,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.errorBg,
+                  color: ThemeHelper.errorBg(context),
                   borderRadius: AppRadius.mdAll,
                   border: Border.all(color: AppColors.error.withValues(alpha: 0.15)),
                 ),
@@ -527,7 +525,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.bgAlt,
+                        color: ThemeHelper.bgAlt(context),
                         borderRadius: AppRadius.smAll,
                       ),
                       child: Row(
@@ -538,16 +536,16 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
                             children: [
                               Text(
                                 CurrencyHelper.formatRupiah(p['amount']),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.text,
+                                  color: ThemeHelper.text(context),
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 '${p['payment_method'] ?? 'Bank Transfer'} · ${p['created_at'] ?? '-'}',
-                                style: AppTypography.caption,
+                                style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)),
                               ),
                             ],
                           ),
@@ -577,15 +575,15 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTypography.h3),
+          Text(title, style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
           const SizedBox(height: 16),
           child,
         ],
@@ -597,7 +595,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.successBg,
+        color: ThemeHelper.successBg(context),
         borderRadius: AppRadius.lgAll,
       ),
       child: Column(
@@ -615,7 +613,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
           const SizedBox(height: 4),
           Text(
             'Invoice ini sudah lunas.',
-            style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context)),
           ),
         ],
       ),
@@ -627,7 +625,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
       children: [
         Text(
           'Klik tombol di bawah untuk memulai pembayaran.',
-          style: AppTypography.bodySmall,
+          style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -665,7 +663,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
           width: double.infinity,
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: AppColors.infoBg,
+            color: ThemeHelper.infoBg(context),
             borderRadius: AppRadius.lgAll,
           ),
           child: Column(
@@ -681,18 +679,18 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
               const SizedBox(height: 6),
               Text(
                 info['va_number'] ?? '-',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   fontFamily: 'monospace',
                   letterSpacing: 0.05,
-                  color: AppColors.text,
+                  color: ThemeHelper.text(context),
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 '${info['bank_name'] ?? ''} · ${info['account_name'] ?? ''}',
-                style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context)),
               ),
             ],
           ),
@@ -703,7 +701,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
         Text('Transfer sebesar:', style: TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: AppColors.text,
+          color: ThemeHelper.text(context),
         )),
         const SizedBox(height: 6),
         Text(
@@ -716,7 +714,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
         ),
         Text(
           '(termasuk digit unik: +${uniqueDigit.toInt()})',
-          style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+          style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context)),
         ),
         const SizedBox(height: 18),
 
@@ -725,7 +723,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
           Text('Cara Pembayaran:', style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppColors.text,
+            color: ThemeHelper.text(context),
           )),
           const SizedBox(height: 10),
           ..._buildInstructions(info['instructions']),
@@ -737,7 +735,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.warningBg,
+              color: ThemeHelper.warningBg(context),
               borderRadius: AppRadius.smAll,
             ),
             child: Row(
@@ -770,7 +768,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.bgAlt,
+            color: ThemeHelper.bgAlt(context),
             borderRadius: AppRadius.smAll,
           ),
           child: Column(
@@ -778,19 +776,19 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
             children: [
               Text(
                 e.key.toString().toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textMuted,
+                  color: ThemeHelper.textMuted(context),
                   letterSpacing: 0.05,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 e.value.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: ThemeHelper.textSecondary(context),
                 ),
               ),
             ],
@@ -810,7 +808,7 @@ class _InvoiceDetailPageState extends State<_InvoiceDetailPage> {
       case 'failed':
         return AppColors.error;
       default:
-        return AppColors.textMuted;
+        return ThemeHelper.textMuted(context);
     }
   }
 
@@ -917,14 +915,12 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppColors.bg,
         appBar: AppBar(title: const Text('Buat Invoice')),
         body: AppWidgets.loadingIndicator(),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Buat Invoice')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),

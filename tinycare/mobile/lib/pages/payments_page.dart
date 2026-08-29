@@ -125,7 +125,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
       case 'rejected':
         return AppColors.error;
       default:
-        return AppColors.textMuted;
+        return ThemeHelper.textMuted(context);
     }
   }
 
@@ -145,7 +145,6 @@ class _PaymentsPageState extends State<PaymentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Pembayaran'),
       ),
@@ -184,9 +183,9 @@ class _PaymentsPageState extends State<PaymentsPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -202,16 +201,16 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     // Backend nests: payment.invoice.parent.user.name
                     Text(
                       payment['invoice']?['parent']?['user']?['name'] ?? payment['user']?['name'] ?? '-',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.text,
+                        color: ThemeHelper.text(context),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Invoice: ${payment['invoice']?['invoice_number'] ?? '-'} · ${payment['invoice']?['child']?['name'] ?? ''}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                      style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context)),
                     ),
                   ],
                 ),
@@ -240,15 +239,15 @@ class _PaymentsPageState extends State<PaymentsPage> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 6),
-                Text(payment['created_at'], style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                Text(payment['created_at'], style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
               ],
             ),
           ],
           if (isPending) ...[
             const SizedBox(height: 12),
-            const Divider(color: AppColors.border),
+            Divider(color: ThemeHelper.border(context)),
             const SizedBox(height: 8),
             Row(
               children: [

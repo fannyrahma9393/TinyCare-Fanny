@@ -143,7 +143,6 @@ class _ReportsPageState extends State<ReportsPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Laporan'),
         actions: [
@@ -195,13 +194,13 @@ class _ReportsPageState extends State<ReportsPage> {
                                   decoration: BoxDecoration(
                                     color: _activeTab == 'weekly'
                                         ? AppColors.primary
-                                        : AppColors.surface,
+                                        : ThemeHelper.surface(context),
                                     borderRadius: const BorderRadius.horizontal(
                                         left: Radius.circular(12)),
                                     border: Border.all(
                                         color: _activeTab == 'weekly'
                                             ? AppColors.primary
-                                            : AppColors.border),
+                                            : ThemeHelper.border(context)),
                                   ),
                                   child: Center(
                                     child: Text('Mingguan',
@@ -210,7 +209,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                           fontWeight: FontWeight.w600,
                                           color: _activeTab == 'weekly'
                                               ? Colors.white
-                                              : AppColors.textSecondary,
+                                              : ThemeHelper.textSecondary(context),
                                         )),
                                   ),
                                 ),
@@ -226,13 +225,13 @@ class _ReportsPageState extends State<ReportsPage> {
                                   decoration: BoxDecoration(
                                     color: _activeTab == 'monthly'
                                         ? AppColors.primary
-                                        : AppColors.surface,
+                                        : ThemeHelper.surface(context),
                                     borderRadius: const BorderRadius.horizontal(
                                         right: Radius.circular(12)),
                                     border: Border.all(
                                         color: _activeTab == 'monthly'
                                             ? AppColors.primary
-                                            : AppColors.border),
+                                            : ThemeHelper.border(context)),
                                   ),
                                   child: Center(
                                     child: Text('Bulanan',
@@ -241,7 +240,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                           fontWeight: FontWeight.w600,
                                           color: _activeTab == 'monthly'
                                               ? Colors.white
-                                              : AppColors.textSecondary,
+                                              : ThemeHelper.textSecondary(context),
                                         )),
                                   ),
                                 ),
@@ -277,9 +276,9 @@ class _ReportsPageState extends State<ReportsPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
       ),
       child: Column(
         children: [
@@ -295,16 +294,16 @@ class _ReportsPageState extends State<ReportsPage> {
           ),
           const SizedBox(height: 16),
           Text('Belum ada laporan $type',
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.text)),
+                  color: ThemeHelper.text(context))),
           const SizedBox(height: 8),
           Text(
             'Laporan $type belum dibuat. Tekan tombol di bawah untuk generate laporan pertama.',
             textAlign: TextAlign.center,
             style:
-                const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context)),
           ),
           const SizedBox(height: 20),
           if (isAdmin)
@@ -337,9 +336,9 @@ class _ReportsPageState extends State<ReportsPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -353,15 +352,15 @@ class _ReportsPageState extends State<ReportsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(report['child']?['name'] ?? '-',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.text)),
+                            color: ThemeHelper.text(context))),
                     const SizedBox(height: 4),
                     Text(
                       '${report['week_start'] ?? '-'} s/d ${report['week_end'] ?? '-'}',
-                      style: const TextStyle(
-                          fontSize: 12, color: AppColors.textMuted),
+                      style: TextStyle(
+                          fontSize: 12, color: ThemeHelper.textMuted(context)),
                     ),
                   ],
                 ),
@@ -400,11 +399,12 @@ class _ReportsPageState extends State<ReportsPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                  color: AppColors.bgAlt, borderRadius: AppRadius.mdAll),
+                  color: ThemeHelper.bgAlt(context),
+                  borderRadius: AppRadius.mdAll),
               child: Text(report['overall_summary'],
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: ThemeHelper.textSecondary(context),
                       height: 1.5)),
             ),
           ],
@@ -437,9 +437,9 @@ class _ReportsPageState extends State<ReportsPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -453,14 +453,15 @@ class _ReportsPageState extends State<ReportsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(report['child']?['name'] ?? '-',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.text)),
+                            color: ThemeHelper.text(context))),
                     const SizedBox(height: 4),
                     Text('$monthName $year',
-                        style: const TextStyle(
-                            fontSize: 12, color: AppColors.textMuted)),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
@@ -498,11 +499,12 @@ class _ReportsPageState extends State<ReportsPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                  color: AppColors.bgAlt, borderRadius: AppRadius.mdAll),
+                  color: ThemeHelper.bgAlt(context),
+                  borderRadius: AppRadius.mdAll),
               child: Text(report['overall_summary'],
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textSecondary,
+                      color: ThemeHelper.textSecondary(context),
                       height: 1.5)),
             ),
           ],
@@ -516,14 +518,14 @@ class _ReportsPageState extends State<ReportsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('$label: ',
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary)),
+                color: ThemeHelper.textSecondary(context))),
         Expanded(
           child: Text(value,
               style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                  TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
         ),
       ],
     );

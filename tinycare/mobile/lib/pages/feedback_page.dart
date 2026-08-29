@@ -161,7 +161,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Feedback')),
       floatingActionButton: !isAdmin ? FloatingActionButton(
         onPressed: _showFeedbackForm,
@@ -200,9 +199,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Padding(
@@ -215,22 +214,22 @@ class _FeedbackPageState extends State<FeedbackPage> {
               children: [
                 Expanded(
                   child: Text(feedback['subject'] ?? '-',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text)),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                 ),
                 _buildRatingStars(feedback['rating'] ?? 5),
               ],
             ),
             const SizedBox(height: 10),
             Text(feedback['message'] ?? '',
-                style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5)),
+                style: TextStyle(fontSize: 14, color: ThemeHelper.textSecondary(context), height: 1.5)),
             if (feedback['user'] != null || feedback['parent'] != null) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.person, size: 14, color: AppColors.textMuted),
+                  Icon(Icons.person, size: 14, color: ThemeHelper.textMuted(context)),
                   const SizedBox(width: 6),
                   Text(feedback['user']?['name'] ?? feedback['parent']?['user']?['name'] ?? '-',
-                      style: AppTypography.caption),
+                      style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                 ],
               ),
             ],
@@ -242,9 +241,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.primarySubtle,
+                  color: ThemeHelper.successBg(context),
                   borderRadius: AppRadius.mdAll,
-                  border: Border.all(color: AppColors.primaryLighter),
+                  border: Border.all(color: ThemeHelper.border(context)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +258,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     ),
                     const SizedBox(height: 6),
                     Text(feedback['admin_response'],
-                        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                        style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context))),
                   ],
                 ),
               ),
@@ -268,9 +267,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 6),
-                Text(feedback['created_at'] ?? '-', style: AppTypography.caption),
+                Text(feedback['created_at'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                 const Spacer(),
                 AppWidgets.statusBadge(statusLabel, statusColor),
               ],
@@ -279,7 +278,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
             // Admin actions
             if (isAdmin) ...[
               const SizedBox(height: 12),
-              const Divider(color: AppColors.border),
+              Divider(color: ThemeHelper.border(context)),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -295,13 +294,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     icon: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.border),
+                        border: Border.all(color: ThemeHelper.border(context)),
                         borderRadius: AppRadius.smAll,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Status', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                          Text('Status', style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context))),
                           const SizedBox(width: 4),
                           const Icon(Icons.arrow_drop_down, size: 16),
                         ],
@@ -357,9 +356,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(child: Container(width: 40, height: 4,
-                          decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
+                          decoration: BoxDecoration(color: ThemeHelper.border(context), borderRadius: BorderRadius.circular(2)))),
                       const SizedBox(height: 20),
-                      const Text('Kirim Feedback', style: AppTypography.h2),
+                      Text('Kirim Feedback', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _subjectController,
@@ -367,7 +366,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                         validator: (v) => v == null || v.isEmpty ? 'Subjek harus diisi' : null,
                       ),
                       const SizedBox(height: 16),
-                      const Text('Rating', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+                      Text('Rating', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                       const SizedBox(height: 8),
                       Row(
                         children: List.generate(5, (index) {
@@ -411,7 +410,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       case 'responded': return AppColors.success;
       case 'reviewed': return AppColors.info;
       case 'pending': return AppColors.warning;
-      default: return AppColors.textMuted;
+      default: return ThemeHelper.textMuted(context);
     }
   }
 

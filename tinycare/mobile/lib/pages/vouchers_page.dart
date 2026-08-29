@@ -83,7 +83,6 @@ class _VouchersPageState extends State<VouchersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Voucher'),
         actions: [
@@ -121,9 +120,9 @@ class _VouchersPageState extends State<VouchersPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -145,32 +144,32 @@ class _VouchersPageState extends State<VouchersPage> {
                       voucher['type'] == 'percentage'
                           ? '${voucher['value']}% diskon'
                           : 'Rp ${voucher['value'] ?? 0} diskon',
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: ThemeHelper.text(context)),
                     ),
                   ],
                 ),
               ),
-              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : AppColors.textMuted),
+              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : ThemeHelper.textMuted(context)),
             ],
           ),
           if (voucher['description'] != null && voucher['description'].toString().isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(voucher['description'], style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5)),
+            Text(voucher['description'], style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context), height: 1.5)),
           ],
           const SizedBox(height: 8),
           Row(
             children: [
-              const Icon(Icons.people_outline, size: 14, color: AppColors.textMuted),
+              Icon(Icons.people_outline, size: 14, color: ThemeHelper.textMuted(context)),
               const SizedBox(width: 6),
               Text(
                 'Digunakan: $usageCount${maxUses != null ? ' / $maxUses' : ''}',
-                style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context)),
               ),
               const Spacer(),
               if (voucher['expires_at'] != null) ...[
-                const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 6),
-                Text('Berlaku hingga ${voucher['expires_at']}', style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                Text('Berlaku hingga ${voucher['expires_at']}', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
               ],
             ],
           ),
@@ -317,7 +316,6 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Voucher' : 'Tambah Voucher')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -330,7 +328,7 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.errorBg,
+                    color: ThemeHelper.errorBg(context),
                     borderRadius: AppRadius.smAll,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
                   ),

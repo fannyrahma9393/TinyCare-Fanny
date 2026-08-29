@@ -81,7 +81,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
       case 'urgent': return AppColors.error;
       case 'high': return AppColors.warning;
       case 'normal': return AppColors.primary;
-      default: return AppColors.textMuted;
+      default: return ThemeHelper.textMuted(context);
     }
   }
 
@@ -110,7 +110,6 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Pengumuman'),
         actions: [
@@ -155,9 +154,9 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -191,11 +190,11 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                     children: [
                       Expanded(
                         child: Text(item['title'] ?? '-',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text)),
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                       ),
                       if (isAdmin)
                         PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textMuted),
+                          icon: Icon(Icons.more_vert, size: 18, color: ThemeHelper.textMuted(context)),
                           onSelected: (value) async {
                             if (value == 'edit') {
                               final result = await Navigator.push(context,
@@ -217,15 +216,15 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                     item['content'] ?? '',
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
+                    style: TextStyle(fontSize: 14, color: ThemeHelper.textSecondary(context), height: 1.5),
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                      Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                       const SizedBox(width: 6),
                       Text(item['publish_date'] ?? item['created_at'] ?? '-',
-                          style: AppTypography.caption),
+                          style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                     ],
                   ),
                 ],
@@ -246,38 +245,38 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.7, minChildSize: 0.5, maxChildSize: 0.9, expand: false,
-          builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.all(28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(child: Container(width: 40, height: 4,
-                      decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)))),
-                  const SizedBox(height: 20),
-                  AppWidgets.statusBadge(_getPriorityLabel(priority), _getPriorityColor(priority)),
-                  const SizedBox(height: 14),
-                  Text(item['title'] ?? '', style: AppTypography.h1),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      const Icon(Icons.calendar_today, size: 14, color: AppColors.textMuted),
-                      const SizedBox(width: 6),
-                      Text(item['publish_date'] ?? '-', style: AppTypography.caption),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Text(item['content'] ?? '',
-                      style: const TextStyle(fontSize: 16, height: 1.7, color: AppColors.text)),
-                ],
-              ),
-            );
-          },
-        );
-      },
+          return DraggableScrollableSheet(
+            initialChildSize: 0.7, minChildSize: 0.5, maxChildSize: 0.9, expand: false,
+            builder: (context, scrollController) {
+              return SingleChildScrollView(
+                controller: scrollController,
+                padding: const EdgeInsets.all(28),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(child: Container(width: 40, height: 4,
+                        decoration: BoxDecoration(color: ThemeHelper.border(context), borderRadius: BorderRadius.circular(2)))),
+                    const SizedBox(height: 20),
+                    AppWidgets.statusBadge(_getPriorityLabel(priority), _getPriorityColor(priority)),
+                    const SizedBox(height: 14),
+                    Text(item['title'] ?? '', style: AppTypography.h1.copyWith(color: ThemeHelper.text(context))),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today, size: 14, color: ThemeHelper.textMuted(context)),
+                        const SizedBox(width: 6),
+                        Text(item['publish_date'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(item['content'] ?? '',
+                        style: TextStyle(fontSize: 16, height: 1.7, color: ThemeHelper.text(context))),
+                  ],
+                ),
+              );
+            },
+          );
+        },
     );
   }
 }
@@ -368,7 +367,6 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Pengumuman' : 'Tambah Pengumuman')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -403,7 +401,7 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
                 keyboardType: TextInputType.datetime,
               ),
               const SizedBox(height: 16),
-              const Text('Prioritas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Prioritas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -436,12 +434,12 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
   Widget _buildPriorityChip(String value, String label) {
     final selected = _priority == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _priority = value),
       selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

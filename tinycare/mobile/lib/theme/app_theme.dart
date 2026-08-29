@@ -11,21 +11,36 @@ class AppColors {
   static const Color primaryLighter = Color(0xFFD1E8DA);
   static const Color primarySurface = Color(0xFFF0F7F3);
 
-  // Background
+  // Background (light)
   static const Color bg = Color(0xFFF6F7F5);
   static const Color bgAlt = Color(0xFFF0F2EE);
   static const Color surface = Colors.white;
   static const Color surfaceElevated = Colors.white;
 
-  // Text
+  // Text (light)
   static const Color text = Color(0xFF1B2A22);
   static const Color textSecondary = Color(0xFF566B5E);
   static const Color textMuted = Color(0xFF8A9B91);
   static const Color textOnPrimary = Colors.white;
 
-  // Borders
+  // Borders (light)
   static const Color border = Color(0xFFE2E4E0);
   static const Color borderLight = Color(0xFFEEF0EC);
+
+  // Dark theme variants
+  static const Color darkBg = Color(0xFF121212);
+  static const Color darkBgAlt = Color(0xFF1E1E1E);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkSurfaceElevated = Color(0xFF2A2A2A);
+  static const Color darkText = Color(0xFFE8E8E8);
+  static const Color darkTextSecondary = Color(0xFFB0B0B0);
+  static const Color darkTextMuted = Color(0xFF888888);
+  static const Color darkBorder = Color(0xFF333333);
+  static const Color darkBorderLight = Color(0xFF2A2A2A);
+  static const Color darkSuccessBg = Color(0xFF1A2E1A);
+  static const Color darkWarningBg = Color(0xFF2E2A1A);
+  static const Color darkErrorBg = Color(0xFF2E1A1A);
+  static const Color darkInfoBg = Color(0xFF1A2A2E);
 
   // Status Colors
   static const Color success = Color(0xFF3A7059);
@@ -53,6 +68,25 @@ class AppColors {
       offset: Offset(0, 2),
     ),
   ];
+}
+
+/// Theme-aware color resolver. Use in widgets that need to adapt to light/dark mode.
+class ThemeHelper {
+  static bool isDark(BuildContext context) => Theme.of(context).brightness == Brightness.dark;
+
+  static Color bg(BuildContext context) => isDark(context) ? AppColors.darkBg : AppColors.bg;
+  static Color bgAlt(BuildContext context) => isDark(context) ? AppColors.darkBgAlt : AppColors.bgAlt;
+  static Color surface(BuildContext context) => isDark(context) ? AppColors.darkSurface : AppColors.surface;
+  static Color surfaceElevated(BuildContext context) => isDark(context) ? AppColors.darkSurfaceElevated : AppColors.surfaceElevated;
+  static Color text(BuildContext context) => isDark(context) ? AppColors.darkText : AppColors.text;
+  static Color textSecondary(BuildContext context) => isDark(context) ? AppColors.darkTextSecondary : AppColors.textSecondary;
+  static Color textMuted(BuildContext context) => isDark(context) ? AppColors.darkTextMuted : AppColors.textMuted;
+  static Color border(BuildContext context) => isDark(context) ? AppColors.darkBorder : AppColors.border;
+  static Color borderLight(BuildContext context) => isDark(context) ? AppColors.darkBorderLight : AppColors.borderLight;
+  static Color successBg(BuildContext context) => isDark(context) ? AppColors.darkSuccessBg : AppColors.successBg;
+  static Color warningBg(BuildContext context) => isDark(context) ? AppColors.darkWarningBg : AppColors.warningBg;
+  static Color errorBg(BuildContext context) => isDark(context) ? AppColors.darkErrorBg : AppColors.errorBg;
+  static Color infoBg(BuildContext context) => isDark(context) ? AppColors.darkInfoBg : AppColors.infoBg;
 }
 
 class AppRadius {
@@ -164,14 +198,14 @@ class AppTheme {
     fontFamily: AppTypography.fontFamily,
 
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.surface,
-      foregroundColor: AppColors.text,
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       titleTextStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: AppColors.text,
+        color: Colors.white,
       ),
     ),
 
@@ -249,14 +283,14 @@ class AppTheme {
     fontFamily: AppTypography.fontFamily,
 
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF1E1E1E),
-      foregroundColor: Color(0xFFE8E8E8),
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
       elevation: 0,
       scrolledUnderElevation: 0,
       titleTextStyle: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: Color(0xFFE8E8E8),
+        color: Colors.white,
       ),
     ),
 
@@ -560,14 +594,17 @@ class AppWidgets {
     VoidCallback? onTap,
     EdgeInsets? padding,
     Color? color,
+    BuildContext? context,
   }) {
+    final surfaceColor = context != null ? ThemeHelper.surface(context) : AppColors.surface;
+    final borderColor = context != null ? ThemeHelper.border(context) : AppColors.border;
     final container = Container(
       width: double.infinity,
       padding: padding ?? const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: color ?? AppColors.surface,
+        color: color ?? surfaceColor,
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderColor),
         boxShadow: AppColors.cardShadow,
       ),
       child: child,
@@ -589,13 +626,16 @@ class AppWidgets {
     required Color color,
     required IconData icon,
     VoidCallback? onTap,
+    BuildContext? context,
   }) {
+    final surfaceColor = context != null ? ThemeHelper.surface(context) : AppColors.surface;
+    final borderColor = context != null ? ThemeHelper.border(context) : AppColors.border;
     final container = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderColor),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -752,13 +792,15 @@ class AppWidgets {
   // ===========================================================================
 
   /// Info row for detail pages
-  static Widget infoRow(String label, String value, {bool isTotal = false, bool isMuted = false}) {
+  static Widget infoRow(String label, String value, {bool isTotal = false, bool isMuted = false, BuildContext? context}) {
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+          Text(label, style: TextStyle(fontSize: 13, color: mutedColor)),
           Flexible(
             child: Text(
               value,
@@ -766,7 +808,7 @@ class AppWidgets {
               style: TextStyle(
                 fontSize: isTotal ? 15 : 13,
                 fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
-                color: isMuted ? AppColors.textMuted : (isTotal ? AppColors.primary : AppColors.text),
+                color: isMuted ? mutedColor : (isTotal ? AppColors.primary : textColor),
               ),
             ),
           ),
@@ -781,20 +823,23 @@ class AppWidgets {
     required String label,
     required String value,
     Color? iconColor,
+    BuildContext? context,
   }) {
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: iconColor ?? AppColors.textMuted),
+          Icon(icon, size: 16, color: iconColor ?? mutedColor),
           const SizedBox(width: 10),
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+          Text(label, style: TextStyle(fontSize: 13, color: mutedColor)),
           const Spacer(),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.text),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: textColor),
             ),
           ),
         ],
@@ -887,11 +932,12 @@ class AppWidgets {
   // ===========================================================================
 
   /// Section header with optional action button
-  static Widget sectionHeader(String title, {VoidCallback? onAction, String? actionLabel}) {
+  static Widget sectionHeader(String title, {VoidCallback? onAction, String? actionLabel, BuildContext? context}) {
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: AppTypography.h3),
+        Text(title, style: AppTypography.h3.copyWith(color: textColor)),
         if (onAction != null)
           GestureDetector(
             onTap: onAction,
@@ -905,13 +951,14 @@ class AppWidgets {
   }
 
   /// Divider with label
-  static Widget labeledDivider(String label) {
+  static Widget labeledDivider(String label, {BuildContext? context}) {
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
     return Row(
       children: [
         const Expanded(child: Divider()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(label, style: AppTypography.caption),
+          child: Text(label, style: TextStyle(fontSize: 12, color: mutedColor)),
         ),
         const Expanded(child: Divider()),
       ],
@@ -930,7 +977,10 @@ class AppWidgets {
     String? subtitle,
     Widget? trailing,
     Color? iconColor,
+    BuildContext? context,
   }) {
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
     return ListTile(
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
@@ -942,20 +992,23 @@ class AppWidgets {
         ),
         child: Icon(icon, color: iconColor ?? AppColors.primary, size: 20),
       ),
-      title: Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-      subtitle: subtitle != null ? Text(subtitle, style: AppTypography.caption) : null,
-      trailing: trailing ?? const Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+      title: Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor)),
+      subtitle: subtitle != null ? Text(subtitle, style: TextStyle(fontSize: 12, color: mutedColor)) : null,
+      trailing: trailing ?? Icon(Icons.chevron_right, color: mutedColor, size: 20),
     );
   }
 
   /// Grouped menu items in a card container
   /// Each item is a map with keys: 'label', 'icon', 'onTap', 'subtitle' (optional), 'iconColor' (optional)
-  static Widget menuGroup(List<Map<String, dynamic>> items) {
+  static Widget menuGroup(List<Map<String, dynamic>> items, {BuildContext? context}) {
+    final surfaceColor = context != null ? ThemeHelper.surface(context) : AppColors.surface;
+    final borderColor = context != null ? ThemeHelper.border(context) : AppColors.border;
+    final borderLightColor = context != null ? ThemeHelper.borderLight(context) : AppColors.borderLight;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: borderColor),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -970,9 +1023,10 @@ class AppWidgets {
                 onTap: item['onTap'] as VoidCallback?,
                 subtitle: item['subtitle'] as String?,
                 iconColor: item['iconColor'] as Color?,
+                context: context,
               ),
               if (!isLast)
-                const Divider(height: 1, indent: 72, endIndent: 18, color: AppColors.borderLight),
+                Divider(height: 1, indent: 72, endIndent: 18, color: borderLightColor),
             ],
           );
         }),
@@ -1053,7 +1107,11 @@ class AppWidgets {
     required String title,
     String? subtitle,
     Widget? action,
+    BuildContext? context,
   }) {
+    final bgColor = context != null ? ThemeHelper.bgAlt(context) : AppColors.bgAlt;
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(48),
@@ -1063,19 +1121,19 @@ class AppWidgets {
             Container(
               width: 64, height: 64,
               decoration: BoxDecoration(
-                color: AppColors.bgAlt,
+                color: bgColor,
                 borderRadius: AppRadius.lgAll,
               ),
-              child: Icon(icon, color: AppColors.textMuted, size: 28),
+              child: Icon(icon, color: mutedColor, size: 28),
             ),
             const SizedBox(height: 16),
             Text(
               title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
-              Text(subtitle, style: AppTypography.caption, textAlign: TextAlign.center),
+              Text(subtitle, style: TextStyle(fontSize: 12, color: mutedColor), textAlign: TextAlign.center),
             ],
             if (action != null) ...[
               const SizedBox(height: 16),
@@ -1091,7 +1149,10 @@ class AppWidgets {
   static Widget errorState({
     required String message,
     required VoidCallback onRetry,
+    BuildContext? context,
   }) {
+    final bgColor = context != null ? ThemeHelper.errorBg(context) : AppColors.errorBg;
+    final textColor = context != null ? ThemeHelper.text(context) : AppColors.text;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -1101,7 +1162,7 @@ class AppWidgets {
             Container(
               width: 64, height: 64,
               decoration: BoxDecoration(
-                color: AppColors.errorBg,
+                color: bgColor,
                 borderRadius: AppRadius.lgAll,
               ),
               child: const Icon(Icons.error_outline, color: AppColors.error, size: 28),
@@ -1109,7 +1170,7 @@ class AppWidgets {
             const SizedBox(height: 16),
             Text(
               message,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -1132,14 +1193,16 @@ class AppWidgets {
   }
 
   /// Loading overlay
-  static Widget loadingOverlay({String? message}) {
+  static Widget loadingOverlay({String? message, BuildContext? context}) {
+    final surfaceColor = context != null ? ThemeHelper.surface(context) : AppColors.surface;
+    final mutedColor = context != null ? ThemeHelper.textMuted(context) : AppColors.textMuted;
     return Container(
       color: Colors.black.withValues(alpha: 0.3),
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: surfaceColor,
             borderRadius: AppRadius.lgAll,
           ),
           child: Column(
@@ -1148,7 +1211,7 @@ class AppWidgets {
               const CircularProgressIndicator(color: AppColors.primary),
               if (message != null) ...[
                 const SizedBox(height: 16),
-                Text(message, style: AppTypography.bodySmall),
+                Text(message, style: TextStyle(fontSize: 13, color: mutedColor)),
               ],
             ],
           ),

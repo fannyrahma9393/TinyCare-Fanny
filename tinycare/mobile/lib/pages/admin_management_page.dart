@@ -84,7 +84,6 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
 
     if (!auth.isAdminMaster) {
       return Scaffold(
-        backgroundColor: AppColors.bg,
         appBar: AppBar(title: const Text('Kelola Admin')),
         body: AppWidgets.emptyState(
           icon: Icons.shield_outlined,
@@ -95,7 +94,6 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Kelola Admin'),
         actions: [
@@ -137,9 +135,9 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,15 +149,15 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(user?['name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                    Text(user?['name'] ?? '-', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: ThemeHelper.text(context))),
                     const SizedBox(height: 2),
-                    Text(user?['email'] ?? '-', style: AppTypography.caption),
+                    Text(user?['email'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
               AppWidgets.statusBadge(
                 isActive ? 'Aktif' : 'Nonaktif',
-                isActive ? AppColors.success : AppColors.textMuted,
+                isActive ? AppColors.success : ThemeHelper.textMuted(context),
               ),
             ],
           ),
@@ -183,7 +181,7 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
                   child: Text(isActive ? 'Nonaktifkan' : 'Aktifkan', style: const TextStyle(fontSize: 12)),
                 ),
               if (isSelf)
-                Text('Akun Anda', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                Text('Akun Anda', style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
             ],
           ),
         ],
@@ -273,7 +271,6 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Tambah Admin')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -286,7 +283,7 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.errorBg,
+                    color: ThemeHelper.errorBg(context),
                     borderRadius: AppRadius.smAll,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
                   ),

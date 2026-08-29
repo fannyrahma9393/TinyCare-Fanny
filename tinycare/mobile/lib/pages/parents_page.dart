@@ -96,7 +96,6 @@ class _ParentsPageState extends State<ParentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Orang Tua')),
       body: Column(
         children: [
@@ -146,7 +145,7 @@ class _ParentsPageState extends State<ParentsPage> {
       child: ChoiceChip(
         label: Text(label, style: TextStyle(
           fontSize: 12,
-          color: isSelected ? Colors.white : AppColors.textSecondary,
+          color: isSelected ? Colors.white : ThemeHelper.textSecondary(context),
         )),
         selected: isSelected,
         onSelected: (_) {
@@ -154,8 +153,8 @@ class _ParentsPageState extends State<ParentsPage> {
           _loadParents();
         },
         selectedColor: AppColors.primary,
-        backgroundColor: AppColors.surface,
-        side: const BorderSide(color: AppColors.border),
+        backgroundColor: ThemeHelper.surface(context),
+        side: BorderSide(color: ThemeHelper.border(context)),
       ),
     );
   }
@@ -172,7 +171,7 @@ class _ParentsPageState extends State<ParentsPage> {
         ? AppColors.success
         : status == 'pending'
             ? AppColors.warning
-            : AppColors.textMuted;
+            : ThemeHelper.textMuted(context);
     final statusLabel = status == 'active'
         ? 'Aktif'
         : status == 'pending'
@@ -184,9 +183,9 @@ class _ParentsPageState extends State<ParentsPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.mdAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -228,15 +227,15 @@ class _ParentsPageState extends State<ParentsPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
-                    Text(email, style: AppTypography.caption, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    Text(email, style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)), maxLines: 1, overflow: TextOverflow.ellipsis),
                     if (phone != '-') ...[
                       const SizedBox(height: 2),
-                      Text(phone, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                      Text(phone, style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                     ],
                     const SizedBox(height: 4),
                     Text(
                       '$childrenCount ${childrenCount == 1 ? 'anak' : 'anak'} terdaftar',
-                      style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context)),
                     ),
                   ],
                 ),
@@ -248,7 +247,7 @@ class _ParentsPageState extends State<ParentsPage> {
                 children: [
                   AppWidgets.statusBadge(statusLabel, statusColor),
                   const SizedBox(height: 8),
-                  const Icon(Icons.chevron_right, size: 18, color: AppColors.textMuted),
+                  Icon(Icons.chevron_right, size: 18, color: ThemeHelper.textMuted(context)),
                 ],
               ),
             ],
@@ -419,10 +418,9 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
         ? AppColors.success
         : status == 'pending'
             ? AppColors.warning
-            : AppColors.textMuted;
+            : ThemeHelper.textMuted(context);
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: Text(name),
         actions: isPending
@@ -447,9 +445,9 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: ThemeHelper.surface(context),
                 borderRadius: AppRadius.xlAll,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: ThemeHelper.border(context)),
                 boxShadow: AppColors.cardShadow,
               ),
               child: Column(
@@ -473,9 +471,9 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(name, style: AppTypography.h2, textAlign: TextAlign.center),
+                  Text(name, style: AppTypography.h2.copyWith(color: ThemeHelper.text(context)), textAlign: TextAlign.center),
                   const SizedBox(height: 4),
-                  Text(_getEmail(), style: AppTypography.bodySmall, textAlign: TextAlign.center),
+                  Text(_getEmail(), style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)), textAlign: TextAlign.center),
                   const SizedBox(height: 10),
                   AppWidgets.statusBadge(
                     status == 'active' ? 'Aktif' : status == 'pending' ? 'Menunggu' : status,
@@ -491,15 +489,15 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: ThemeHelper.surface(context),
                 borderRadius: AppRadius.lgAll,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: ThemeHelper.border(context)),
                 boxShadow: AppColors.cardShadow,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Informasi Akun', style: AppTypography.h3),
+                  Text('Informasi Akun', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                   const SizedBox(height: 16),
                   AppWidgets.infoRow('Nama', name),
                   AppWidgets.infoRow('Email', _getEmail()),
@@ -516,15 +514,15 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: ThemeHelper.surface(context),
                 borderRadius: AppRadius.lgAll,
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: ThemeHelper.border(context)),
                 boxShadow: AppColors.cardShadow,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Anak Terdaftar', style: AppTypography.h3),
+                  Text('Anak Terdaftar', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                   const SizedBox(height: 14),
                   if (children.isEmpty)
                     AppWidgets.emptyState(
@@ -536,7 +534,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.bgAlt,
+                        color: ThemeHelper.bgAlt(context),
                         borderRadius: AppRadius.mdAll,
                       ),
                       child: Row(
@@ -571,14 +569,14 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                                 const SizedBox(height: 2),
                                 Text(
                                   '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'} · ${child['birth_date'] ?? '-'}',
-                                  style: AppTypography.caption,
+                                  style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)),
                                 ),
                               ],
                             ),
                           ),
                           AppWidgets.statusBadge(
                             child['status'] == 'active' ? 'Aktif' : 'Nonaktif',
-                            child['status'] == 'active' ? AppColors.success : AppColors.textMuted,
+                            child['status'] == 'active' ? AppColors.success : ThemeHelper.textMuted(context),
                           ),
                         ],
                       ),

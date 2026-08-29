@@ -33,33 +33,39 @@ class _AppScaffoldState extends State<AppScaffold> {
         index: _currentIndex,
         children: isAdmin ? _adminPages : _parentPages,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(
-            top: BorderSide(color: AppColors.border, width: 1),
-          ),
-        ),
-        child: SafeArea(
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) => setState(() => _currentIndex = index),
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.textMuted,
-            selectedLabelStyle: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final surfaceColor = ThemeHelper.surface(context);
+          final borderColor = ThemeHelper.border(context);
+          return Container(
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              border: Border(
+                top: BorderSide(color: borderColor, width: 1),
+              ),
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
+            child: SafeArea(
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) => setState(() => _currentIndex = index),
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                selectedItemColor: AppColors.primary,
+                unselectedItemColor: ThemeHelper.textMuted(context),
+                selectedLabelStyle: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+                items: isAdmin ? _adminNavItems : _parentNavItems,
+              ),
             ),
-            items: isAdmin ? _adminNavItems : _parentNavItems,
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -138,9 +144,9 @@ class _PlaceholderPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 48, color: AppColors.textMuted),
+          Icon(icon, size: 48, color: ThemeHelper.textMuted(context)),
           const SizedBox(height: 12),
-          Text(label, style: AppTypography.h3),
+          Text(label, style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
         ],
       ),
     );

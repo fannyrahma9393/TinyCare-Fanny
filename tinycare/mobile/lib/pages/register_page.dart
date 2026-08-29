@@ -75,7 +75,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     if (_isSuccess) {
       return Scaffold(
-        backgroundColor: AppColors.bg,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -86,17 +85,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: AppColors.successBg,
+                    color: ThemeHelper.successBg(context),
                     borderRadius: AppRadius.xlAll,
                   ),
                   child: const Icon(Icons.check_circle, size: 36, color: AppColors.success),
                 ),
                 const SizedBox(height: 24),
-                const Text('Registrasi Berhasil!', style: AppTypography.h1),
+                Text('Registrasi Berhasil!', style: AppTypography.h1.copyWith(color: ThemeHelper.text(context))),
                 const SizedBox(height: 10),
-                const Text(
+                Text(
                   'Akun Anda telah dibuat dan menunggu persetujuan admin. Anda akan dapat login setelah akun disetujui.',
-                  style: AppTypography.bodySmall,
+                  style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 28),
@@ -115,7 +114,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Daftar Akun Orang Tua')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -125,7 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Header
-              const Text('Buat akun untuk memantau si kecil', style: AppTypography.bodySmall),
+              Text('Buat akun untuk memantau si kecil', style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context))),
               const SizedBox(height: 24),
 
               // Error
@@ -133,7 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.errorBg,
+                    color: ThemeHelper.errorBg(context),
                     borderRadius: AppRadius.smAll,
                     border: Border.all(color: AppColors.error.withValues(alpha: 0.2)),
                   ),
@@ -239,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Sudah punya akun? ', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+                  Text('Sudah punya akun? ', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                   GestureDetector(
                     onTap: () => Navigator.pushReplacementNamed(context, '/login'),
                     child: const Text('Masuk', style: TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),

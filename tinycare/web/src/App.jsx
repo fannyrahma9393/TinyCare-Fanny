@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import ParentLayout from './components/ParentLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Landing from './pages/Landing';
 
 // Admin pages
 import Dashboard from './pages/Dashboard';
@@ -75,6 +76,7 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={user ? <Navigate to={isAdmin ? '/dashboard' : '/parent'} replace /> : <Login />} />
       <Route path="/register" element={user ? <Navigate to={isAdmin ? '/dashboard' : '/parent'} replace /> : <Register />} />
 
@@ -112,9 +114,8 @@ function AppRoutes() {
       <Route path="/parent/invoices/:id" element={<ParentRoute><ParentInvoiceDetail /></ParentRoute>} />
       <Route path="/parent/profile" element={<ParentRoute><ParentProfile /></ParentRoute>} />
 
-      {/* Default redirect */}
-      <Route path="/" element={<Navigate to={isAdmin ? '/dashboard' : '/parent'} replace />} />
-      <Route path="*" element={<Navigate to={isAdmin ? '/dashboard' : '/parent'} replace />} />
+      {/* Default */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

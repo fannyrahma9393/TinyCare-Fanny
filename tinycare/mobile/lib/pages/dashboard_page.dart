@@ -18,7 +18,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       body: IndexedStack(
         index: _currentIndex,
         children: const [
@@ -29,20 +28,25 @@ class _DashboardPageState extends State<DashboardPage> {
           _ProfileTab(),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border, width: 1)),
-        ),
-        child: SafeArea(
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) => setState(() => _currentIndex = index),
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.textMuted,
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final surfaceColor = ThemeHelper.surface(context);
+          final borderColor = ThemeHelper.border(context);
+          final mutedColor = ThemeHelper.textMuted(context);
+          return Container(
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              border: Border(top: BorderSide(color: borderColor, width: 1)),
+            ),
+            child: SafeArea(
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) => setState(() => _currentIndex = index),
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                selectedItemColor: AppColors.primary,
+                unselectedItemColor: mutedColor,
             selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
             unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
             items: const [
@@ -74,6 +78,8 @@ class _DashboardPageState extends State<DashboardPage> {
             ],
           ),
         ),
+        );
+        },
       ),
     );
   }
@@ -128,7 +134,6 @@ class _HomeTabState extends State<_HomeTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
@@ -188,10 +193,10 @@ class _HomeTabState extends State<_HomeTab> {
                     style: AppTypography.h1.copyWith(color: AppColors.primaryDark),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Pantau perkembangan si kecil dengan mudah.',
-                    style: TextStyle(fontSize: 14, color: AppColors.textSecondary, height: 1.5),
-                  ),
+              Text(
+                'Pantau perkembangan si kecil dengan mudah.',
+                style: TextStyle(fontSize: 14, color: ThemeHelper.textSecondary(context), height: 1.5),
+              ),
                 ],
               ),
             ),
@@ -205,7 +210,7 @@ class _HomeTabState extends State<_HomeTab> {
                 _buildSummaryCard(
                   'Tagihan',
                   '${pendingInvoices.length}',
-                  pendingInvoices.isNotEmpty ? AppColors.warning : AppColors.textMuted,
+                  pendingInvoices.isNotEmpty ? AppColors.warning : ThemeHelper.textMuted(context),
                 ),
                 const SizedBox(width: 12),
                 _buildSummaryCard('Pengumuman', '${announcements.length}', AppColors.info),
@@ -215,7 +220,9 @@ class _HomeTabState extends State<_HomeTab> {
 
             // Children Section
             if (children.isNotEmpty) ...[
-              const Text('Anak Saya', style: AppTypography.h3),
+              Builder(
+                builder: (context) => Text('Anak Saya', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+              ),
               const SizedBox(height: 14),
               ...List.generate(children.length, (i) {
                 return _buildChildCard(children[i]);
@@ -224,14 +231,18 @@ class _HomeTabState extends State<_HomeTab> {
             ],
 
             // Quick Actions
-            const Text('Menu', style: AppTypography.h3),
+            Builder(
+              builder: (context) => Text('Menu', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+            ),
             const SizedBox(height: 14),
             _buildQuickActionsGrid(),
             const SizedBox(height: 28),
 
             // Pending Invoices
             if (pendingInvoices.isNotEmpty) ...[
-              const Text('Invoice Pending', style: AppTypography.h3),
+              Builder(
+                builder: (context) => Text('Invoice Pending', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+              ),
               const SizedBox(height: 14),
               ...List.generate(pendingInvoices.length, (i) {
                 return _buildPendingInvoiceCard(pendingInvoices[i]);
@@ -241,7 +252,9 @@ class _HomeTabState extends State<_HomeTab> {
 
             // Announcements
             if (announcements.isNotEmpty) ...[
-              const Text('Pengumuman', style: AppTypography.h3),
+              Builder(
+                builder: (context) => Text('Pengumuman', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+              ),
               const SizedBox(height: 14),
               ...List.generate(
                 announcements.length > 3 ? 3 : announcements.length,
@@ -264,22 +277,29 @@ class _HomeTabState extends State<_HomeTab> {
 
   Widget _buildSummaryCard(String label, String value, Color valueColor) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: AppRadius.lgAll,
-          border: Border.all(color: AppColors.border),
-          boxShadow: AppColors.cardShadow,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label.toUpperCase(), style: AppTypography.label),
-            const SizedBox(height: 8),
-            Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: valueColor, height: 1)),
-          ],
-        ),
+      child: Builder(
+        builder: (context) {
+          final surfaceColor = ThemeHelper.surface(context);
+          final borderColor = ThemeHelper.border(context);
+          final labelColor = ThemeHelper.textMuted(context);
+          return Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              borderRadius: AppRadius.lgAll,
+              border: Border.all(color: borderColor),
+              boxShadow: AppColors.cardShadow,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label.toUpperCase(), style: AppTypography.label.copyWith(color: labelColor)),
+                const SizedBox(height: 8),
+                Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700, color: valueColor, height: 1)),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -293,61 +313,70 @@ class _HomeTabState extends State<_HomeTab> {
         final parentState = context.findAncestorStateOfType<_DashboardPageState>();
         parentState?.setState(() => parentState._currentIndex = 1);
       },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: AppRadius.lgAll,
-          border: Border.all(color: AppColors.border),
-          boxShadow: AppColors.cardShadow,
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 48, height: 48,
-                  decoration: BoxDecoration(color: AppColors.primaryLighter, borderRadius: AppRadius.mdAll),
-                  child: Center(
-                    child: Text(
-                      (child['name'] ?? '?')[0].toUpperCase(),
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primary),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(child['name'] ?? '-', style: AppTypography.h3),
-                      const SizedBox(height: 2),
-                      Text(child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan', style: AppTypography.caption),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: AppColors.textMuted),
-              ],
+      child: Builder(
+        builder: (context) {
+          final surfaceColor = ThemeHelper.surface(context);
+          final borderColor = ThemeHelper.border(context);
+          final textColor = ThemeHelper.text(context);
+          final mutedColor = ThemeHelper.textMuted(context);
+          final successBgColor = ThemeHelper.successBg(context);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              borderRadius: AppRadius.lgAll,
+              border: Border.all(color: borderColor),
+              boxShadow: AppColors.cardShadow,
             ),
-            if (activePackage != null) ...[
-              const SizedBox(height: 14),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.successBg, borderRadius: AppRadius.smAll),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    Text(activePackage['name'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.success)),
-                    const SizedBox(height: 2),
-                    Text(CurrencyHelper.formatRupiah(activePackage['price']), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    Container(
+                      width: 48, height: 48,
+                      decoration: BoxDecoration(color: AppColors.primaryLighter, borderRadius: AppRadius.mdAll),
+                      child: Center(
+                        child: Text(
+                          (child['name'] ?? '?')[0].toUpperCase(),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.primary),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(child['name'] ?? '-', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textColor)),
+                          const SizedBox(height: 2),
+                          Text(child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan', style: TextStyle(fontSize: 12, color: mutedColor)),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, color: mutedColor),
                   ],
                 ),
-              ),
-            ],
-          ],
-        ),
+                if (activePackage != null) ...[
+                  const SizedBox(height: 14),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(color: successBgColor, borderRadius: AppRadius.smAll),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(activePackage['name'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.success)),
+                        const SizedBox(height: 2),
+                        Text(CurrencyHelper.formatRupiah(activePackage['price']), style: TextStyle(fontSize: 12, color: mutedColor)),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -375,20 +404,27 @@ class _HomeTabState extends State<_HomeTab> {
         final action = actions[index];
         return GestureDetector(
           onTap: action.route != null ? () => Navigator.pushNamed(context, action.route!) : null,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: AppRadius.mdAll,
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(action.icon, color: AppColors.primary, size: 22),
-                const SizedBox(height: 6),
-                Text(action.label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.textSecondary), textAlign: TextAlign.center),
-              ],
-            ),
+          child: Builder(
+            builder: (context) {
+              final surfaceColor = ThemeHelper.surface(context);
+              final borderColor = ThemeHelper.border(context);
+              final labelColor = ThemeHelper.textSecondary(context);
+              return Container(
+                decoration: BoxDecoration(
+                  color: surfaceColor,
+                  borderRadius: AppRadius.mdAll,
+                  border: Border.all(color: borderColor),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(action.icon, color: AppColors.primary, size: 22),
+                    const SizedBox(height: 6),
+                    Text(action.label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: labelColor), textAlign: TextAlign.center),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -398,14 +434,19 @@ class _HomeTabState extends State<_HomeTab> {
   Widget _buildPendingInvoiceCard(dynamic inv) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/invoices'),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.warningBg,
-          borderRadius: AppRadius.lgAll,
-          border: Border.all(color: AppColors.warning.withValues(alpha: 0.15)),
-        ),
+      child: Builder(
+        builder: (context) {
+          final warningBgColor = ThemeHelper.warningBg(context);
+          final mutedColor = ThemeHelper.textMuted(context);
+          final textColor = ThemeHelper.text(context);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: warningBgColor,
+              borderRadius: AppRadius.lgAll,
+              border: Border.all(color: AppColors.warning.withValues(alpha: 0.15)),
+            ),
         child: Row(
           children: [
             Container(
@@ -418,15 +459,17 @@ class _HomeTabState extends State<_HomeTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(inv['invoice_number'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+                  Text(inv['invoice_number'] ?? '-', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textColor)),
                   const SizedBox(height: 2),
-                  Text('${inv['child']?['name'] ?? ''} · Jatuh tempo: ${inv['due_date'] ?? '-'}', style: AppTypography.caption),
+                  Text('${inv['child']?['name'] ?? ''} · Jatuh tempo: ${inv['due_date'] ?? '-'}', style: TextStyle(fontSize: 12, color: mutedColor)),
                 ],
               ),
             ),
             Text(CurrencyHelper.formatRupiah(inv['total']), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.warning)),
           ],
         ),
+        );
+        },
       ),
     );
   }
@@ -434,23 +477,31 @@ class _HomeTabState extends State<_HomeTab> {
   Widget _buildAnnouncementCard(dynamic ann) {
     return GestureDetector(
       onTap: () => Navigator.pushNamed(context, '/announcements'),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: AppRadius.lgAll,
-          border: Border.all(color: AppColors.border),
-          boxShadow: AppColors.cardShadow,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(ann['title'] ?? '-', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.text)),
-            const SizedBox(height: 6),
-            Text(ann['content'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5)),
-          ],
-        ),
+      child: Builder(
+        builder: (context) {
+          final surfaceColor = ThemeHelper.surface(context);
+          final borderColor = ThemeHelper.border(context);
+          final textColor = ThemeHelper.text(context);
+          final textSecColor = ThemeHelper.textSecondary(context);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: surfaceColor,
+              borderRadius: AppRadius.lgAll,
+              border: Border.all(color: borderColor),
+              boxShadow: AppColors.cardShadow,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(ann['title'] ?? '-', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: textColor)),
+                const SizedBox(height: 6),
+                Text(ann['content'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: textSecColor, height: 1.5)),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -489,7 +540,6 @@ class _ChildrenTabState extends State<_ChildrenTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Anak Saya')),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
@@ -516,9 +566,9 @@ class _ChildrenTabState extends State<_ChildrenTab> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Padding(
@@ -543,9 +593,9 @@ class _ChildrenTabState extends State<_ChildrenTab> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(child['name'] ?? '-', style: AppTypography.h2),
+                      Text(child['name'] ?? '-', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
                       const SizedBox(height: 4),
-                      Text('${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'} · ${child['birth_date'] ?? '-'}', style: AppTypography.caption),
+                      Text('${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'} · ${child['birth_date'] ?? '-'}', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                     ],
                   ),
                 ),
@@ -555,7 +605,7 @@ class _ChildrenTabState extends State<_ChildrenTab> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: AppColors.bgAlt, borderRadius: AppRadius.mdAll),
+              decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.mdAll),
               child: Column(
                 children: [
                   AppWidgets.infoRow('Status', child['status'] == 'active' ? 'Aktif' : 'Nonaktif'),
@@ -633,7 +683,6 @@ class _InvoicesTabState extends State<_InvoicesTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Tagihan')),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
@@ -664,9 +713,9 @@ class _InvoicesTabState extends State<_InvoicesTab> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: ThemeHelper.surface(context),
           borderRadius: AppRadius.lgAll,
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: ThemeHelper.border(context)),
           boxShadow: AppColors.cardShadow,
         ),
         child: Column(
@@ -738,7 +787,6 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: const Text('Aktivitas Hari Ini')),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
@@ -759,7 +807,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
                               Container(
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                                decoration: BoxDecoration(color: AppColors.surface, borderRadius: AppRadius.mdAll, border: Border.all(color: AppColors.border)),
+                                decoration: BoxDecoration(color: ThemeHelper.surface(context), borderRadius: AppRadius.mdAll, border: Border.all(color: ThemeHelper.border(context))),
                                 child: DropdownButton<int>(
                                   value: _selectedChildId,
                                   isExpanded: true,
@@ -785,9 +833,9 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: Column(
@@ -811,7 +859,7 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(story['child']?['name'] ?? '-', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
-                    Text(story['date'] ?? '-', style: AppTypography.caption),
+                    Text(story['date'] ?? '-', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                   ],
                 ),
               ),
@@ -838,13 +886,13 @@ class _ActivitiesTabState extends State<_ActivitiesTab> {
   Widget _buildInfoChip(String label, String value, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(color: AppColors.bgAlt, borderRadius: AppRadius.smAll),
+      decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.smAll),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.textMuted),
+          Icon(icon, size: 14, color: ThemeHelper.textMuted(context)),
           const SizedBox(width: 6),
-          Text('$label: $value', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+          Text('$label: $value', style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context), fontWeight: FontWeight.w500)),
         ],
       ),
     );
@@ -890,7 +938,6 @@ class _ProfileTabState extends State<_ProfileTab> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Profil'),
         actions: [
@@ -926,9 +973,9 @@ class _ProfileTabState extends State<_ProfileTab> {
             width: double.infinity,
             padding: const EdgeInsets.all(28),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: ThemeHelper.surface(context),
               borderRadius: AppRadius.xlAll,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: ThemeHelper.border(context)),
               boxShadow: AppColors.cardShadow,
             ),
             child: Column(
@@ -941,9 +988,9 @@ class _ProfileTabState extends State<_ProfileTab> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(user?['name'] ?? '-', style: AppTypography.h2, textAlign: TextAlign.center),
+                Text(user?['name'] ?? '-', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context)), textAlign: TextAlign.center),
                 const SizedBox(height: 4),
-                Text(user?['email'] ?? '-', style: AppTypography.bodySmall, textAlign: TextAlign.center),
+                Text(user?['email'] ?? '-', style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)), textAlign: TextAlign.center),
                 const SizedBox(height: 10),
                 AppWidgets.statusBadge(roleLabel, AppColors.primary),
               ],
@@ -956,15 +1003,15 @@ class _ProfileTabState extends State<_ProfileTab> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: ThemeHelper.surface(context),
               borderRadius: AppRadius.lgAll,
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: ThemeHelper.border(context)),
               boxShadow: AppColors.cardShadow,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Informasi Akun', style: AppTypography.h3),
+                Text('Informasi Akun', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                 const SizedBox(height: 16),
                 AppWidgets.infoRow('Nama', user?['name'] ?? '-'),
                 AppWidgets.infoRow('Email', user?['email'] ?? '-'),

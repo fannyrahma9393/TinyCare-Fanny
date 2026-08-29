@@ -104,7 +104,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       case 'kreatif': return Colors.purple;
       case 'sosial': return AppColors.warning;
       case 'umum': return AppColors.primary;
-      default: return AppColors.textMuted;
+      default: return ThemeHelper.textMuted(context);
     }
   }
 
@@ -125,7 +125,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(
         title: const Text('Aktivitas'),
         actions: [
@@ -143,7 +142,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       ),
       body: Column(
         children: [
-          if (_activities.isNotEmpty)
+if (_activities.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: TextField(
@@ -160,14 +159,14 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: AppRadius.mdAll,
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: ThemeHelper.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: AppRadius.mdAll,
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: ThemeHelper.border(context)),
                   ),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: ThemeHelper.surface(context),
                 ),
               ),
             ),
@@ -205,9 +204,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: ThemeHelper.surface(context),
         borderRadius: AppRadius.lgAll,
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: ThemeHelper.border(context)),
         boxShadow: AppColors.cardShadow,
       ),
       child: InkWell(
@@ -229,7 +228,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   Expanded(
                     child: Text(
                       activity['name'] ?? '-',
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.text),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context)),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -242,28 +241,28 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   activity['description'],
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+                  style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context), height: 1.5),
                 ),
               ],
               const SizedBox(height: 10),
               Row(
                 children: [
                   if (activity['child'] != null) ...[
-                    const Icon(Icons.child_care, size: 14, color: AppColors.textMuted),
+                    Icon(Icons.child_care, size: 14, color: ThemeHelper.textMuted(context)),
                     const SizedBox(width: 6),
                     Text(activity['child']['name'] ?? '-',
-                        style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                        style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                     const SizedBox(width: 16),
                   ],
                   if (activity['date'] != null) ...[
-                    const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                    Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                     const SizedBox(width: 6),
-                    Text(activity['date'], style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    Text(activity['date'], style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                   ],
                   const Spacer(),
                   if (isAdmin)
                     PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 18, color: AppColors.textMuted),
+                      icon: Icon(Icons.more_vert, size: 18, color: ThemeHelper.textMuted(context)),
                       onSelected: (value) async {
                         if (value == 'edit') {
                           final result = await Navigator.push(context,
@@ -371,7 +370,6 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
       appBar: AppBar(title: Text(_isEditing ? 'Edit Aktivitas' : 'Tambah Aktivitas')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -402,7 +400,7 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
               const SizedBox(height: 16),
 
               // Category selector (backend field: category)
-              const Text('Kategori', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.text)),
+              Text('Kategori', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -437,12 +435,12 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
   Widget _buildCategoryChip(String value, String label) {
     final selected = _category == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : AppColors.textSecondary)),
+      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
       selected: selected,
       onSelected: (_) => setState(() => _category = value),
       selectedColor: AppColors.primary,
-      backgroundColor: AppColors.surface,
-      side: const BorderSide(color: AppColors.border),
+      backgroundColor: ThemeHelper.surface(context),
+      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

@@ -147,7 +147,7 @@ export default function Register() {
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>Password *</label>
               <div style={{ position: 'relative' }}>
-                <input type={showPassword ? 'text' : 'password'} name="password" value={form.password} onChange={handleChange} style={{ ...inputStyle, paddingRight: '44px' }} placeholder="••••••••" required minLength="8" />
+                <input type={showPassword ? 'text' : 'password'} name="password" value={form.password} onChange={handleChange} style={{ ...inputStyle, paddingRight: '44px' }} placeholder="Min. 8 karakter" required minLength="8" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} style={eyeBtnStyle} aria-label={showPassword ? 'Sembunyikan password' : 'Perlihatkan password'}>
                   <EyeIcon visible={showPassword} />
                 </button>
@@ -156,7 +156,7 @@ export default function Register() {
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>Konfirmasi Password *</label>
               <div style={{ position: 'relative' }}>
-                <input type={showConfirm ? 'text' : 'password'} name="password_confirmation" value={form.password_confirmation} onChange={handleChange} style={{ ...inputStyle, paddingRight: '44px' }} placeholder="••••••••" required minLength="8" />
+                <input type={showConfirm ? 'text' : 'password'} name="password_confirmation" value={form.password_confirmation} onChange={handleChange} style={{ ...inputStyle, paddingRight: '44px' }} placeholder="Ulangi kata sandi" required minLength="8" />
                 <button type="button" onClick={() => setShowConfirm(!showConfirm)} style={eyeBtnStyle} aria-label={showConfirm ? 'Sembunyikan password' : 'Perlihatkan password'}>
                   <EyeIcon visible={showConfirm} />
                 </button>

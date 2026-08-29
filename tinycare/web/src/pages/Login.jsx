@@ -287,7 +287,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ ...inputStyle, paddingRight: '44px' }}
-                  placeholder="••••••••"
+                  placeholder="Masukkan kata sandi"
                   required
                   autoComplete="current-password"
                   onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(74,140,111,0.12)'; }}
