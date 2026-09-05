@@ -49,25 +49,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // Admin and admin_master require access code
-        if (in_array($roleName, ['admin', 'admin_master'])) {
-            $adminAccessCode = trim((string) $request->input('admin_access_code', ''));
-
-            if ($adminAccessCode === '') {
-                throw ValidationException::withMessages([
-                    'admin_access_code' => ['Kode akses admin diperlukan.'],
-                ]);
-            }
-
-            $expectedCode = (string) config('services.tinycare.admin_access_code');
-
-            if (! hash_equals($expectedCode, $adminAccessCode)) {
-                throw ValidationException::withMessages([
-                    'admin_access_code' => ['Kode akses admin tidak valid.'],
-                ]);
-            }
-        }
-
         // Safe logging — never log password or access code
         Log::info('TinyCare login success', [
             'email' => $user->email,

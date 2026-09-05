@@ -8,11 +8,12 @@ export default function Feedback() {
   const [filter, setFilter] = useState('');
   const [respondingTo, setRespondingTo] = useState(null);
   const [responseText, setResponseText] = useState('');
+  const [error, setError] = useState('');
 
   async function loadFeedbacks() {
     setLoading(true);
     try { const params = filter ? { status: filter } : {}; const res = await feedbackAPI.list(params); setFeedbacks(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data feedback.'); } finally { setLoading(false); }
   }
 
   useEffect(() => { loadFeedbacks(); }, [filter]);
@@ -45,6 +46,13 @@ export default function Feedback() {
           <button key={tab.value} onClick={() => setFilter(tab.value)} className={filter === tab.value ? 'tc-btn tc-btn-primary' : 'tc-btn tc-btn-secondary'} style={{ padding: '7px 14px', fontSize: '13px' }}>{tab.label}</button>
         ))}
       </div>
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadFeedbacks(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {feedbacks.map((item) => {

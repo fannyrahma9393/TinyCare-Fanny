@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet" />
+    <!-- Firebase Messaging (compat) SDK — see src/services/firebase.js. Uses the
+         same version as public/firebase-messaging-sw.js. Lazy app init keeps the
+         app working even when credentials are not configured. -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
   </head>
   <body>
     <div id="root"></div>

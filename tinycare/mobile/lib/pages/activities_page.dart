@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/child_select.dart';
+import 'activities_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class ActivitiesPage extends StatefulWidget {
@@ -31,8 +33,9 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       _error = null;
     });
     try {
-      final activities = await _api.getActivities();
+      final auth = context.read<AuthProvider>();
       final children = await _api.getChildren();
+      final activities = auth.isAdmin ? await _api.getActivities() : <dynamic>[];
       setState(() {
         _activities = activities;
         _children = children;
@@ -51,6 +54,53 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     return _activities.where((a) =>
       (a['name'] ?? '').toString().toLowerCase().contains(_searchQuery.toLowerCase())
     ).toList();
+  }
+
+  Widget _buildParentPicker() {
+    final textColor = ThemeHelper.text(context);
+    final mutedColor = ThemeHelper.textMuted(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Aktivitas'),
+        actions: [
+          if (_children.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                setState(() { _isLoading = true; _error = null; });
+                _loadData();
+              },
+            ),
+        ],
+      ),
+      body: _isLoading
+          ? AppWidgets.loadingIndicator()
+          : _error != null
+              ? AppWidgets.errorState(message: _error!, onRetry: () {
+                  setState(() { _isLoading = true; _error = null; });
+                  _loadData();
+                })
+              : _children.isEmpty
+                  ? AppWidgets.emptyState(
+                      icon: Icons.emoji_events_outlined,
+                      title: 'Belum ada data anak',
+                      subtitle: 'Data akan muncul ketika anak sudah terdaftar di daycare.',
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadData,
+                      color: AppColors.primary,
+                      child: ChildPickerGrid(
+                        children: _children,
+                        actionLabel: 'Lihat Aktivitas',
+                        onTap: (child) {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (_) => ActivitiesDetailPage(childId: child['id']),
+                          ));
+                        },
+                      ),
+                    ),
+    );
   }
 
   void _showToast(String message, {bool isError = false}) {
@@ -96,25 +146,27 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     }
   }
 
-  // Backend Activity field: category (not type)
+  // Backend Activity field: category - must match DB seeder
   Color _getCategoryColor(String? category) {
     switch (category) {
-      case 'fisik': return AppColors.success;
-      case 'kognitif': return AppColors.info;
-      case 'kreatif': return Colors.purple;
-      case 'sosial': return AppColors.warning;
-      case 'umum': return AppColors.primary;
+      case 'edukasi': return AppColors.info;
+      case 'bermain': return AppColors.success;
+      case 'olahraga': return AppColors.warning;
+      case 'seni': return Colors.purple;
+      case 'makan': return AppColors.warning;
+      case 'istirahat': return ThemeHelper.textMuted(context);
       default: return ThemeHelper.textMuted(context);
     }
   }
 
   String _getCategoryLabel(String? category) {
     switch (category) {
-      case 'fisik': return 'Fisik';
-      case 'kognitif': return 'Kognitif';
-      case 'kreatif': return 'Kreatif';
-      case 'sosial': return 'Sosial';
-      case 'umum': return 'Umum';
+      case 'edukasi': return 'Edukasi';
+      case 'bermain': return 'Bermain';
+      case 'olahraga': return 'Olahraga';
+      case 'seni': return 'Seni';
+      case 'makan': return 'Makan';
+      case 'istirahat': return 'Istirahat';
       default: return category ?? '-';
     }
   }
@@ -123,6 +175,10 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final isAdmin = auth.isAdmin;
+
+    if (!isAdmin) {
+      return _buildParentPicker();
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -399,18 +455,19 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
               ),
               const SizedBox(height: 16),
 
-              // Category selector (backend field: category)
+              // Category selector (backend field: category) - must match DB seeder
               Text('Kategori', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildCategoryChip('umum', 'Umum'),
-                  _buildCategoryChip('fisik', 'Fisik'),
-                  _buildCategoryChip('kognitif', 'Kognitif'),
-                  _buildCategoryChip('kreatif', 'Kreatif'),
-                  _buildCategoryChip('sosial', 'Sosial'),
+                  _buildCategoryChip('edukasi', 'Edukasi'),
+                  _buildCategoryChip('bermain', 'Bermain'),
+                  _buildCategoryChip('olahraga', 'Olahraga'),
+                  _buildCategoryChip('seni', 'Seni'),
+                  _buildCategoryChip('makan', 'Makan'),
+                  _buildCategoryChip('istirahat', 'Istirahat'),
                 ],
               ),
               const SizedBox(height: 24),

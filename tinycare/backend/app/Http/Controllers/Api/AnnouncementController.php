@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\User;
+use App\Services\FcmNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -54,10 +56,17 @@ class AnnouncementController extends Controller
 
         $announcement = Announcement::create($validated);
 
+        // If published immediately, notify all active parents via FCM + DB notification.
+        $notifyResult = null;
+        if (! empty($validated['is_published'])) {
+            $notifyResult = $this->notifyAllParents($announcement);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil dibuat.',
             'data' => $announcement,
+            'notify' => $notifyResult,
         ], 201);
     }
 
@@ -75,12 +84,20 @@ class AnnouncementController extends Controller
             'is_published' => 'sometimes|boolean',
         ]);
 
+        $wasPublished = $announcement->is_published;
         $announcement->update($validated);
+
+        // If newly published (was draft, now published), notify all parents.
+        $notifyResult = null;
+        if (! $wasPublished && ! empty($validated['is_published'])) {
+            $notifyResult = $this->notifyAllParents($announcement);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil diperbarui.',
             'data' => $announcement,
+            'notify' => $notifyResult,
         ]);
     }
 
@@ -95,6 +112,62 @@ class AnnouncementController extends Controller
             'success' => true,
             'message' => 'Pengumuman berhasil dihapus.',
         ]);
+    }
+
+    /**
+     * Send FCM push + DB notification to every active parent user.
+     *
+     * @return array{targeted_parents: int, fcm_sent: int, fcm_failed: int, fcm_configured: bool}
+     */
+    private function notifyAllParents(Announcement $announcement): array
+    {
+        $fcm = app(FcmNotificationService::class);
+        $parentUsers = User::where('role', 'parent')
+            ->where('status', 'active')
+            ->get();
+
+        $targeted = 0;
+        $fcmSent = 0;
+        $fcmFailed = 0;
+
+        foreach ($parentUsers as $user) {
+            // Create in-app database notification
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'type' => 'announcement',
+                'title' => 'Pengumuman Baru',
+                'message' => $announcement->title,
+                'link' => '/announcements',
+                'data' => [
+                    'type' => 'announcement',
+                    'announcement_id' => $announcement->id,
+                ],
+            ]);
+
+            $targeted++;
+
+            // Send FCM push
+            $result = $fcm->sendToUser(
+                $user->id,
+                'Pengumuman Baru',
+                $announcement->title,
+                '/announcements',
+                [
+                    'type' => 'announcement',
+                    'announcement_id' => (string) $announcement->id,
+                ]
+            );
+
+            $fcmSent += $result['success'];
+            $fcmFailed += $result['failed'];
+        }
+
+        return [
+            'targeted_parents' => $targeted,
+            'fcm_sent' => $fcmSent,
+            'fcm_failed' => $fcmFailed,
+            'fcm_configured' => $fcm->isConfigured(),
+        ];
     }
 
     /**

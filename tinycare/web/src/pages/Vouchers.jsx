@@ -10,13 +10,14 @@ export default function Vouchers() {
     code: '', description: '', discount_type: 'nominal', discount_value: '',
     min_transaction: '0', max_usage: '', start_date: '', end_date: '', status: 'active',
   });
+  const [error, setError] = useState('');
 
   async function loadVouchers() {
     try {
       const res = await vouchersAPI.list();
       setVouchers(res.data.data.data || []);
     } catch (error) {
-      console.error('Error loading vouchers:', error);
+      setError(error.response?.data?.message || 'Gagal memuat data voucher.');
     } finally {
       setLoading(false);
     }
@@ -56,6 +57,13 @@ export default function Vouchers() {
   return (
     <div>
       <PageHeader title="Manajemen Voucher" subtitle="Kelola voucher diskon untuk pelanggan" action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Tambah Voucher</button>} />
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadVouchers(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div className="tc-card" style={{ overflow: 'hidden' }}>
         <table className="tc-table">

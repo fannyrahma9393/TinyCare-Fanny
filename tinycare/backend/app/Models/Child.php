@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Storage;
 
 class Child extends Model
 {
@@ -21,6 +22,8 @@ class Child extends Model
         'emergency_contact_relationship',
         'status',
     ];
+
+    protected $appends = ['photo_url'];
 
     protected $casts = [
         'birth_date' => 'date',
@@ -67,6 +70,11 @@ class Child extends Model
         return $this->hasMany(DevelopmentAssessment::class);
     }
 
+    public function childInformation(): HasMany
+    {
+        return $this->hasMany(ChildInformation::class);
+    }
+
     public function isActive(): bool
     {
         return $this->status === 'active';
@@ -101,5 +109,32 @@ class Child extends Model
         return $this->attendance()
             ->whereDate('date', now()->toDateString())
             ->first();
+    }
+
+    /**
+     * Get photo URL for display.
+     *
+     * If photo is a full external URL, return as-is.
+     * If photo is a stored file path, generate a temporary URL.
+     * If null, return null.
+     */
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (! $this->photo) {
+            return null;
+        }
+
+        if (filter_var($this->photo, FILTER_VALIDATE_URL)) {
+            return $this->photo;
+        }
+
+        if (Storage::disk('local')->exists($this->photo)) {
+            return Storage::disk('local')->temporaryUrl(
+                $this->photo,
+                now()->addMinutes(30)
+            );
+        }
+
+        return $this->photo;
     }
 }

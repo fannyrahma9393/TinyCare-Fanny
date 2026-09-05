@@ -74,6 +74,41 @@ class _UserManagementPageState extends State<UserManagementPage> {
     }
   }
 
+  Future<void> _toggleStatus(int userId, String targetStatus) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(targetStatus == 'inactive' ? 'Nonaktifkan Akun' : 'Aktifkan Akun'),
+        content: Text(targetStatus == 'inactive'
+            ? 'Nonaktifkan akun ini? Pengguna tidak dapat login selama nonaktif.'
+            : 'Aktifkan kembali akun ini?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: targetStatus == 'inactive' ? AppColors.warning : AppColors.success),
+            child: Text(targetStatus == 'inactive' ? 'Nonaktifkan' : 'Aktifkan'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    try {
+      final response = targetStatus == 'active'
+          ? await _api.activateUser(userId)
+          : await _api.deactivateUser(userId);
+      if (response['success'] == true) {
+        _showToast(targetStatus == 'active' ? 'Akun berhasil diaktifkan.' : 'Akun berhasil dinonaktifkan.');
+        _loadUsers();
+      } else {
+        _showToast(response['message'] ?? 'Gagal mengubah status.', isError: true);
+      }
+    } catch (e) {
+      _showToast('Gagal mengubah status. Silakan coba lagi.', isError: true);
+    }
+  }
+
   void _showToast(String message, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -164,13 +199,18 @@ class _UserManagementPageState extends State<UserManagementPage> {
           // Filter Tabs
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                _buildFilterChip('Semua', 'all'),
-                _buildFilterChip('Orang Tua', 'parent'),
-                _buildFilterChip('Menunggu', 'pending'),
-                _buildFilterChip('Admin', 'admin'),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFilterChip('Semua', 'all'),
+                  _buildFilterChip('Orang Tua', 'parent'),
+                  _buildFilterChip('Menunggu', 'pending'),
+                  _buildFilterChip('Aktif', 'active'),
+                  _buildFilterChip('Nonaktif', 'inactive'),
+                  _buildFilterChip('Admin', 'admin'),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -301,6 +341,28 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     side: const BorderSide(color: AppColors.error),
                   ),
                   child: const Text('Tolak', style: TextStyle(fontSize: 12)),
+                ),
+              ] else if (status == 'active') ...[
+                OutlinedButton(
+                  onPressed: () => _toggleStatus(user['id'], 'inactive'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.warning,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                    side: const BorderSide(color: AppColors.warning),
+                  ),
+                  child: const Text('Nonaktifkan', style: TextStyle(fontSize: 12)),
+                ),
+              ] else if (status == 'inactive') ...[
+                ElevatedButton(
+                  onPressed: () => _toggleStatus(user['id'], 'active'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.success,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    minimumSize: Size.zero,
+                  ),
+                  child: const Text('Aktifkan', style: TextStyle(fontSize: 12)),
                 ),
               ],
             ],

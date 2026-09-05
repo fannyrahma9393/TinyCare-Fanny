@@ -11,14 +11,6 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        // Set the admin access code for tests
-        config(['services.tinycare.admin_access_code' => 'TEST-ADMIN-CODE']);
-        putenv('TINYCARE_ADMIN_ACCESS_CODE=TEST-ADMIN-CODE');
-    }
-
     private function createAdmin(): User
     {
         $role = Role::firstOrCreate(['name' => 'admin'], ['description' => 'Admin']);
@@ -87,14 +79,13 @@ class AuthTest extends TestCase
 
     // ==================== ADMIN LOGIN TESTS ====================
 
-    public function test_admin_login_with_correct_admin_code_success(): void
+    public function test_admin_login_success(): void
     {
         $this->createAdmin();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'admin@test.com',
             'password' => 'password123',
-            'admin_access_code' => 'TEST-ADMIN-CODE',
         ]);
 
         $response->assertOk()
@@ -107,7 +98,7 @@ class AuthTest extends TestCase
             ->assertJsonStructure(['data' => ['token', 'user']]);
     }
 
-    public function test_admin_login_without_admin_code_fail(): void
+    public function test_admin_login_without_admin_code_success(): void
     {
         $this->createAdmin();
 
@@ -116,35 +107,71 @@ class AuthTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors('admin_access_code');
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'user' => ['role' => 'admin'],
+                ],
+            ]);
     }
 
-    public function test_admin_login_with_wrong_admin_code_fail(): void
+    public function test_admin_login_ignores_access_code(): void
     {
         $this->createAdmin();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'admin@test.com',
             'password' => 'password123',
-            'admin_access_code' => 'WRONG-CODE',
+            'admin_access_code' => 'any-code-ignored',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors('admin_access_code');
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'user' => ['role' => 'admin'],
+                ],
+            ]);
     }
 
-    public function test_admin_login_error_message_for_missing_code(): void
+    public function test_admin_master_login_success(): void
+    {
+        $role = Role::firstOrCreate(['name' => 'admin_master'], ['description' => 'Admin Master']);
+        User::create([
+            'name' => 'Admin Master Test',
+            'email' => 'master@test.com',
+            'password' => bcrypt('password123'),
+            'role_id' => $role->id,
+            'status' => 'active',
+        ]);
+
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email' => 'master@test.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'user' => ['role' => 'admin_master'],
+                ],
+            ]);
+    }
+
+    public function test_role_comes_from_backend_not_frontend(): void
     {
         $this->createAdmin();
 
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'admin@test.com',
             'password' => 'password123',
+            'role' => 'parent',
         ]);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors('admin_access_code');
+        $response->assertOk()
+            ->assertJsonPath('data.user.role', 'admin');
     }
 
     // ==================== CREDENTIAL VALIDATION TESTS ====================
@@ -262,7 +289,6 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'inactive@test.com',
             'password' => 'password123',
-            'admin_access_code' => 'TEST-ADMIN-CODE',
         ]);
 
         $response->assertUnprocessable()

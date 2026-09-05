@@ -26,6 +26,13 @@ class RoleMiddleware
             ], 403);
         }
 
+        if ($user->status !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun tidak aktif.',
+            ], 403);
+        }
+
         if (! in_array($user->role->name, $roles)) {
             return response()->json([
                 'success' => false,

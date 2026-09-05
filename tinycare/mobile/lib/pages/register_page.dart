@@ -157,7 +157,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Email *'),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Email tidak boleh kosong';
-                  if (!v.contains('@')) return 'Email tidak valid';
+                  final emailRegex = RegExp(r'^[\w-\.]+@[\w-]+\.[a-zA-Z]{2,}$');
+                  if (!emailRegex.hasMatch(v)) return 'Email tidak valid';
                   return null;
                 },
               ),

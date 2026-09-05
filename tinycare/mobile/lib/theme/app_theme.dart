@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
 
 /// TinyCare Premium Design System
 /// Premium, elegant, modern, clean - soft green / dark green palette
@@ -1257,6 +1259,99 @@ class AppWidgets {
       ),
     );
     return result ?? false;
+  }
+}
+
+// =============================================================================
+// SHARED THEME SWITCHER WIDGET
+// =============================================================================
+
+/// Reusable dark/light mode toggle widget used by both Admin and Parent.
+class ThemeSwitcher extends StatelessWidget {
+  const ThemeSwitcher({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final textColor = ThemeHelper.text(context);
+    final mutedColor = ThemeHelper.textMuted(context);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: AppRadius.lgAll,
+        border: Border.all(color: borderColor),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40, height: 40,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: AppRadius.smAll,
+            ),
+            child: Icon(
+              isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+              color: AppColors.primary,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Mode Tampilan', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor)),
+                const SizedBox(height: 2),
+                Text(
+                  isDark ? 'Mode Gelap' : 'Mode Terang',
+                  style: TextStyle(fontSize: 12, color: mutedColor),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              themeProvider.setThemeMode(
+                isDark ? ThemeModeOption.light : ThemeModeOption.dark,
+              );
+            },
+            child: Container(
+              width: 52, height: 28,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.primary : ThemeHelper.border(context),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 200),
+                alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  width: 22, height: 22,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      isDark ? Icons.dark_mode : Icons.light_mode,
+                      size: 12,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

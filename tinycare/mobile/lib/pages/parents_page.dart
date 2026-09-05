@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/child_photo.dart';
 
 class ParentsPage extends StatefulWidget {
   const ParentsPage({super.key});
@@ -539,24 +540,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryLighter,
-                              borderRadius: AppRadius.smAll,
-                            ),
-                            child: Center(
-                              child: Text(
-                                (child['name'] ?? '?')[0].toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ),
+                          ChildPhoto(child: child, width: 40, radius: 8),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(

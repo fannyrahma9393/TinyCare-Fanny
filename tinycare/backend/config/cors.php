@@ -9,12 +9,11 @@ return [
     'allowed_origins' => [
         'https://tinycare.my.id',
         'http://tinycare.my.id',
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://localhost:8000',
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '/^http:\/\/localhost:\d+$/',
+    ],
 
     'allowed_headers' => ['*'],
 

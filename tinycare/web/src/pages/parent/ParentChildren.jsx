@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { parentAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import ChildPhoto from '../../components/ChildPhoto';
 
 export default function ParentChildren() {
   const [children, setChildren] = useState([]);
@@ -10,7 +11,10 @@ export default function ParentChildren() {
 
   useEffect(() => {
     parentAPI.children()
-      .then((res) => setChildren(res.data.data.data || []))
+      .then((res) => {
+        const list = res.data.data?.data || res.data.data || [];
+        setChildren(Array.isArray(list) ? list : []);
+      })
       .catch(() => setError('Gagal memuat data anak.'))
       .finally(() => setLoading(false));
   }, []);
@@ -41,13 +45,7 @@ export default function ParentChildren() {
               onClick={() => navigate(`/parent/children/${child.id}`)}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
-                <div style={{
-                  width: '52px', height: '52px', borderRadius: 'var(--radius-xl)',
-                  background: 'var(--color-primary-lighter)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                }}>
-                  <span style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '20px' }}>{child.name?.charAt(0)}</span>
-                </div>
+                <ChildPhoto child={child} width={52} alt={child.name} />
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '2px' }}>{child.name}</h3>
                   <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>

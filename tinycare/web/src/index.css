@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 /* ============================================
@@ -93,6 +94,58 @@
   /* Header */
   --header-bg: rgba(255,255,255,0.85);
   --header-border: #e8eae7;
+
+  /* Landing Page */
+  --lp-bg: linear-gradient(180deg, #faf7f0 0%, #f4efe4 40%, #f0ebe0 100%);
+  --lp-bg-solid: #faf7f0;
+  --lp-card-glass: rgba(255,255,255,0.7);
+  --lp-card-glass-hover: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,245,237,0.95));
+  --lp-card-border: rgba(50,70,58,0.06);
+  --lp-card-border-hover: rgba(201,164,92,0.4);
+  --lp-card-shadow: 0 8px 32px rgba(44,60,50,0.06);
+  --lp-card-shadow-hover: 0 32px 72px rgba(44,60,50,0.16);
+  --lp-badge-bg: rgba(255,255,255,0.55);
+  --lp-badge-border: rgba(201,164,92,0.35);
+  --lp-badge-text: #8a6a2f;
+  --lp-badge-shadow: 0 8px 24px rgba(201,164,92,0.1);
+  --lp-dashboard-bg: rgba(255,255,255,0.94);
+  --lp-dashboard-border: rgba(44,90,71,0.1);
+  --lp-dashboard-border-outer: rgba(201,164,92,0.1);
+  --lp-dashboard-chrome: rgba(250,247,240,0.5);
+  --lp-ticker-bg: linear-gradient(180deg, rgba(250,247,240,0.8), rgba(244,239,228,0.8));
+  --lp-ticker-border: rgba(201,164,92,0.2);
+  --lp-how-bg: linear-gradient(180deg, rgba(201,164,92,0.06), rgba(201,164,92,0.03));
+  --lp-panel-light-bg: rgba(255,255,255,0.85);
+  --lp-panel-light-border: rgba(44,90,71,0.08);
+  --lp-panel-dark-shadow: 0 36px 80px rgba(36,72,58,0.35);
+  --lp-footer-bg: linear-gradient(180deg, rgba(239,233,220,0.6), rgba(239,233,220,0.9));
+  --lp-footer-border: rgba(50,70,58,0.08);
+  --lp-cta-section-bg: linear-gradient(135deg, #1a3328 0%, #2c5a47 40%, #3a7059 70%, #4a8c6f 100%);
+  --lp-cta-section-shadow: 0 50px 120px rgba(31,61,49,0.4);
+  --lp-cta-primary-bg: linear-gradient(135deg, #2c5a47, #3a7059);
+  --lp-cta-primary-shadow: 0 16px 40px rgba(44,90,71,0.35);
+  --lp-cta-secondary-bg: rgba(255,255,255,0.5);
+  --lp-cta-secondary-border: rgba(44,90,71,0.25);
+  --lp-cta-secondary-hover: rgba(255,255,255,0.85);
+  --lp-stat-card-bg: linear-gradient(135deg, #2c5a47, #3a7059);
+  --lp-glow-orb-gold: rgba(201,164,92,0.2);
+  --lp-glow-orb-green: rgba(72,132,105,0.22);
+  --lp-glow-orb-cream: rgba(233,214,166,0.25);
+  --lp-particle-color: rgba(201,164,92,VAR);
+  --lp-decorative-ring: rgba(201,164,92,0.1);
+  --lp-check-bg: linear-gradient(135deg, #e8f4ed, #f5f0e4);
+  --lp-check-gold-bg: rgba(201,164,92,0.25);
+  --lp-testimonial-bg: rgba(255,255,255,0.85);
+  --lp-testimonial-hover: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(250,247,240,0.98));
+  --lp-testimonial-border: rgba(50,70,58,0.06);
+  --lp-testimonial-border-hover: rgba(201,164,92,0.35);
+  --lp-testimonial-shadow: 0 12px 36px rgba(44,60,50,0.07);
+  --lp-testimonial-shadow-hover: 0 28px 64px rgba(44,60,50,0.14);
+  --lp-scroll-top-bg: linear-gradient(135deg, #2c5a47, #3a7059);
+  --lp-scroll-top-hover-bg: linear-gradient(135deg, #d4a84a, #c9a45c, #b8963e);
+  --lp-scroll-top-shadow: 0 10px 28px rgba(44,90,71,0.35);
+  --lp-scroll-top-shadow-hover: 0 12px 32px rgba(201,164,92,0.45);
+  --lp-menu-btn-bar: var(--color-primary-dark);
 }
 
 /* --- Dark Theme --- */
@@ -160,6 +213,58 @@
   /* Header */
   --header-bg: rgba(19,28,22,0.88);
   --header-border: #223028;
+
+  /* Landing Page (Dark) */
+  --lp-bg: linear-gradient(180deg, #0e1510 0%, #121b15 40%, #141e17 100%);
+  --lp-bg-solid: #0e1510;
+  --lp-card-glass: rgba(22,32,25,0.7);
+  --lp-card-glass-hover: linear-gradient(145deg, rgba(30,42,34,0.95), rgba(22,32,25,0.95));
+  --lp-card-border: rgba(100,140,115,0.08);
+  --lp-card-border-hover: rgba(201,164,92,0.35);
+  --lp-card-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  --lp-card-shadow-hover: 0 32px 72px rgba(0,0,0,0.35);
+  --lp-badge-bg: rgba(22,32,25,0.65);
+  --lp-badge-border: rgba(201,164,92,0.3);
+  --lp-badge-text: #c9a45c;
+  --lp-badge-shadow: 0 8px 24px rgba(201,164,92,0.08);
+  --lp-dashboard-bg: rgba(22,32,25,0.88);
+  --lp-dashboard-border: rgba(106,173,143,0.15);
+  --lp-dashboard-border-outer: rgba(201,164,92,0.08);
+  --lp-dashboard-chrome: rgba(14,21,16,0.6);
+  --lp-ticker-bg: linear-gradient(180deg, rgba(14,21,16,0.7), rgba(18,27,21,0.7));
+  --lp-ticker-border: rgba(201,164,92,0.15);
+  --lp-how-bg: linear-gradient(180deg, rgba(201,164,92,0.04), rgba(201,164,92,0.02));
+  --lp-panel-light-bg: rgba(22,32,25,0.85);
+  --lp-panel-light-border: rgba(106,173,143,0.1);
+  --lp-panel-dark-shadow: 0 36px 80px rgba(0,0,0,0.4);
+  --lp-footer-bg: linear-gradient(180deg, rgba(18,27,21,0.6), rgba(18,27,21,0.9));
+  --lp-footer-border: rgba(100,140,115,0.1);
+  --lp-cta-section-bg: linear-gradient(135deg, #0e1a14 0%, #152a1e 40%, #1c3a28 70%, #264a35 100%);
+  --lp-cta-section-shadow: 0 50px 120px rgba(0,0,0,0.5);
+  --lp-cta-primary-bg: linear-gradient(135deg, #3a7059, #4a8c6f);
+  --lp-cta-primary-shadow: 0 16px 40px rgba(44,90,71,0.4);
+  --lp-cta-secondary-bg: rgba(22,32,25,0.5);
+  --lp-cta-secondary-border: rgba(106,173,143,0.2);
+  --lp-cta-secondary-hover: rgba(30,42,34,0.85);
+  --lp-stat-card-bg: linear-gradient(135deg, #1c3a28, #264a35);
+  --lp-glow-orb-gold: rgba(201,164,92,0.12);
+  --lp-glow-orb-green: rgba(72,132,105,0.14);
+  --lp-glow-orb-cream: rgba(233,214,166,0.12);
+  --lp-particle-color: rgba(201,164,92,VAR);
+  --lp-decorative-ring: rgba(201,164,92,0.06);
+  --lp-check-bg: linear-gradient(135deg, #1a2e23, #252015);
+  --lp-check-gold-bg: rgba(201,164,92,0.2);
+  --lp-testimonial-bg: rgba(22,32,25,0.8);
+  --lp-testimonial-hover: linear-gradient(145deg, rgba(30,42,34,0.95), rgba(22,32,25,0.95));
+  --lp-testimonial-border: rgba(100,140,115,0.08);
+  --lp-testimonial-border-hover: rgba(201,164,92,0.3);
+  --lp-testimonial-shadow: 0 12px 36px rgba(0,0,0,0.2);
+  --lp-testimonial-shadow-hover: 0 28px 64px rgba(0,0,0,0.35);
+  --lp-scroll-top-bg: linear-gradient(135deg, #3a7059, #4a8c6f);
+  --lp-scroll-top-hover-bg: linear-gradient(135deg, #d4a84a, #c9a45c, #b8963e);
+  --lp-scroll-top-shadow: 0 10px 28px rgba(44,90,71,0.4);
+  --lp-scroll-top-shadow-hover: 0 12px 32px rgba(201,164,92,0.4);
+  --lp-menu-btn-bar: var(--color-primary);
 }
 
 /* ============================================
@@ -864,8 +969,6 @@ a {
    Import Inter font (optional, safe fallback)
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 /* ============================================
    Landing Page (Public Home)
    ============================================ */
@@ -903,6 +1006,27 @@ a {
   100% { transform: translateX(-50%); }
 }
 
+@keyframes lpGlow {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(201,164,92,0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(201,164,92,0.25); }
+}
+
+@keyframes lpGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Premium button hover effects */
+.lp-cta-primary:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 20px 48px rgba(44,90,71,0.42) !important;
+}
+
+.lp-cta-primary:active {
+  transform: translateY(-1px) !important;
+}
+
 .lp-serif {
   font-family: 'Playfair Display', 'Inter', Georgia, serif;
 }
@@ -934,4 +1058,20 @@ a {
   background: linear-gradient(100deg, rgba(201,164,92,0) 0%, rgba(201,164,92,0.9) 50%, rgba(201,164,92,0) 100%);
   background-size: 220% auto;
   animation: lpShimmerText 4s ease-in-out infinite;
+}
+
+/* Premium scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(201,164,92,0.25);
+  color: #2c5a47;
+}
+
+/* Smooth transitions for all interactive elements */
+a, button {
+  -webkit-tap-highlight-color: transparent;
 }

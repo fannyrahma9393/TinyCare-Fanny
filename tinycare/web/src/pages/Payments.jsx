@@ -7,11 +7,12 @@ export default function Payments() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
   const [selectedProof, setSelectedProof] = useState(null);
+  const [error, setError] = useState('');
 
   async function loadPayments() {
     setLoading(true);
     try { const params = { per_page: 50 }; if (filter) params.status = filter; const res = await paymentsAPI.list(params); setPayments(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data pembayaran.'); } finally { setLoading(false); }
   }
 
   useEffect(() => { loadPayments(); }, [filter]);
@@ -53,6 +54,13 @@ export default function Payments() {
           <button key={tab.value} onClick={() => setFilter(tab.value)} className={filter === tab.value ? 'tc-btn tc-btn-primary' : 'tc-btn tc-btn-secondary'} style={{ padding: '7px 14px', fontSize: '13px' }}>{tab.label}</button>
         ))}
       </div>
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadPayments(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div className="tc-card" style={{ overflow: 'hidden' }}>
         <table className="tc-table">

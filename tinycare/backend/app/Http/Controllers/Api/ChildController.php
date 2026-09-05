@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Child;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ChildController extends Controller
 {
@@ -46,30 +47,39 @@ class ChildController extends Controller
             'name' => 'required|string|max:255',
             'birth_date' => 'required|date|before:today',
             'gender' => 'required|in:male,female',
-            'photo' => 'nullable|string|max:500',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:5120',
             'address' => 'nullable|string|max:500',
             'health_info' => 'nullable|string|max:1000',
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
             'emergency_contact_relationship' => 'nullable|string|max:100',
+            'status' => 'sometimes|in:active,inactive',
             'parent_ids' => 'required|array|min:1',
             'parent_ids.*' => 'exists:parents,id',
         ]);
+
+        // Handle file upload
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('child-photos', 'local');
+        }
 
         $child = Child::create([
             'name' => $validated['name'],
             'birth_date' => $validated['birth_date'],
             'gender' => $validated['gender'],
-            'photo' => $validated['photo'] ?? null,
+            'photo' => $photoPath,
             'address' => $validated['address'] ?? null,
             'health_info' => $validated['health_info'] ?? null,
             'emergency_contact_name' => $validated['emergency_contact_name'] ?? null,
             'emergency_contact_phone' => $validated['emergency_contact_phone'] ?? null,
             'emergency_contact_relationship' => $validated['emergency_contact_relationship'] ?? null,
-            'status' => 'active',
+            'status' => $validated['status'] ?? 'active',
         ]);
 
         $child->parents()->attach($validated['parent_ids']);
+
+        $child->parents()->get()->each->syncUserStatusFromChildren();
 
         return response()->json([
             'success' => true,
@@ -103,7 +113,7 @@ class ChildController extends Controller
             'name' => 'sometimes|string|max:255',
             'birth_date' => 'sometimes|date|before:today',
             'gender' => 'sometimes|in:male,female',
-            'photo' => 'nullable|string|max:500',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:5120',
             'address' => 'nullable|string|max:500',
             'health_info' => 'nullable|string|max:1000',
             'emergency_contact_name' => 'nullable|string|max:255',
@@ -114,11 +124,28 @@ class ChildController extends Controller
             'parent_ids.*' => 'exists:parents,id',
         ]);
 
-        $child->update(collect($validated)->except(['parent_ids'])->toArray());
+        $data = collect($validated)->except(['parent_ids'])->toArray();
+
+        // Handle file upload — only save new file after validation passes
+        if ($request->hasFile('photo')) {
+            // Store new file first
+            $photoPath = $request->file('photo')->store('child-photos', 'local');
+
+            // Delete old file safely
+            if ($child->photo && Storage::disk('local')->exists($child->photo)) {
+                Storage::disk('local')->delete($child->photo);
+            }
+
+            $data['photo'] = $photoPath;
+        }
+
+        $child->update($data);
 
         if (isset($validated['parent_ids'])) {
             $child->parents()->sync($validated['parent_ids']);
         }
+
+        $child->parents()->get()->each->syncUserStatusFromChildren();
 
         return response()->json([
             'success' => true,
@@ -134,9 +161,13 @@ class ChildController extends Controller
     {
         $this->authorize('delete', $child);
 
+        $parents = $child->parents()->get();
+
         $child->parents()->detach();
         $child->childPackages()->delete();
         $child->delete();
+
+        $parents->each->syncUserStatusFromChildren();
 
         return response()->json([
             'success' => true,

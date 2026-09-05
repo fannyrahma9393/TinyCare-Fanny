@@ -35,10 +35,6 @@ class RegistrationAndUserManagementTest extends TestCase
         Role::firstOrCreate(['name' => 'admin'], ['description' => 'Admin']);
         Role::firstOrCreate(['name' => 'admin_master'], ['description' => 'Admin Master']);
 
-        // Set access code in config
-        $this->accessCode = 'TEST-ACCESS-CODE';
-        config(['services.tinycare.admin_access_code' => $this->accessCode]);
-
         // Create admin_master
         $this->adminMaster = User::create([
             'name' => 'Admin Master',
@@ -425,35 +421,11 @@ class RegistrationAndUserManagementTest extends TestCase
             ]);
     }
 
-    public function test_admin_login_requires_access_code(): void
+    public function test_admin_login_without_access_code_succeeds(): void
     {
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'admin@tinycare.com',
             'password' => 'password123',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['admin_access_code']);
-    }
-
-    public function test_admin_login_with_wrong_access_code(): void
-    {
-        $response = $this->postJson('/api/v1/auth/login', [
-            'email' => 'admin@tinycare.com',
-            'password' => 'password123',
-            'admin_access_code' => 'WRONG-CODE',
-        ]);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['admin_access_code']);
-    }
-
-    public function test_admin_login_with_correct_access_code(): void
-    {
-        $response = $this->postJson('/api/v1/auth/login', [
-            'email' => 'admin@tinycare.com',
-            'password' => 'password123',
-            'admin_access_code' => $this->accessCode,
         ]);
 
         $response->assertStatus(200)
@@ -467,12 +439,48 @@ class RegistrationAndUserManagementTest extends TestCase
             ]);
     }
 
-    public function test_admin_master_login_with_access_code(): void
+    public function test_admin_login_ignores_access_code(): void
+    {
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email' => 'admin@tinycare.com',
+            'password' => 'password123',
+            'admin_access_code' => 'WRONG-CODE',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'user' => [
+                        'role' => 'admin',
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_admin_login_with_email_password_only(): void
+    {
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email' => 'admin@tinycare.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'user' => [
+                        'role' => 'admin',
+                    ],
+                ],
+            ]);
+    }
+
+    public function test_admin_master_login_succeeds(): void
     {
         $response = $this->postJson('/api/v1/auth/login', [
             'email' => 'master@tinycare.com',
             'password' => 'password123',
-            'admin_access_code' => $this->accessCode,
         ]);
 
         $response->assertStatus(200)

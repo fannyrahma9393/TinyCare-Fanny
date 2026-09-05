@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/currency.dart';
+import 'invoice_detail_page.dart';
 
 class InvoicesPage extends StatefulWidget {
   const InvoicesPage({super.key});
@@ -112,6 +113,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final isAdmin = auth.isAdmin;
@@ -182,7 +184,10 @@ class _InvoicesPageState extends State<InvoicesPage> {
       ),
       child: InkWell(
         borderRadius: AppRadius.lgAll,
-        onTap: () => _showInvoiceDetail(inv),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => InvoiceDetailPage(invoiceId: inv['id'])),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(

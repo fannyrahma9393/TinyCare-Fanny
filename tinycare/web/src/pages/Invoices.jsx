@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { invoicesAPI, childrenAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
@@ -6,21 +7,36 @@ export default function Invoices() {
   const [invoices, setInvoices] = useState([]);
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [filter, setFilter] = useState('');
+  const [searchParams] = useSearchParams();
+  const [filter, setFilter] = useState(searchParams.get('filter') || '');
   const [formData, setFormData] = useState({ child_id: '', package_id: '', due_date: '', voucher_code: '', notes: '' });
 
   async function loadInvoices() {
     setLoading(true);
-    try { const params = { per_page: 50 }; if (filter) params.status = filter; const res = await invoicesAPI.list(params); setInvoices(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    setError('');
+    try {
+      const params = { per_page: 50 };
+      if (filter) params.status = filter;
+      const res = await invoicesAPI.list(params);
+      setInvoices(res.data.data.data || []);
+    } catch (error) {
+      setError(error.response?.data?.message || 'Gagal memuat daftar invoice.');
+    } finally {
+      setLoading(false);
+    }
   }
   async function loadChildren() {
     try { const res = await childrenAPI.list({ per_page: 100 }); setChildren(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data anak.'); }
   }
 
   useEffect(() => { loadInvoices(); loadChildren(); }, [filter]);
+
+  useEffect(() => {
+    setFilter(searchParams.get('filter') || '');
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +59,11 @@ export default function Invoices() {
     cancelled: { label: 'Dibatalkan', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
   };
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+  const formatCurrency = (amount) => {
+    const num = Number(amount);
+    if (num <= 0 || Number.isNaN(num)) return 'Rp 0';
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(num);
+  };
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}><div className="tc-spinner"></div></div>;
 
@@ -57,19 +77,27 @@ export default function Invoices() {
         ))}
       </div>
 
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={loadInvoices} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
+
       <div className="tc-card" style={{ overflow: 'hidden' }}>
-        <table className="tc-table">
+        <div style={{ overflowX: 'auto' }}>
+        <table className="tc-table" style={{ minWidth: '900px' }}>
           <thead>
             <tr>
-              <th>No. Invoice</th>
+              <th style={{ whiteSpace: 'nowrap' }}>No. Invoice</th>
               <th>Anak</th>
               <th>Paket</th>
-              <th>Subtotal</th>
-              <th>Diskon</th>
-              <th>Total</th>
-              <th>Jatuh Tempo</th>
+              <th style={{ textAlign: 'right' }}>Subtotal</th>
+              <th style={{ textAlign: 'right' }}>Diskon</th>
+              <th style={{ textAlign: 'right' }}>Total</th>
+              <th style={{ whiteSpace: 'nowrap' }}>Jatuh Tempo</th>
               <th>Status</th>
-              <th>Aksi</th>
+              <th style={{ position: 'sticky', right: 0, background: 'var(--color-surface)', zIndex: 1, textAlign: 'center' }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -77,21 +105,21 @@ export default function Invoices() {
               const status = statusConfig[invoice.status] || statusConfig.pending;
               return (
                 <tr key={invoice.id}>
-                  <td style={{ fontFamily: 'monospace', fontWeight: '600', fontSize: '13px' }}>{invoice.invoice_number}</td>
+                  <td style={{ fontFamily: 'monospace', fontWeight: '600', fontSize: '13px', whiteSpace: 'nowrap' }}>{invoice.invoice_number}</td>
                   <td style={{ fontSize: '13px' }}>{invoice.child?.name}</td>
                   <td style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>{invoice.package?.name}</td>
-                  <td style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>{formatCurrency(invoice.subtotal)}</td>
-                  <td style={{ fontSize: '13px', color: invoice.discount > 0 ? 'var(--color-success)' : 'var(--color-text-muted)' }}>
+                  <td style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textAlign: 'right' }}>{formatCurrency(invoice.subtotal)}</td>
+                  <td style={{ fontSize: '13px', color: invoice.discount > 0 ? 'var(--color-success)' : 'var(--color-text-muted)', textAlign: 'right' }}>
                     {invoice.discount > 0 ? '-' + formatCurrency(invoice.discount) : '-'}
                   </td>
-                  <td style={{ fontSize: '14px', fontWeight: '700' }}>{formatCurrency(invoice.total)}</td>
-                  <td style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>{new Date(invoice.due_date).toLocaleDateString('id-ID')}</td>
+                  <td style={{ fontSize: '14px', fontWeight: '700', textAlign: 'right' }}>{formatCurrency(invoice.total)}</td>
+                  <td style={{ fontSize: '12px', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{new Date(invoice.due_date).toLocaleDateString('id-ID')}</td>
                   <td><span className="tc-badge" style={{ background: status.bg, color: status.color }}>{status.label}</span></td>
-                  <td>
+                  <td style={{ position: 'sticky', right: 0, background: 'var(--color-surface)', zIndex: 1 }}>
                     {invoice.status === 'pending' && (
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <button onClick={() => handleStatusUpdate(invoice.id, 'paid')} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-success)', padding: '4px 8px', fontSize: '12px' }}>Bayar</button>
-                        <button onClick={() => handleStatusUpdate(invoice.id, 'cancelled')} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '12px' }}>Batal</button>
+                      <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+                        <button onClick={() => handleStatusUpdate(invoice.id, 'paid')} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-success)', padding: '4px 8px', fontSize: '12px', whiteSpace: 'nowrap' }}>Bayar</button>
+                        <button onClick={() => handleStatusUpdate(invoice.id, 'cancelled')} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '12px', whiteSpace: 'nowrap' }}>Batal</button>
                       </div>
                     )}
                   </td>
@@ -100,6 +128,7 @@ export default function Invoices() {
             })}
           </tbody>
         </table>
+        </div>
         {invoices.length === 0 && <EmptyState icon="💳" title="Belum ada invoice" />}
       </div>
 

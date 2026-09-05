@@ -7,13 +7,14 @@ export default function Packages() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', price: '', duration_days: '', facilities: '', quota: '', status: 'active' });
+  const [error, setError] = useState('');
 
   async function loadPackages() {
     try {
       const res = await packagesAPI.list();
       setPackages(res.data.data.data || []);
     } catch (error) {
-      console.error('Error loading packages:', error);
+      setError(error.response?.data?.message || 'Gagal memuat data paket.');
     } finally {
       setLoading(false);
     }
@@ -57,6 +58,13 @@ export default function Packages() {
         subtitle="Kelola paket daycare yang tersedia"
         action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Tambah Paket</button>}
       />
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadPackages(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
         {packages.map((pkg) => (

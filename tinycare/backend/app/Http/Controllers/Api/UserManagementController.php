@@ -24,6 +24,12 @@ class UserManagementController extends Controller
                 $query->whereHas('role', fn ($q) => $q->where('name', 'parent'))
                     ->where('status', 'active');
                 break;
+            case 'active':
+                $query->where('status', 'active');
+                break;
+            case 'inactive':
+                $query->where('status', 'inactive');
+                break;
             case 'pending':
                 $query->whereHas('role', fn ($q) => $q->where('name', 'parent'))
                     ->where('status', 'pending');
@@ -149,6 +155,50 @@ class UserManagementController extends Controller
             'success' => true,
             'message' => 'Akun parent berhasil ditolak.',
             'data' => $user->load(['role', 'parent']),
+        ]);
+    }
+
+    /**
+     * Activate a user (admin action).
+     * POST /api/v1/admin/users/{user}/activate
+     */
+    public function activate(User $user): JsonResponse
+    {
+        if ($user->status === 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun ini sudah aktif.',
+            ], 422);
+        }
+
+        $user->update(['status' => 'active']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil diaktifkan.',
+            'data' => $user->load(['role', 'parent', 'admin']),
+        ]);
+    }
+
+    /**
+     * Deactivate a user (admin action).
+     * POST /api/v1/admin/users/{user}/deactivate
+     */
+    public function deactivate(User $user): JsonResponse
+    {
+        if ($user->status === 'inactive') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun ini sudah nonaktif.',
+            ], 422);
+        }
+
+        $user->update(['status' => 'inactive']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil dinonaktifkan.',
+            'data' => $user->load(['role', 'parent', 'admin']),
         ]);
     }
 }

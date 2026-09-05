@@ -28,6 +28,8 @@ class ParentController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
+        $parents->getCollection()->transform(fn (ParentModel $parent) => $this->withEffectiveStatus($parent));
+
         return response()->json([
             'success' => true,
             'data' => $parents,
@@ -54,6 +56,12 @@ class ParentController extends Controller
 
         $parent = DB::transaction(function () use ($validated) {
             $role = Role::where('name', 'parent')->first();
+
+            if (! $role) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['Konfigurasi sistem tidak ditemukan. Silakan hubungi admin.'],
+                ]);
+            }
 
             $user = User::create([
                 'name' => $validated['name'],
@@ -92,8 +100,18 @@ class ParentController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $parent,
+            'data' => $this->withEffectiveStatus($parent),
         ]);
+    }
+
+    /**
+     * Attach the effective status (derived from children) to a parent.
+     */
+    protected function withEffectiveStatus(ParentModel $parent): ParentModel
+    {
+        $parent->setAttribute('effective_status', $parent->hasActiveChild() ? 'active' : 'inactive');
+
+        return $parent;
     }
 
     /**

@@ -30,6 +30,12 @@ class RegistrationController extends Controller
         $result = DB::transaction(function () use ($validated) {
             $role = Role::where('name', 'parent')->first();
 
+            if (! $role) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['Konfigurasi sistem tidak ditemukan. Silakan hubungi admin.'],
+                ]);
+            }
+
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],

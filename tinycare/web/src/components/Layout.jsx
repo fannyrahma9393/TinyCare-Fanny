@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -11,36 +11,34 @@ const menuSections = [
     ],
   },
   {
-    label: 'Children',
+    label: 'Anak',
     items: [
-      { name: 'Children', path: '/children', icon: 'child' },
-      { name: 'Parents', path: '/parents', icon: 'parent' },
-      { name: 'Attendance', path: '/attendance', icon: 'attendance' },
-      { name: 'Daily Stories', path: '/daily-stories', icon: 'story' },
-      { name: 'Activities', path: '/activities', icon: 'activity' },
-      { name: 'Development', path: '/development', icon: 'development' },
+      { name: 'Anak', path: '/children', icon: 'child' },
+      { name: 'Orang Tua', path: '/parents', icon: 'parent' },
+      { name: 'Daily Story', path: '/daily-stories', icon: 'story' },
+      { name: 'Aktivitas', path: '/activities', icon: 'activity' },
+      { name: 'Perkembangan', path: '/development', icon: 'development' },
+      { name: 'Informasi Anak', path: '/child-information', icon: 'info' },
     ],
   },
   {
-    label: 'Finance',
+    label: 'Keuangan',
     items: [
-      { name: 'Packages', path: '/packages', icon: 'package' },
-      { name: 'Vouchers', path: '/vouchers', icon: 'voucher' },
-      { name: 'Invoices', path: '/invoices', icon: 'invoice' },
-      { name: 'Payments', path: '/payments', icon: 'payment' },
+      { name: 'Paket', path: '/packages', icon: 'package' },
+      { name: 'Voucher', path: '/vouchers', icon: 'voucher' },
+      { name: 'Invoice', path: '/invoices', icon: 'invoice' },
+      { name: 'Pembayaran', path: '/payments', icon: 'payment' },
     ],
   },
   {
-    label: 'Communication',
+    label: 'Komunikasi',
     items: [
-      { name: 'Announcements', path: '/announcements', icon: 'announcement' },
-      { name: 'Events', path: '/events', icon: 'event' },
+      { name: 'Pengumuman', path: '/announcements', icon: 'announcement' },
       { name: 'Feedback', path: '/feedback', icon: 'feedback' },
-      { name: 'Reports', path: '/reports', icon: 'report' },
     ],
   },
   {
-    label: 'Management',
+    label: 'Manajemen',
     items: [
       { name: 'Pengguna', path: '/users', icon: 'users' },
     ],
@@ -70,6 +68,8 @@ function SidebarIcon({ name, size = 18 }) {
     report: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>,
     users: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
     admin: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+    info: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
+    profile: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   };
   return icons[name] || null;
 }
@@ -186,8 +186,11 @@ function SidebarContent({ sidebarOpen, onNav }) {
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Close mobile sidebar on navigation
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
@@ -288,6 +291,74 @@ export default function Layout({ children }) {
                 </svg>
               )}
             </button>
+
+            {/* Profile dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '4px 8px', borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+                  cursor: 'pointer', color: 'var(--color-text)',
+                }}
+              >
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: 'var(--radius-full)',
+                  background: 'var(--color-primary-lighter)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '11px' }}>
+                    {user?.name?.charAt(0) || 'A'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '13px', fontWeight: '500', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</span>
+              </button>
+              {profileOpen && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setProfileOpen(false)} />
+                  <div style={{
+                    position: 'absolute', right: 0, top: '100%', marginTop: '4px',
+                    background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-lg)', padding: '6px', minWidth: '180px',
+                    zIndex: 100, boxShadow: 'var(--shadow-md)',
+                  }}>
+                    <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-border-light)', marginBottom: '4px' }}>
+                      <p style={{ fontSize: '13px', fontWeight: '600' }}>{user?.name}</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => { setProfileOpen(false); navigate('/profile'); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+                        padding: '8px 12px', border: 'none', borderRadius: 'var(--radius-md)',
+                        background: 'transparent', cursor: 'pointer', fontSize: '13px',
+                        color: 'var(--color-text)', textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = 'var(--color-bg-alt)'}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      Profil
+                    </button>
+                    <button
+                      onClick={() => { setProfileOpen(false); logout(); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+                        padding: '8px 12px', border: 'none', borderRadius: 'var(--radius-md)',
+                        background: 'transparent', cursor: 'pointer', fontSize: '13px',
+                        color: 'var(--color-error)', textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = 'var(--color-bg-alt)'}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                      Keluar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 

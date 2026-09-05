@@ -7,6 +7,7 @@ use App\Models\Child;
 use App\Models\DevelopmentAssessment;
 use App\Models\DevelopmentCategory;
 use App\Models\DevelopmentNote;
+use App\Services\FcmNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -139,9 +140,33 @@ class DevelopmentController extends Controller
 
         $assessment->load(['child', 'category', 'assessor:id,name']);
 
+        // Notify parent(s) of this child (DB + FCM push). FCM failure must NOT
+        // abort the assessment save.
+        $notify = app(FcmNotificationService::class)->notifyChildParents(
+            $child,
+            [
+                'type' => 'development',
+                'title' => 'Perkembangan '.($child->name ?? 'Anak'),
+                'message' => 'Penilaian perkembangan baru: '.$validated['indicator'],
+                'link' => '/parent/children/'.$child->id.'/development',
+                'data' => [
+                    'type' => 'development',
+                    'child_id' => $child->id,
+                ],
+            ],
+            'Perkembangan Anak',
+            'Ada perkembangan baru untuk '.($child->name ?? 'anak Anda').'.',
+            '/parent/development',
+            [
+                'type' => 'development',
+                'child_id' => (string) $child->id,
+            ]
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Penilaian perkembangan berhasil dicatat.',
+            'notify' => $notify,
             'data' => $assessment,
         ], 201);
     }

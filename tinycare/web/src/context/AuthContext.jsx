@@ -3,11 +3,25 @@ import { authAPI } from '../services/api';
 
 const AuthContext = createContext(null);
 
+function sanitizeUser(data) {
+  if (!data || typeof data !== 'object') return null;
+  return {
+    id: data.id,
+    name: String(data.name || '').replace(/<[^>]*>/g, '').trim(),
+    email: String(data.email || '').trim(),
+    role: String(data.role || '').trim(),
+    status: String(data.status || '').trim(),
+  };
+}
+
 function getInitialUser() {
   try {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
-    if (token && savedUser) return JSON.parse(savedUser);
+    if (token && savedUser) {
+      const parsed = JSON.parse(savedUser);
+      return sanitizeUser(parsed);
+    }
   } catch {
     // ignore parse error
   }
@@ -28,15 +42,15 @@ export function AuthProvider({ children }) {
     authAPI.me()
       .then((response) => {
         const userData = response.data.data;
-        const freshUser = {
-          id: userData.id,
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-          status: userData.status,
-        };
-        localStorage.setItem('user', JSON.stringify(freshUser));
-        setUser(freshUser);
+        const freshUser = sanitizeUser(userData);
+        if (freshUser) {
+          localStorage.setItem('user', JSON.stringify(freshUser));
+          setUser(freshUser);
+        } else {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setUser(null);
+        }
       })
       .catch(() => {
         localStorage.removeItem('token');
@@ -46,18 +60,16 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (email, password, adminAccessCode) => {
+  const login = async (email, password) => {
     const payload = { email, password };
-    if (adminAccessCode) {
-      payload.admin_access_code = adminAccessCode;
-    }
 
     const response = await authAPI.login(payload);
     const { data } = response.data;
 
+    const sanitizedUser = sanitizeUser(data.user);
     localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
+    localStorage.setItem('user', JSON.stringify(sanitizedUser));
+    setUser(sanitizedUser);
 
     return data;
   };

@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase Android config — contains per-app identifiers; download from console.
+# NEVER commit a real google-services.json.
+google-services.json
+**/google-services.json
+

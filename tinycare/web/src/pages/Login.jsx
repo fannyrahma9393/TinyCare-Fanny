@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
-function EyeIcon({ passwordHidden }) {
-  // Icon shows the ACTION that will happen on tap:
-  // passwordHidden=true  -> show open eye (action: "show password")
-  // passwordHidden=false -> show crossed eye (action: "hide password")
-  return passwordHidden ? (
+function EyeIcon({ visible }) {
+  // Icon shows the CURRENT STATE:
+  // visible=true  -> open eye (password is displayed)
+  // visible=false -> crossed eye (password is hidden)
+  return visible ? (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
       <circle cx="12" cy="12" r="3"/>
@@ -23,9 +23,7 @@ function EyeIcon({ passwordHidden }) {
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [adminAccessCode, setAdminAccessCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showAccessCode, setShowAccessCode] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -37,8 +35,15 @@ export default function Login() {
     setError('');
     setLoading(true);
 
+    // Client-side validation before API call
+    if (password.length < 8) {
+      setError('Password minimal 8 karakter.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const data = await login(email, password, adminAccessCode || undefined);
+      const data = await login(email, password);
 
       // Role-based redirect
       if (data.user.role === 'admin' || data.user.role === 'admin_master') {
@@ -51,13 +56,31 @@ export default function Login() {
         localStorage.removeItem('user');
       }
     } catch (err) {
-      const errors = err.response?.data?.errors;
-      const message = err.response?.data?.message;
+      if (!err.response) {
+        if (err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT') {
+          setError('Server terlalu lama merespons. Silakan coba lagi.');
+        } else {
+          setError('Tidak dapat terhubung ke server. Pastikan server berjalan.');
+        }
+        return;
+      }
 
-      if (errors?.admin_access_code) {
-        setError(Array.isArray(errors.admin_access_code) ? errors.admin_access_code[0] : errors.admin_access_code);
-      } else if (errors?.email) {
-        setError(Array.isArray(errors.email) ? errors.email[0] : errors.email);
+      const status = err.response.status;
+      const errors = err.response.data?.errors;
+      const message = err.response.data?.message;
+
+      if (status === 401) {
+        setError(message || 'Email atau password salah.');
+      } else if (status === 422 && errors) {
+        if (errors.email) {
+          setError(Array.isArray(errors.email) ? errors.email[0] : errors.email);
+        } else {
+          setError(Object.values(errors).flat().join('. '));
+        }
+      } else if (status === 403) {
+        setError(message || 'Anda tidak memiliki akses.');
+      } else if (status >= 500) {
+        setError('Terjadi kesalahan pada server. Silakan coba lagi.');
       } else {
         setError(message || 'Login gagal. Periksa email dan password.');
       }
@@ -300,37 +323,9 @@ export default function Login() {
                   aria-label={showPassword ? 'Sembunyikan password' : 'Perlihatkan password'}
                   title={showPassword ? 'Sembunyikan password' : 'Perlihatkan password'}
                 >
-                  <EyeIcon passwordHidden={!showPassword} />
+                  <EyeIcon visible={showPassword} />
                 </button>
               </div>
-            </div>
-
-            <div style={{ marginBottom: '28px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>Kode Akses Admin</label>
-              <div style={inputWrap}>
-                <input
-                  type={showAccessCode ? 'text' : 'password'}
-                  value={adminAccessCode}
-                  onChange={(e) => setAdminAccessCode(e.target.value)}
-                  style={{ ...inputStyle, paddingRight: '44px' }}
-                  placeholder="Masukkan kode akses admin"
-                  autoComplete="off"
-                  onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(74,140,111,0.12)'; }}
-                  onBlur={(e) => { e.target.style.borderColor = 'var(--color-border)'; e.target.style.boxShadow = 'none'; }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowAccessCode(!showAccessCode)}
-                  style={eyeBtnStyle}
-                  aria-label={showAccessCode ? 'Sembunyikan kode akses' : 'Perlihatkan kode akses'}
-                  title={showAccessCode ? 'Sembunyikan kode akses' : 'Perlihatkan kode akses'}
-                >
-                  <EyeIcon passwordHidden={!showAccessCode} />
-                </button>
-              </div>
-              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '6px' }}>
-                Kosongkan jika Anda masuk sebagai orang tua.
-              </p>
             </div>
 
             <button

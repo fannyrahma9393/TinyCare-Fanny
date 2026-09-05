@@ -77,9 +77,8 @@ class _ProfilePageState extends State<ProfilePage> {
               );
               if (confirm == true) {
                 await auth.logout();
-                if (mounted) {
-                  Navigator.pushReplacementNamed(context, '/login');
-                }
+                if (!context.mounted) return;
+                Navigator.pushReplacementNamed(context, '/login');
               }
             },
           ),
@@ -188,6 +187,26 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+
+          // Account Actions
+          AppWidgets.menuGroup(
+            [
+              {
+                'label': 'Ubah Password',
+                'icon': Icons.lock_outline,
+                'onTap': () => Navigator.pushNamed(context, '/change-password'),
+                'subtitle': 'Ganti kata sandi akun Anda',
+              },
+            ],
+            context: context,
+          ),
+          const SizedBox(height: 16),
+
+          // Theme Toggle
+          AppWidgets.sectionHeader('Tampilan', context: context),
+          const SizedBox(height: 12),
+          const ThemeSwitcher(),
           const SizedBox(height: 16),
 
           // App Info

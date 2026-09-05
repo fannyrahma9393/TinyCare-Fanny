@@ -18,8 +18,26 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Handle API requests - route to Laravel
+    RewriteCond %{REQUEST_URI} ^/api/
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Handle signed storage file URLs (/storage/...) - route to Laravel
+    # so Storage::temporaryUrl() files (child photos, etc.) are served
+    # instead of falling through to the SPA index.html.
+    RewriteCond %{REQUEST_URI} ^/storage/
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    # Handle Laravel public assets (favicon, etc)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Handle SPA - serve React index.html for all other routes
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ /index.html [L]
 </IfModule>

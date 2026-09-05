@@ -43,7 +43,7 @@ describe('Login Component', () => {
     expect(screen.getByPlaceholderText('email@tinycare.com')).toBeInTheDocument()
     
     // Check if password field exists
-    expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Masukkan kata sandi')).toBeInTheDocument()
   })
 
   it('has submit button', () => {

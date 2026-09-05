@@ -48,4 +48,22 @@ return [
         'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Firebase Cloud Messaging (FCM)
+    |--------------------------------------------------------------------------
+    |
+    | FCM HTTP v1 sender built on Guzzle (already a Laravel dependency) using a
+    | Google service-account JWT. Credentials are provided via environment
+    | variables and are NEVER committed. When credentials are absent, messages
+    | are logged instead of sent so the request never crashes.
+    |
+    */
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+        'client_email' => env('FIREBASE_CLIENT_EMAIL'),
+        'private_key' => env('FIREBASE_PRIVATE_KEY'),
+        'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+    ],
+
 ];

@@ -46,6 +46,11 @@ class User extends Authenticatable
         return $this->hasMany(AuditLog::class);
     }
 
+    public function fcmTokens(): HasMany
+    {
+        return $this->hasMany(FcmToken::class);
+    }
+
     public function isAdmin(): bool
     {
         return in_array($this->role?->name, ['admin', 'admin_master']);

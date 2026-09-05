@@ -24,9 +24,6 @@ class AuthorizationTest extends TestCase
     {
         parent::setUp();
 
-        config(['services.tinycare.admin_access_code' => 'TEST-ADMIN-CODE']);
-        putenv('TINYCARE_ADMIN_ACCESS_CODE=TEST-ADMIN-CODE');
-
         $adminRole = Role::firstOrCreate(['name' => 'admin'], ['description' => 'Admin']);
         $parentRole = Role::firstOrCreate(['name' => 'parent'], ['description' => 'Parent']);
 
@@ -74,7 +71,6 @@ class AuthorizationTest extends TestCase
         $res = $this->postJson('/api/v1/auth/login', [
             'email' => 'admin@test.com',
             'password' => 'password123',
-            'admin_access_code' => 'TEST-ADMIN-CODE',
         ]);
 
         $res->assertOk()

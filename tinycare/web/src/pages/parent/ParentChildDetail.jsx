@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { parentAPI } from '../../services/api';
+import ChildPhoto from '../../components/ChildPhoto';
 
 export default function ParentChildDetail() {
   const { id } = useParams();
@@ -19,8 +20,7 @@ export default function ParentChildDetail() {
       parentAPI.childDevelopment(id).then((r) => setDevelopment(r.data.data)),
       parentAPI.childAttendance(id).then((r) => setAttendance(r.data.data?.attendance?.data || [])),
       parentAPI.childActivities(id).then((r) => setActivities(r.data.data?.data || [])),
-    ]).catch((err) => {
-      console.error('Child detail error:', err);
+    ]).catch((_err) => {
       setError('Gagal memuat data anak.');
     }).finally(() => setLoading(false));
   }, [id]);
@@ -49,8 +49,6 @@ export default function ParentChildDetail() {
     { key: 'activities', label: 'Aktivitas' },
   ];
 
-  const categoryIcons = { motorik: '🏃', bahasa: '💬', sosial: '👫', kognitif: '🧠', kemandirian: '💪' };
-
   return (
     <div>
       <button onClick={() => navigate('/parent/children')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
@@ -60,13 +58,7 @@ export default function ParentChildDetail() {
 
       {/* Child Profile */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
-        <div style={{
-          width: '56px', height: '56px', borderRadius: 'var(--radius-xl)',
-          background: 'var(--color-primary-lighter)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '22px' }}>{child.name?.charAt(0)}</span>
-        </div>
+        <ChildPhoto child={child} width={96} alt={child.name} />
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em' }}>{child.name}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
@@ -90,7 +82,7 @@ export default function ParentChildDetail() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
           {development.categories?.map((cat) => (
             <div key={cat.id} className="tc-card tc-card-hover" style={{ padding: '18px' }}>
-              <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'capitalize', marginBottom: '10px' }}>{categoryIcons[cat.name] || '📊'} {cat.name}</h3>
+              <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'capitalize', marginBottom: '10px' }}>{cat.icon || '📊'} {cat.name}</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
                 <span style={{ color: 'var(--color-text-muted)' }}>Progress</span>
                 <span style={{ fontWeight: '600' }}>{cat.average_progress}%</span>
@@ -113,7 +105,7 @@ export default function ParentChildDetail() {
                 display: 'flex', alignItems: 'center', gap: '12px',
                 padding: '12px', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-alt)',
               }}>
-                <span style={{ fontSize: '16px' }}>{categoryIcons[cat.name] || '📊'}</span>
+                <span style={{ fontSize: '16px' }}>{cat.icon || '📊'}</span>
                 <div style={{ flex: 1 }}>
                   <p style={{ fontSize: '13px', fontWeight: '600' }}>{a.indicator}</p>
                   <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', textTransform: 'capitalize' }}>{cat.name} · {a.observation_date}</p>

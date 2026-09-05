@@ -7,10 +7,11 @@ export default function Announcements() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ title: '', content: '', priority: 'normal', publish_date: '', expire_date: '', is_published: true });
+  const [error, setError] = useState('');
 
   async function loadAnnouncements() {
     try { const res = await announcementsAPI.list(); setAnnouncements(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data pengumuman.'); } finally { setLoading(false); }
   }
 
   useEffect(() => { loadAnnouncements(); }, []);
@@ -39,6 +40,13 @@ export default function Announcements() {
   return (
     <div>
       <PageHeader title="Manajemen Pengumuman" subtitle="Buat dan kelola pengumuman untuk orang tua" action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Buat Pengumuman</button>} />
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadAnnouncements(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {announcements.map((item) => {

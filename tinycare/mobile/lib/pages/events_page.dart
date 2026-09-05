@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
-import '../utils/api_error.dart';
 
+/// Admin events page — mirrors web Events.
+///
+/// Lists upcoming and past events with date, title, description.
+/// Admin can create, edit, delete events.
 class EventsPage extends StatefulWidget {
   const EventsPage({super.key});
 
@@ -13,7 +14,7 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-  final ApiService _api = ApiService();
+  final _api = ApiService();
   List<dynamic> _events = [];
   bool _isLoading = true;
   String? _error;
@@ -25,26 +26,169 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Future<void> _loadEvents() async {
-    if (!mounted) return;
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      final rawData = await _api.getEvents();
-      if (!mounted) return;
-      setState(() { _events = rawData; _isLoading = false; });
+      final events = await _api.getEvents();
+      setState(() {
+        _events = events;
+        _isLoading = false;
+      });
     } catch (e) {
-      if (!mounted) return;
-      setState(() { _error = ApiErrorHandler.getMessage(e); _isLoading = false; });
+      setState(() {
+        _error = 'Gagal memuat data acara.';
+        _isLoading = false;
+      });
     }
   }
 
-  void _showToast(String message, {bool isError = false}) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? AppColors.error : AppColors.success,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
+  @override
+  Widget build(BuildContext context) {
+    final textColor = ThemeHelper.text(context);
+    final mutedColor = ThemeHelper.textMuted(context);
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Acara'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const _EventFormPage()),
+              );
+              if (result == true) _loadEvents();
+            },
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? AppWidgets.loadingIndicator()
+          : _error != null
+              ? AppWidgets.errorState(message: _error!, onRetry: _loadEvents)
+              : _events.isEmpty
+                  ? AppWidgets.emptyState(
+                      icon: Icons.event_outlined,
+                      title: 'Belum ada acara',
+                      subtitle: 'Tekan tombol + untuk menambahkan acara.',
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadEvents,
+                      color: AppColors.primary,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        itemCount: _events.length,
+                        itemBuilder: (context, index) =>
+                            _buildEventCard(_events[index]),
+                      ),
+                    ),
+    );
+  }
+
+  Widget _buildEventCard(dynamic event) {
+    final textColor = ThemeHelper.text(context);
+    final mutedColor = ThemeHelper.textMuted(context);
+    final surfaceColor = ThemeHelper.surface(context);
+    final borderColor = ThemeHelper.border(context);
+    final isActive = (event['status'] ?? 'active') == 'active';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: AppRadius.lgAll,
+        border: Border.all(color: borderColor),
+        boxShadow: AppColors.cardShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event['title'] ?? '-',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.calendar_today, size: 14, color: AppColors.primary),
+                        const SizedBox(width: 6),
+                        Text(
+                          _formatDate(event['start_date'] ?? ''),
+                          style: TextStyle(fontSize: 12, color: mutedColor),
+                        ),
+                        const SizedBox(width: 12),
+                        const Icon(Icons.access_time, size: 14, color: AppColors.primary),
+                        const SizedBox(width: 6),
+                        Text(
+                          event['start_time'] ?? '',
+                          style: TextStyle(fontSize: 12, color: mutedColor),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              AppWidgets.statusBadge(
+                isActive ? 'Aktif' : 'Terselesaikan',
+                isActive ? AppColors.success : mutedColor,
+              ),
+            ],
+          ),
+          if (event['description'] != null && event['description'].toString().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              event['description'].toString(),
+              style: TextStyle(fontSize: 12, color: mutedColor, height: 1.5),
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => _EventFormPage(event: event)),
+                    );
+                    if (result == true) _loadEvents();
+                  },
+                  icon: const Icon(Icons.edit_outlined, size: 16),
+                  label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _deleteEvent(event),
+                  icon: const Icon(Icons.delete_outline, size: 16),
+                  label: const Text('Hapus', style: TextStyle(fontSize: 12)),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -54,7 +198,7 @@ class _EventsPageState extends State<EventsPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Acara'),
-        content: Text('Hapus "${event['title'] ?? ''}"?'),
+        content: Text('Yakin ingin menghapus acara "${event['title']}"?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
           TextButton(
@@ -66,318 +210,51 @@ class _EventsPageState extends State<EventsPage> {
       ),
     );
     if (confirm != true) return;
-
     try {
-      final response = await _api.deleteEvent(event['id']);
-      if (response['success'] == true) {
-        _showToast('Acara berhasil dihapus.');
-        _loadEvents();
-      } else {
-        _showToast(response['message'] ?? 'Gagal menghapus.', isError: true);
-      }
+      await _api.deleteEvent(event['id']);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: const Text('Acara berhasil dihapus.'), backgroundColor: AppColors.success),
+      );
+      _loadEvents();
     } catch (e) {
-      _showToast('Gagal menghapus acara.', isError: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: const Text('Gagal menghapus acara.'), backgroundColor: AppColors.error),
+      );
     }
   }
 
-  Color _getTypeColor(String? type) {
-    switch (type) {
-      case 'activity': return AppColors.primary;
-      case 'holiday': return AppColors.info;
-      case 'special': return Colors.purple;
-      case 'meeting': return AppColors.warning;
-      default: return ThemeHelper.textMuted(context);
-    }
-  }
-
-  String _getTypeLabel(String? type) {
-    switch (type) {
-      case 'activity': return 'Aktivitas';
-      case 'holiday': return 'Libur';
-      case 'special': return 'Spesial';
-      case 'meeting': return 'Meeting';
-      default: return type ?? '-';
-    }
-  }
-
-  String _getTypeEmoji(String? type) {
-    switch (type) {
-      case 'activity': return '🎯';
-      case 'holiday': return '🏖️';
-      case 'special': return '⭐';
-      case 'meeting': return '👥';
-      default: return '📅';
-    }
-  }
-
-  String _formatDate(String? date) {
-    if (date == null) return '-';
+  String _formatDate(String date) {
+    if (date.isEmpty) return '-';
     try {
-      final d = DateTime.parse(date);
-      return '${d.day}/${d.month}/${d.year}';
-    } catch (_) {
-      return date;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final isAdmin = auth.isAdmin;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Acara'),
-        actions: [
-          if (isAdmin)
-            IconButton(
-              icon: const Icon(Icons.add_outlined),
-              onPressed: () async {
-                final result = await Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const EventFormPage()));
-                if (result == true) _loadEvents();
-              },
-              tooltip: 'Tambah Acara',
-            ),
-        ],
-      ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadEvents)
-              : _events.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.calendar_today,
-                      title: 'Belum ada acara',
-                      subtitle: isAdmin ? 'Tekan tombol + untuk membuat acara.' : null,
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadEvents,
-                      color: AppColors.primary,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _events.length,
-                        itemBuilder: (context, index) => _buildEventCard(_events[index], isAdmin),
-                      ),
-                    ),
-    );
-  }
-
-  Widget _buildEventCard(dynamic event, bool isAdmin) {
-    final type = event['type'] ?? 'activity';
-    final typeColor = _getTypeColor(type);
-    final startDate = event['date'];
-    DateTime? dateObj;
-    try { dateObj = DateTime.parse(startDate ?? ''); } catch (_) {}
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: ThemeHelper.surface(context),
-        borderRadius: AppRadius.lgAll,
-        border: Border.all(color: ThemeHelper.border(context)),
-        boxShadow: AppColors.cardShadow,
-      ),
-      child: InkWell(
-        borderRadius: AppRadius.lgAll,
-        onTap: () => _showDetail(event, isAdmin),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Container(
-                width: 56, height: 56,
-                decoration: BoxDecoration(
-                  color: typeColor.withValues(alpha: 0.1),
-                  borderRadius: AppRadius.mdAll,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('${dateObj?.day ?? '?'}',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: typeColor)),
-                    Text(_getTypeEmoji(type), style: const TextStyle(fontSize: 10)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(event['title'] ?? 'Tanpa judul',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
-                        const SizedBox(width: 4),
-                        Text(_formatDate(startDate), style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
-                        if (event['start_time'] != null) ...[
-                          const SizedBox(width: 8),
-                          Icon(Icons.access_time, size: 12, color: ThemeHelper.textMuted(context)),
-                          const SizedBox(width: 4),
-                          Text(event['start_time'] ?? '', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
-                        ],
-                      ],
-                    ),
-                    if (event['location'] != null && event['location'].toString().isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on, size: 12, color: ThemeHelper.textMuted(context)),
-                          const SizedBox(width: 4),
-                          Text(event['location'] ?? '', style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 6),
-                    AppWidgets.statusBadge(_getTypeLabel(type), typeColor),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  if (isAdmin)
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert, size: 18, color: ThemeHelper.textMuted(context)),
-                      onSelected: (value) async {
-                        if (value == 'edit') {
-                          final result = await Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => EventFormPage(event: event)));
-                          if (result == true) _loadEvents();
-                        } else if (value == 'delete') {
-                          _deleteEvent(event);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                        const PopupMenuItem(value: 'delete', child: Text('Hapus')),
-                      ],
-                    ),
-                  Icon(Icons.chevron_right, color: ThemeHelper.textMuted(context)),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDetail(dynamic event, bool isAdmin) {
-    final type = event['type'] ?? 'activity';
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.55, minChildSize: 0.3, maxChildSize: 0.85, expand: false,
-          builder: (context, scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              padding: const EdgeInsets.all(28),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(child: Container(width: 40, height: 4,
-                      decoration: BoxDecoration(color: ThemeHelper.border(context), borderRadius: BorderRadius.circular(2)))),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Text(_getTypeEmoji(type), style: const TextStyle(fontSize: 36)),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(event['title'] ?? 'Tanpa judul', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
-                            const SizedBox(height: 6),
-                            AppWidgets.statusBadge(_getTypeLabel(type), _getTypeColor(type)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(color: ThemeHelper.bgAlt(context), borderRadius: AppRadius.lgAll),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today, size: 18, color: ThemeHelper.textMuted(context)),
-                            const SizedBox(width: 12),
-                            Text(_formatDate(event['date'])),
-                          ],
-                        ),
-                        if (event['start_time'] != null) ...[
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Icon(Icons.access_time, size: 18, color: ThemeHelper.textMuted(context)),
-                              const SizedBox(width: 12),
-                              Text('${event['start_time']}${event['end_time'] != null ? ' - ${event['end_time']}' : ''}'),
-                            ],
-                          ),
-                        ],
-                        if (event['location'] != null && event['location'].toString().isNotEmpty) ...[
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, size: 18, color: ThemeHelper.textMuted(context)),
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(event['location'])),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (event['description'] != null && event['description'].toString().isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    Text('Deskripsi', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
-                    const SizedBox(height: 10),
-                    Text(event['description'],
-                        style: TextStyle(fontSize: 14, height: 1.7, color: ThemeHelper.text(context))),
-                  ],
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+      final parts = date.split('-');
+      if (parts.length == 3) {
+        final months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        final m = int.tryParse(parts[1]);
+        return '${parts[2]} ${months[m! - 1]} ${parts[0]}';
+      }
+    } catch (_) {}
+    return date;
   }
 }
 
-// ==================== Event Form (Create/Edit) ====================
-class EventFormPage extends StatefulWidget {
+class _EventFormPage extends StatefulWidget {
   final dynamic event;
-  const EventFormPage({super.key, this.event});
+  const _EventFormPage({this.event});
 
   @override
-  State<EventFormPage> createState() => EventFormPageState();
+  State<_EventFormPage> createState() => _EventFormPageState();
 }
 
-class EventFormPageState extends State<EventFormPage> {
+class _EventFormPageState extends State<_EventFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _dateController = TextEditingController();
-  final _startTimeController = TextEditingController();
-  final _endTimeController = TextEditingController();
-  final _locationController = TextEditingController();
-  String _type = 'activity';
+  final _timeController = TextEditingController();
   bool _isSubmitting = false;
   String? _error;
+  final _api = ApiService();
 
-  final ApiService _api = ApiService();
   bool get _isEditing => widget.event != null;
 
   @override
@@ -386,14 +263,8 @@ class EventFormPageState extends State<EventFormPage> {
     if (_isEditing) {
       _titleController.text = widget.event['title'] ?? '';
       _descriptionController.text = widget.event['description'] ?? '';
-      _dateController.text = widget.event['date'] ?? '';
-      _startTimeController.text = widget.event['start_time'] ?? '';
-      _endTimeController.text = widget.event['end_time'] ?? '';
-      _locationController.text = widget.event['location'] ?? '';
-      _type = widget.event['type'] ?? 'activity';
-    } else {
-      // Default date = today
-      _dateController.text = ApiService.today();
+      _dateController.text = widget.event['start_date'] ?? '';
+      _timeController.text = widget.event['start_time'] ?? '';
     }
   }
 
@@ -402,49 +273,34 @@ class EventFormPageState extends State<EventFormPage> {
     _titleController.dispose();
     _descriptionController.dispose();
     _dateController.dispose();
-    _startTimeController.dispose();
-    _endTimeController.dispose();
-    _locationController.dispose();
+    _timeController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSave() async {
+  Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _isSubmitting = true; _error = null; });
-
     try {
-      Map<String, dynamic> response;
-      if (_isEditing) {
-        response = await _api.updateEvent(
-          widget.event['id'],
-          title: _titleController.text.trim(),
-          date: _dateController.text.trim().isNotEmpty ? _dateController.text.trim() : null,
-          description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
-          type: _type,
-          startTime: _startTimeController.text.trim().isNotEmpty ? _startTimeController.text.trim() : null,
-          endTime: _endTimeController.text.trim().isNotEmpty ? _endTimeController.text.trim() : null,
-          location: _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
-        );
-      } else {
-        response = await _api.createEvent(
-          title: _titleController.text.trim(),
-          date: _dateController.text.trim(),
-          description: _descriptionController.text.trim().isNotEmpty ? _descriptionController.text.trim() : null,
-          type: _type,
-          startTime: _startTimeController.text.trim().isNotEmpty ? _startTimeController.text.trim() : null,
-          endTime: _endTimeController.text.trim().isNotEmpty ? _endTimeController.text.trim() : null,
-          location: _locationController.text.trim().isNotEmpty ? _locationController.text.trim() : null,
-        );
-      }
-
+      final response = _isEditing
+          ? await _api.updateEvent(
+              widget.event['id'],
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim(),
+              startDate: _dateController.text.trim(),
+              startTime: _timeController.text.trim(),
+            )
+          : await _api.createEvent(
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim(),
+              startDate: _dateController.text.trim(),
+              startTime: _timeController.text.trim(),
+            );
       if (response['success'] == true) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Acara diperbarui.' : 'Acara dibuat.'),
+              content: Text(_isEditing ? 'Acara diperbarui.' : 'Acara berhasil dibuat.'),
               backgroundColor: AppColors.success,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
             ),
           );
           Navigator.pop(context, true);
@@ -453,7 +309,7 @@ class EventFormPageState extends State<EventFormPage> {
         setState(() { _error = response['message'] ?? 'Gagal menyimpan.'; _isSubmitting = false; });
       }
     } catch (e) {
-      setState(() { _error = ApiErrorHandler.getMessage(e); _isSubmitting = false; });
+      setState(() { _error = 'Gagal menyimpan. Silakan coba lagi.'; _isSubmitting = false; });
     }
   }
 
@@ -480,64 +336,31 @@ class EventFormPageState extends State<EventFormPage> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Deskripsi', alignLabelWithHint: true),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
                 controller: _dateController,
                 decoration: const InputDecoration(labelText: 'Tanggal *', hintText: 'YYYY-MM-DD'),
-                keyboardType: TextInputType.datetime,
                 validator: (v) => v == null || v.isEmpty ? 'Tanggal tidak boleh kosong' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _locationController,
-                textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Lokasi'),
+                controller: _timeController,
+                decoration: const InputDecoration(labelText: 'Waktu *', hintText: 'HH:MM'),
+                validator: (v) => v == null || v.isEmpty ? 'Waktu tidak boleh kosong' : null,
               ),
               const SizedBox(height: 16),
-              Text('Tipe Acara', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8, runSpacing: 8,
-                children: [
-                  _buildTypeChip('activity', '🎯 Aktivitas'),
-                  _buildTypeChip('holiday', '🏖️ Libur'),
-                  _buildTypeChip('special', '⭐ Spesial'),
-                  _buildTypeChip('meeting', '👥 Meeting'),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _startTimeController,
-                      decoration: const InputDecoration(labelText: 'Waktu Mulai', hintText: 'HH:MM'),
-                      keyboardType: TextInputType.datetime,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _endTimeController,
-                      decoration: const InputDecoration(labelText: 'Waktu Selesai', hintText: 'HH:MM'),
-                      keyboardType: TextInputType.datetime,
-                    ),
-                  ),
-                ],
+              TextFormField(
+                controller: _descriptionController,
+                maxLines: 3,
+                textInputAction: TextInputAction.done,
+                decoration: const InputDecoration(labelText: 'Deskripsi', alignLabelWithHint: true),
               ),
               const SizedBox(height: 24),
               SizedBox(
                 height: 48,
                 child: ElevatedButton(
-                  onPressed: _isSubmitting ? null : _handleSave,
+                  onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(_isEditing ? 'Simpan Perubahan' : 'Buat Acara',
+                      : Text(_isEditing ? 'Simpan Perubahan' : 'Tambah Acara',
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
@@ -545,18 +368,6 @@ class EventFormPageState extends State<EventFormPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTypeChip(String value, String label) {
-    final selected = _type == value;
-    return ChoiceChip(
-      label: Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white : ThemeHelper.textSecondary(context))),
-      selected: selected,
-      onSelected: (_) => setState(() => _type = value),
-      selectedColor: AppColors.primary,
-      backgroundColor: ThemeHelper.surface(context),
-      side: BorderSide(color: ThemeHelper.border(context)),
     );
   }
 }

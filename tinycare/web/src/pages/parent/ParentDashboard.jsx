@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { parentAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import ChildPhoto from '../../components/ChildPhoto';
 
 export default function ParentDashboard() {
   const [data, setData] = useState(null);
@@ -14,7 +15,6 @@ export default function ParentDashboard() {
     parentAPI.dashboard()
       .then((res) => setData(res.data.data))
       .catch((err) => {
-        console.error('Parent dashboard error:', err);
         setError(err.response?.data?.message || 'Gagal memuat dashboard.');
       })
       .finally(() => setLoading(false));
@@ -53,6 +53,7 @@ export default function ParentDashboard() {
   const pendingInvoices = data.pending_invoices || [];
   const announcements = data.announcements || [];
   const upcomingEvents = data.upcoming_events || [];
+  const childInformation = data.child_information || [];
 
   const formatCurrency = (v) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(v);
 
@@ -107,13 +108,7 @@ export default function ParentDashboard() {
                 onClick={() => navigate(`/parent/children/${child.id}`)}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '14px' }}>
-                  <div style={{
-                    width: '48px', height: '48px', borderRadius: 'var(--radius-xl)',
-                    background: 'var(--color-primary-lighter)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}>
-                    <span style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '18px' }}>{child.name?.charAt(0)}</span>
-                  </div>
+                  <ChildPhoto child={child} width={48} alt={child.name} />
                   <div>
                     <h3 style={{ fontSize: '15px', fontWeight: '600' }}>{child.name}</h3>
                     <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
@@ -176,6 +171,49 @@ export default function ParentDashboard() {
             </div>
             <p className="tc-empty-state-title">Belum ada data anak</p>
             <p className="tc-empty-state-desc">Data akan muncul ketika anak sudah terdaftar di daycare.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Child Information Section */}
+      {childInformation.length > 0 && (
+        <div style={{ marginBottom: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '15px', fontWeight: '700', letterSpacing: '-0.01em' }}>Informasi Anak</h2>
+            <button
+              onClick={() => navigate('/parent/information')}
+              className="tc-btn tc-btn-ghost tc-btn-sm"
+              style={{ fontSize: '12px' }}
+            >
+              Lihat Semua
+            </button>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '14px' }}>
+            {childInformation.slice(0, 3).map((info) => (
+              <div
+                key={info.id}
+                className="tc-card tc-card-interactive"
+                style={{ padding: '16px', cursor: 'pointer' }}
+                onClick={() => navigate('/parent/information')}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{
+                    width: '32px', height: '32px', borderRadius: 'var(--radius-md)',
+                    background: 'var(--color-info-bg)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-info)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '13px', fontWeight: '600' }}>{info.child?.name}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{info.type}</p>
+                  </div>
+                </div>
+                <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }} className="tc-truncate">{info.title || info.content}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}

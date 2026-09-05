@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { parentsAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
@@ -13,6 +14,7 @@ export default function Parents() {
     emergency_contact_name: '', emergency_contact_phone: '', emergency_contact_relationship: '',
   });
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
 
   async function loadParents() {
     try {
@@ -20,7 +22,7 @@ export default function Parents() {
       const res = await parentsAPI.list({ search });
       setParents(res.data.data.data || []);
     } catch (error) {
-      console.error('Error loading parents:', error);
+      setError(error.response?.data?.message || 'Gagal memuat data orang tua.');
     } finally {
       setLoading(false);
     }
@@ -88,6 +90,13 @@ export default function Parents() {
         <input type="text" placeholder="Cari nama atau email..." value={search} onChange={(e) => setSearch(e.target.value)} className="tc-input" style={{ maxWidth: '360px' }} />
       </div>
 
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadParents(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
+
       <div className="tc-card" style={{ overflow: 'hidden' }}>
         <table className="tc-table">
           <thead>
@@ -96,6 +105,7 @@ export default function Parents() {
               <th>Email</th>
               <th>Telepon</th>
               <th>Anak</th>
+              <th>Status</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -120,7 +130,7 @@ export default function Parents() {
                   {parent.children && parent.children.length > 0 ? (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                       {parent.children.map((child) => (
-                        <span key={child.id} className="tc-badge tc-badge-success">{child.name}</span>
+                        <span key={child.id} className={`tc-badge ${child.status === 'active' ? 'tc-badge-success' : 'tc-badge-info'}`}>{child.name}</span>
                       ))}
                     </div>
                   ) : (
@@ -128,9 +138,17 @@ export default function Parents() {
                   )}
                 </td>
                 <td>
-                  <button onClick={() => handleDelete(parent.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>
-                    Hapus
-                  </button>
+                  <span className={`tc-badge ${parent.effective_status === 'active' ? 'tc-badge-success' : 'tc-badge-error'}`}>
+                    {parent.effective_status === 'active' ? 'Aktif' : 'Nonaktif'}
+                  </span>
+                </td>
+                <td>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <Link to={`/parents/${parent.id}`} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-info)', padding: '4px 8px', fontSize: '13px' }}>Detail</Link>
+                    <button onClick={() => handleDelete(parent.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>
+                      Hapus
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

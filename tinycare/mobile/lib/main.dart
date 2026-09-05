@@ -1,20 +1,17 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
+import 'services/fcm_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'theme/app_theme.dart';
 import 'pages/login_page.dart';
-import 'pages/dashboard_page.dart';
 import 'pages/children_page.dart';
 import 'pages/daily_stories_page.dart';
-import 'pages/attendance_page.dart';
 import 'pages/development_page.dart';
 import 'pages/invoices_page.dart';
 import 'pages/announcements_page.dart';
-import 'pages/events_page.dart';
 import 'pages/feedback_page.dart';
 import 'pages/admin_dashboard_page.dart';
 import 'pages/register_page.dart';
@@ -27,10 +24,47 @@ import 'pages/vouchers_page.dart';
 import 'pages/parents_page.dart';
 import 'pages/payments_page.dart';
 import 'pages/reports_page.dart';
+import 'pages/child_information_page.dart';
+import 'pages/parent_information_page.dart';
+import 'pages/forgot_password_page.dart';
+import 'pages/reset_password_page.dart';
+import 'pages/notifications_page.dart';
+import 'pages/change_password_page.dart';
+import 'widgets/parent_scaffold.dart';
+
+/// Global navigator key so FCM notification taps can route navigation even
+/// when a widget context is unavailable (background/terminated launches).
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   ApiService().init();
+
+  // Initialize Firebase Messaging (guarded: never crashes if not configured).
+  FcmService.instance.initialize();
+
+  // Foreground push -> clear in-app feedback via SnackBar.
+  FcmService.instance.onForegroundMessage = (notification) {
+    final messenger = navigatorKey.currentState?.context;
+    if (messenger == null) return;
+    ScaffoldMessenger.of(messenger).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${notification.title}\n${notification.body}',
+          style: const TextStyle(height: 1.3),
+        ),
+        duration: const Duration(seconds: 6),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  };
+
+  // Notification tap -> route to the relevant page.
+  FcmService.instance.onNotificationTap = (notification) {
+    final nav = navigatorKey.currentState;
+    if (nav == null) return;
+    nav.pushNamed(notification.resolveRoute());
+  };
 
   // Catch Flutter framework errors (synchronous)
   FlutterError.onError = (details) {
@@ -77,6 +111,7 @@ class TinyCareApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) => MaterialApp(
           title: 'TinyCare',
+          navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           theme: AppTheme.theme,
           darkTheme: AppTheme.darkTheme,
@@ -85,25 +120,30 @@ class TinyCareApp extends StatelessWidget {
           routes: {
             '/login': (context) => const LoginPage(),
             '/register': (context) => const RegisterPage(),
-            '/dashboard': (context) => const _AuthGuard(child: DashboardPage()),
-            '/admin-dashboard': (context) => const _AuthGuard(child: AdminDashboardPage()),
+            '/forgot-password': (context) => const ForgotPasswordPage(),
+            '/reset-password': (context) => const ResetPasswordPage(),
+            '/notifications': (context) => const _AuthGuard(child: NotificationsPage()),
+            '/change-password': (context) => const _AuthGuard(child: ChangePasswordPage()),
+            '/dashboard': (context) => const _AuthGuard(child: AdminDashboardPage()),
+            '/parent': (context) => const _AuthGuard(child: ParentScaffold()),
             '/children': (context) => const _AuthGuard(child: ChildrenPage()),
             '/daily-stories': (context) => const _AuthGuard(child: DailyStoriesPage()),
-            '/attendance': (context) => const _AuthGuard(child: AttendancePage()),
             '/development': (context) => const _AuthGuard(child: DevelopmentPage()),
             '/invoices': (context) => const _AuthGuard(child: InvoicesPage()),
             '/announcements': (context) => const _AuthGuard(child: AnnouncementsPage()),
-            '/events': (context) => const _AuthGuard(child: EventsPage()),
             '/feedback': (context) => const _AuthGuard(child: FeedbackPage()),
             '/profile': (context) => const _AuthGuard(child: ProfilePage()),
             '/users': (context) => const _AuthGuard(child: UserManagementPage()),
             '/admin-management': (context) => const _AuthGuard(child: AdminManagementPage()),
             '/activities': (context) => const _AuthGuard(child: ActivitiesPage()),
+            '/parent/information': (context) => const _AuthGuard(child: ParentInformationPage()),
+            '/information': (context) => const _AuthGuard(child: ChildInformationPage()),
             '/packages': (context) => const _AuthGuard(child: PackagesPage()),
             '/vouchers': (context) => const _AuthGuard(child: VouchersPage()),
             '/parents': (context) => const _AuthGuard(child: ParentsPage()),
             '/payments': (context) => const _AuthGuard(child: PaymentsPage()),
             '/reports': (context) => const _AuthGuard(child: ReportsPage()),
+
           },
         ),
       ),
@@ -141,10 +181,49 @@ class _AuthGuard extends StatelessWidget {
 
         // Role-based route guard
         final currentRoute = ModalRoute.of(context)?.settings.name ?? '';
-        final isAdminRoute = currentRoute == '/admin-dashboard';
+        final isAdminRoute = currentRoute == '/dashboard';
+        final isParentRoute = currentRoute == '/parent';
 
-        if (isAdminRoute && !auth.isAdmin) {
-          // Parent trying to access admin route - deny
+        // Routes that are admin-only in the web app (AdminRoute wrapper).
+        // Any logged-in parent reaching one of these is redirected, mirroring
+        // web's behaviour (non-admin -> /parent, i.e. the parent dashboard).
+        const adminOnlyRoutes = {
+          '/users',
+          '/packages',
+          '/vouchers',
+          '/payments',
+          '/parents',
+          '/admin-management',
+          '/reports',
+        };
+
+        // Routes that are parent-only in the web app (ParentRoute wrapper).
+        // Any logged-in admin reaching one of these is redirected to admin dashboard.
+        const parentOnlyRoutes = {
+          '/parent',
+          '/parent/children',
+          '/parent/activities',
+          '/parent/development',
+          '/parent/announcements',
+          '/parent/information',
+          '/parent/feedback',
+          '/parent/invoices',
+          '/parent/profile',
+        };
+
+        if (adminOnlyRoutes.contains(currentRoute) && !auth.isAdmin) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, '/parent');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+          );
+        }
+
+        if (parentOnlyRoutes.contains(currentRoute) && auth.isAdmin) {
+          // Admin trying to access parent route - redirect to admin
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.pushReplacementNamed(context, '/dashboard');
           });
@@ -155,10 +234,22 @@ class _AuthGuard extends StatelessWidget {
           );
         }
 
-        if (!isAdminRoute && auth.isAdmin && currentRoute == '/dashboard') {
+        if (isAdminRoute && !auth.isAdmin) {
+          // Parent trying to access admin route - redirect to parent
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushReplacementNamed(context, '/parent');
+          });
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+          );
+        }
+
+        if (isParentRoute && auth.isAdmin) {
           // Admin trying to access parent dashboard - redirect to admin
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushReplacementNamed(context, '/admin-dashboard');
+            Navigator.pushReplacementNamed(context, '/dashboard');
           });
           return const Scaffold(
             body: Center(

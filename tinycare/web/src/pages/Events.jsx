@@ -7,10 +7,11 @@ export default function Events() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ title: '', description: '', date: '', start_time: '', end_time: '', location: '', type: 'activity', status: 'scheduled' });
+  const [error, setError] = useState('');
 
   async function loadEvents() {
     try { const res = await eventsAPI.list(); setEvents(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data jadwal.'); } finally { setLoading(false); }
   }
 
   useEffect(() => { loadEvents(); }, []);
@@ -45,6 +46,13 @@ export default function Events() {
   return (
     <div>
       <PageHeader title="Manajemen Jadwal" subtitle="Kelola jadwal dan event daycare" action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Buat Jadwal</button>} />
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadEvents(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {events.map((event) => {

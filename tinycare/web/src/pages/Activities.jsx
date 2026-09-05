@@ -11,14 +11,15 @@ export default function Activities() {
   const [showChildModal, setShowChildModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', description: '', category: 'bermain' });
   const [childActivityData, setChildActivityData] = useState({ child_id: '', activity_id: '', date: '', time: '', notes: '' });
+  const [error, setError] = useState('');
 
   async function loadActivities() {
     try { const res = await activitiesAPI.list(); setActivities(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data aktivitas.'); } finally { setLoading(false); }
   }
   async function loadChildren() {
     try { const res = await childrenAPI.list({ per_page: 100 }); setChildren(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data anak.'); }
   }
 
   useEffect(() => { loadActivities(); loadChildren(); }, []);
@@ -41,14 +42,20 @@ export default function Activities() {
     }
   };
 
-  const categoryConfig = {
-    edukasi: { label: 'Edukasi', color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
-    bermain: { label: 'Bermain', color: 'var(--color-success)', bg: 'var(--color-success-bg)' },
-    olahraga: { label: 'Olahraga', color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
-    seni: { label: 'Seni', color: '#8b6fc0', bg: '#f3eef9' },
-    makan: { label: 'Makan', color: 'var(--color-accent)', bg: 'var(--color-accent-light)' },
-    istirahat: { label: 'Istirahat', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
-  };
+  const defaultColors = [
+    { color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
+    { color: 'var(--color-success)', bg: 'var(--color-success-bg)' },
+    { color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
+    { color: '#8b6fc0', bg: '#f3eef9' },
+    { color: 'var(--color-accent)', bg: 'var(--color-accent-light)' },
+    { color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
+  ];
+  const categoryConfig = {};
+  const uniqueCategories = [...new Set(activities.map(a => a.category).filter(Boolean))];
+  uniqueCategories.forEach((cat, i) => {
+    const colorSet = defaultColors[i % defaultColors.length];
+    categoryConfig[cat] = { label: cat.charAt(0).toUpperCase() + cat.slice(1), ...colorSet };
+  });
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}><div className="tc-spinner"></div></div>;
 
@@ -68,6 +75,13 @@ export default function Activities() {
         <button onClick={() => setActiveTab('master')} className={activeTab === 'master' ? 'tc-btn tc-btn-primary' : 'tc-btn tc-btn-secondary'} style={{ padding: '7px 14px', fontSize: '13px' }}>Master Aktivitas</button>
         <button onClick={() => setActiveTab('child')} className={activeTab === 'child' ? 'tc-btn tc-btn-primary' : 'tc-btn tc-btn-secondary'} style={{ padding: '7px 14px', fontSize: '13px' }}>Aktivitas Anak</button>
       </div>
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadActivities(); loadChildren(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       {activeTab === 'master' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>

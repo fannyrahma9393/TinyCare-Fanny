@@ -4,6 +4,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Firebase Google Services plugin — applied only when google-services.json is
+// present (downloaded from Firebase Console). Without it, firebase messaging
+// simply disables at runtime and the build still succeeds.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.tinycare.tinycare_mobile"
     compileSdk = flutter.compileSdkVersion

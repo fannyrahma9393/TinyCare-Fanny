@@ -10,6 +10,7 @@ export default function Reports() {
   const [activeTab, setActiveTab] = useState('weekly');
   const [selectedChild, setSelectedChild] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState('');
 
   async function loadReports() {
     try {
@@ -20,7 +21,7 @@ export default function Reports() {
       setWeeklyReports(weeklyRes.data.data.data || []);
       setMonthlyReports(monthlyRes.data.data.data || []);
     } catch (error) {
-      console.error('Error loading reports:', error);
+      setError(error.response?.data?.message || 'Gagal memuat data laporan.');
     } finally {
       setLoading(false);
     }
@@ -31,7 +32,7 @@ export default function Reports() {
       const res = await childrenAPI.list({ per_page: 100 });
       setChildren(res.data.data.data || []);
     } catch (error) {
-      console.error('Error loading children:', error);
+      setError(error.response?.data?.message || 'Gagal memuat data anak.');
     }
   }
 
@@ -52,7 +53,7 @@ export default function Reports() {
       await reportsAPI.generateWeekly(selectedChild, { week_start: weekStart });
       loadReports();
     } catch (error) {
-      console.error('Error generating weekly report:', error);
+      setError(error.response?.data?.message || 'Gagal membuat laporan mingguan.');
     } finally {
       setGenerating(false);
     }
@@ -69,7 +70,7 @@ export default function Reports() {
       });
       loadReports();
     } catch (error) {
-      console.error('Error generating monthly report:', error);
+      setError(error.response?.data?.message || 'Gagal membuat laporan bulanan.');
     } finally {
       setGenerating(false);
     }
@@ -103,6 +104,13 @@ export default function Reports() {
           Pantau perkembangan anak melalui laporan mingguan dan bulanan.
         </p>
       </div>
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadReports(); loadChildren(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       {/* Controls */}
       <div style={{

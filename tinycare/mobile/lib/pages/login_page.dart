@@ -15,15 +15,12 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _adminAccessCodeController = TextEditingController();
   bool _obscurePassword = true;
-  bool _obscureAdminCode = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _adminAccessCodeController.dispose();
     super.dispose();
   }
 
@@ -34,15 +31,14 @@ class _LoginPageState extends State<LoginPage> {
     final success = await auth.login(
       _emailController.text.trim(),
       _passwordController.text,
-      adminAccessCode: _adminAccessCodeController.text.trim(),
     );
 
     if (success && mounted) {
       final role = auth.userRole;
       if (role == 'admin' || role == 'admin_master') {
-        Navigator.pushReplacementNamed(context, '/admin-dashboard');
-      } else {
         Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        Navigator.pushReplacementNamed(context, '/parent');
       }
     }
   }
@@ -164,7 +160,8 @@ class _LoginPageState extends State<LoginPage> {
                               if (value == null || value.isEmpty) {
                                 return 'Email tidak boleh kosong';
                               }
-                              if (!value.contains('@')) {
+                              final emailRegex = RegExp(r'^[\w-\.]+@[\w-]+\.[a-zA-Z]{2,}$');
+                              if (!emailRegex.hasMatch(value)) {
                                 return 'Email tidak valid';
                               }
                               return null;
@@ -176,7 +173,8 @@ class _LoginPageState extends State<LoginPage> {
                           TextFormField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
-                            textInputAction: TextInputAction.next,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted: (_) => _handleLogin(),
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               labelText: 'Password',
@@ -208,53 +206,6 @@ class _LoginPageState extends State<LoginPage> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 16),
-
-                          // Admin Access Code (always visible, optional)
-                          TextFormField(
-                            controller: _adminAccessCodeController,
-                            obscureText: _obscureAdminCode,
-                            textInputAction: TextInputAction.done,
-                            onFieldSubmitted: (_) => _handleLogin(),
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              labelText: 'Kode Akses Admin',
-                              hintText: 'Kosongkan jika tidak diperlukan',
-                              prefixIcon: const Icon(Icons.vpn_key_outlined, color: Colors.black),
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelStyle: const TextStyle(color: Colors.black),
-                              hintStyle: const TextStyle(color: Colors.black54),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureAdminCode
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: Colors.black,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscureAdminCode = !_obscureAdminCode;
-                                  });
-                                },
-                                tooltip: _obscureAdminCode ? 'Kode akses tersembunyi' : 'Kode akses terlihat',
-                              ),
-                            ),
-                            // No validator — field is optional
-                          ),
-                          const SizedBox(height: 6),
-                          // Helper text
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4),
-                            child: Text(
-                              'Hanya diperlukan untuk akun admin. Orang tua dapat mengosongkan field ini.',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: AppColors.textMuted,
-                              ),
-                            ),
-                          ),
-
                           const SizedBox(height: 24),
 
                           // Error message
@@ -324,6 +275,22 @@ class _LoginPageState extends State<LoginPage> {
                           ),
 
                           // Registration link
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.center,
+                            child: TextButton(
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, '/forgot-password'),
+                              child: const Text(
+                                'Lupa password?',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

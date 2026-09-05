@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Child;
 use App\Models\DailyStory;
+use App\Services\FcmNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -77,9 +78,34 @@ class DailyStoryController extends Controller
         $story = DailyStory::create($validated);
         $story->load(['child', 'creator', 'media']);
 
+        // Notify parent(s) of this child (DB + FCM push). FCM failure must NOT
+        // abort the story save.
+        $notify = app(FcmNotificationService::class)->notifyChildParents(
+            $child,
+            [
+                'type' => 'daily_story',
+                'title' => 'Daily Story '.($child->name ?? 'Anak'),
+                'message' => $validated['summary']
+                    ?: 'Daily Story untuk '.($child->name ?? 'anak Anda').' telah dibuat.',
+                'link' => '/parent/children/'.$child->id.'/daily-stories',
+                'data' => [
+                    'type' => 'daily_story',
+                    'child_id' => $child->id,
+                ],
+            ],
+            'Daily Story',
+            'Daily Story baru untuk '.($child->name ?? 'anak Anda').'.',
+            '/parent/children/'.$child->id.'/daily-stories',
+            [
+                'type' => 'daily_story',
+                'child_id' => (string) $child->id,
+            ]
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Daily Story berhasil dibuat.',
+            'notify' => $notify,
             'data' => $story,
         ], 201);
     }

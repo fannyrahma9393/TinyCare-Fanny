@@ -9,15 +9,16 @@ export default function Attendance() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ child_id: '', status: 'hadir', check_in_time: '', check_out_time: '', notes: '' });
+  const [error, setError] = useState('');
 
   async function loadAttendance() {
     setLoading(true);
     try { const res = await attendanceAPI.list({ date: selectedDate }); setAttendance(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data kehadiran.'); } finally { setLoading(false); }
   }
   async function loadChildren() {
     try { const res = await childrenAPI.list({ per_page: 100 }); setChildren(res.data.data.data || []); }
-    catch (error) { console.error('Error:', error); }
+    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data anak.'); }
   }
 
   useEffect(() => { loadAttendance(); loadChildren(); }, [selectedDate]);
@@ -60,6 +61,13 @@ export default function Attendance() {
           </div>
         ))}
       </div>
+
+      {error && (
+        <div className="tc-error-state" style={{ marginBottom: '16px' }}>
+          <p className="tc-empty-state-title">{error}</p>
+          <button onClick={() => { setError(''); loadAttendance(); loadChildren(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        </div>
+      )}
 
       <div className="tc-card" style={{ overflow: 'hidden' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--color-border-light)' }}>

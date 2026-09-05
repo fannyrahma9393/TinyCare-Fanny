@@ -4,10 +4,23 @@ import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
 
 /// Bottom navigation shell for the app.
-/// Shows different nav items based on user role.
+///
+/// IMPORTANT (parity with web):
+/// - This scaffold is used only as a convenience wrapper in a few parent-facing
+///   tabs. The real app navigation is route-based (main.dart routes).
+/// - Do not keep this as the primary navigation model if it duplicates or
+///   conflicts with the route pages. Prefer navigating to the real pages.
+///
+/// Current behaviour:
+/// - Parent: Beranda / Anak / Tagihan / Profil
+/// - Admin:  Dashboard / Anak / Invoice / Profil
+///
+/// Keep this minimal. If a section should show a real page (e.g. parent
+/// dashboard, children list, invoices, profile), that page should be reached
+/// via routes, not via IndexedStack placeholders.
 class AppScaffold extends StatefulWidget {
   final int initialIndex;
-  
+
   const AppScaffold({super.key, this.initialIndex = 0});
 
   @override
@@ -28,6 +41,8 @@ class _AppScaffoldState extends State<AppScaffold> {
     final auth = context.watch<AuthProvider>();
     final isAdmin = auth.isAdmin;
 
+    // NOTE: placeholders are kept intentionally minimal.
+    // If a tab should show a full page, navigate to the route instead.
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -71,17 +86,17 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   List<Widget> get _parentPages => const [
-    _PlaceholderPage(icon: Icons.home, label: 'Beranda'),  // Dashboard handled by parent
-    _PlaceholderPage(icon: Icons.child_care, label: 'Anak'),
-    _PlaceholderPage(icon: Icons.receipt_long, label: 'Tagihan'),
-    _PlaceholderPage(icon: Icons.person, label: 'Profil'),
+    _NavigatePage(route: '/dashboard', label: 'Beranda'),
+    _NavigatePage(route: '/children', label: 'Anak'),
+    _NavigatePage(route: '/invoices', label: 'Tagihan'),
+    _NavigatePage(route: '/profile', label: 'Profil'),
   ];
 
   List<Widget> get _adminPages => const [
-    _PlaceholderPage(icon: Icons.dashboard, label: 'Dashboard'),
-    _PlaceholderPage(icon: Icons.child_care, label: 'Anak'),
-    _PlaceholderPage(icon: Icons.receipt_long, label: 'Invoice'),
-    _PlaceholderPage(icon: Icons.person, label: 'Profil'),
+    _NavigatePage(route: '/admin-dashboard', label: 'Dashboard'),
+    _NavigatePage(route: '/children', label: 'Anak'),
+    _NavigatePage(route: '/invoices', label: 'Invoice'),
+    _NavigatePage(route: '/profile', label: 'Profil'),
   ];
 
   List<BottomNavigationBarItem> get _parentNavItems => const [
@@ -131,23 +146,40 @@ class _AppScaffoldState extends State<AppScaffold> {
   ];
 }
 
-/// Placeholder page - actual pages will be integrated via routes
-class _PlaceholderPage extends StatelessWidget {
-  final IconData icon;
+/// Minimal page that navigates to the real route.
+class _NavigatePage extends StatelessWidget {
+  final String route;
   final String label;
-  
-  const _PlaceholderPage({required this.icon, required this.label});
+
+  const _NavigatePage({required this.route, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 48, color: ThemeHelper.textMuted(context)),
-          const SizedBox(height: 12),
-          Text(label, style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
-        ],
+    return Scaffold(
+      appBar: AppBar(title: Text(label)),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.open_in_browser,
+              size: 48,
+              color: ThemeHelper.textMuted(context),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Buka $label',
+              style: AppTypography.h3.copyWith(color: ThemeHelper.text(context)),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, route);
+              },
+              child: const Text('Buka Halaman'),
+            ),
+          ],
+        ),
       ),
     );
   }

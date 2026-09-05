@@ -50,6 +50,8 @@ export const userManagementAPI = {
   pending: (params) => api.get('/admin/users/pending', { params }),
   approve: (id) => api.post(`/admin/users/${id}/approve`),
   reject: (id, data) => api.post(`/admin/users/${id}/reject`, data),
+  activate: (id) => api.post(`/admin/users/${id}/activate`),
+  deactivate: (id) => api.post(`/admin/users/${id}/deactivate`),
 };
 
 // Admin Management API (Admin Master)
@@ -67,14 +69,19 @@ export const adminManagementAPI = {
 export const childrenAPI = {
   list: (params) => api.get('/admin/children', { params }),
   get: (id) => api.get(`/admin/children/${id}`),
-  create: (data) => api.post('/admin/children', data),
-  update: (id, data) => api.put(`/admin/children/${id}`, data),
+  create: (data) => api.post('/admin/children', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
+  }),
+  update: (id, data) => api.put(`/admin/children/${id}`, data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
+  }),
   delete: (id) => api.delete(`/admin/children/${id}`),
 };
 
 // Parents API
 export const parentsAPI = {
   list: (params) => api.get('/admin/parents', { params }),
+  get: (id) => api.get(`/admin/parents/${id}`),
   create: (data) => api.post('/admin/parents', data),
   update: (id, data) => api.put(`/admin/parents/${id}`, data),
   delete: (id) => api.delete(`/admin/parents/${id}`),
@@ -166,6 +173,15 @@ export const announcementsAPI = {
   delete: (id) => api.delete(`/admin/announcements/${id}`),
 };
 
+// Child Information API
+export const childInformationAPI = {
+  list: (params) => api.get('/admin/child-information', { params }),
+  get: (id) => api.get(`/admin/child-information/${id}`),
+  create: (data) => api.post('/admin/child-information', data),
+  update: (id, data) => api.put(`/admin/child-information/${id}`, data),
+  delete: (id) => api.delete(`/admin/child-information/${id}`),
+};
+
 // Events API
 export const eventsAPI = {
   list: (params) => api.get('/admin/events', { params }),
@@ -194,6 +210,11 @@ export const reportsAPI = {
   generateMonthly: (childId, data) => api.post(`/admin/children/${childId}/reports/monthly`, data),
 };
 
+// Public Stats API (Landing page)
+export const publicStatsAPI = {
+  get: () => api.get('/public/stats'),
+};
+
 // Notifications API
 export const notificationsAPI = {
   list: (params) => api.get('/notifications', { params }),
@@ -212,6 +233,7 @@ export const parentAPI = {
   childAttendance: (childId) => api.get(`/parent/children/${childId}/attendance`),
   childActivities: (childId) => api.get(`/parent/children/${childId}/activities`),
   childDailyStories: (childId) => api.get(`/parent/children/${childId}/daily-stories`),
+  childInformation: (childId) => api.get('/parent/child-information', { params: childId ? { child_id: childId } : {} }),
   childMedia: (childId) => api.get(`/parent/children/${childId}/media`),
   childPackage: (childId) => api.get(`/parent/children/${childId}/package`),
   childPackageHistory: (childId) => api.get(`/parent/children/${childId}/package/history`),

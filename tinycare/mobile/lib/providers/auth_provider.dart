@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../services/api_service.dart';
+import '../services/fcm_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -59,17 +60,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Login with email and password. Supports both parent and admin roles.
-  Future<bool> login(String email, String password, {String? adminAccessCode}) async {
+  Future<bool> login(String email, String password) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final response = await _api.login(
-        email,
-        password,
-        adminAccessCode: adminAccessCode,
-      );
+      final response = await _api.login(email, password);
       
       if (response['success'] == true) {
         final token = response['data']['token'];
@@ -95,6 +92,12 @@ class AuthProvider extends ChangeNotifier {
         _error = null;
         _isLoading = false;
         notifyListeners();
+
+        // Push notifications target parents only. Register this Android device
+        // for FCM. Best-effort: never blocks login or throws.
+        if (isParent) {
+          _setupFcm();
+        }
         return true;
       } else {
         _error = response['message'] ?? 'Login gagal. Silakan coba lagi.';
@@ -115,15 +118,9 @@ class AuthProvider extends ChangeNotifier {
         
         if (statusCode == 422) {
           final errors = data['errors'];
-          if (errors != null && errors is Map) {
-            // Handle admin_access_code validation errors specifically
-            if (errors.containsKey('admin_access_code')) {
-              final adminErrors = errors['admin_access_code'];
-              _error = adminErrors is List ? adminErrors.first.toString() : adminErrors.toString();
-            } else {
-              final firstError = errors.values.first;
-              _error = firstError is List ? firstError.first.toString() : firstError.toString();
-            }
+          if (errors != null && errors is Map && errors.isNotEmpty) {
+            final firstError = errors.values.first;
+            _error = firstError is List ? firstError.first.toString() : firstError.toString();
           } else {
             _error = data['message'] ?? 'Data tidak valid.';
           }
@@ -152,6 +149,7 @@ class AuthProvider extends ChangeNotifier {
 
   /// Logout and clear all session data
   Future<void> logout() async {
+    _teardownFcm();
     try {
       await _api.logout();
     } catch (e) {
@@ -161,6 +159,22 @@ class AuthProvider extends ChangeNotifier {
     _user = null;
     _error = null;
     notifyListeners();
+  }
+
+  /// Register this device for push (parents only). Best-effort + async.
+  void _setupFcm() {
+    FcmService.instance.setupForLoggedInUser(platform: 'android').then((result) {
+      debugPrint('[AuthProvider] FCM setup result: ${result.reason} token=${result.token ?? '-'}');
+    }).catchError((Object e, StackTrace s) {
+      debugPrint('[AuthProvider] FCM setup error (non-critical): $e');
+    });
+  }
+
+  /// Unregister this device from push and tear down listeners (best-effort).
+  void _teardownFcm() {
+    FcmService.instance.teardownForLoggedOutUser().catchError((Object e) {
+      debugPrint('[AuthProvider] FCM teardown error (non-critical): $e');
+    });
   }
 
   void clearError() {

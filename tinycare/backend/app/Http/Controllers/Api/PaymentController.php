@@ -95,9 +95,15 @@ class PaymentController extends Controller
                 'data' => $status,
             ]);
         } catch (\Exception $e) {
+            Log::error('Payment status check failed', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memeriksa status pembayaran.',
+                'message' => 'Gagal memeriksa status pembayaran. Silakan coba lagi.',
             ], 500);
         }
     }

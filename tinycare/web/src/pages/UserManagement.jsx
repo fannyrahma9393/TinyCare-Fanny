@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { userManagementAPI } from '../services/api';
 
 export default function UserManagement() {
@@ -6,7 +7,8 @@ export default function UserManagement() {
   const [summary, setSummary] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [searchParams] = useSearchParams();
+  const [filter, setFilter] = useState(searchParams.get('filter') || 'all');
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
   const [rejectModal, setRejectModal] = useState(null);
@@ -14,6 +16,10 @@ export default function UserManagement() {
   const [toast, setToast] = useState(null);
 
   useEffect(() => { loadUsers(); }, [filter, search]);
+
+  useEffect(() => {
+    setFilter(searchParams.get('filter') || 'all');
+  }, [searchParams]);
 
   async function loadUsers() {
     setLoading(true);
@@ -58,10 +64,34 @@ export default function UserManagement() {
     }
   }
 
+  async function handleToggleStatus(user) {
+    const target = user.status === 'active' ? 'inactive' : 'active';
+    if (!window.confirm(target === 'inactive'
+      ? `Nonaktifkan akun ${user.name}? Pengguna tidak dapat login selama nonaktif.`
+      : `Aktifkan akun ${user.name}?`)) return;
+
+    setActionLoading(user.id);
+    try {
+      if (target === 'active') {
+        await userManagementAPI.activate(user.id);
+      } else {
+        await userManagementAPI.deactivate(user.id);
+      }
+      setToast({ type: 'success', message: target === 'active' ? 'Akun berhasil diaktifkan.' : 'Akun berhasil dinonaktifkan.' });
+      loadUsers();
+    } catch (err) {
+      setToast({ type: 'error', message: err.response?.data?.message || 'Gagal mengubah status akun.' });
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
   const filters = [
     { key: 'all', label: 'Semua' },
     { key: 'parent', label: 'Orang Tua' },
     { key: 'pending', label: 'Menunggu' },
+    { key: 'active', label: 'Aktif' },
+    { key: 'inactive', label: 'Nonaktif' },
     { key: 'admin', label: 'Admin' },
   ];
 
@@ -168,16 +198,28 @@ export default function UserManagement() {
                       <span className="tc-badge" style={{ background: sc.bg, color: sc.color }}>{statusLabels[u.status] || u.status}</span>
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                      {isPending && (
-                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                          <button onClick={() => handleApprove(u.id)} disabled={actionLoading === u.id} className="tc-btn tc-btn-primary tc-btn-sm">
-                            {actionLoading === u.id ? '...' : 'Setujui'}
+                      <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        {isPending && (
+                          <>
+                            <button onClick={() => handleApprove(u.id)} disabled={actionLoading === u.id} className="tc-btn tc-btn-primary tc-btn-sm">
+                              {actionLoading === u.id ? '...' : 'Setujui'}
+                            </button>
+                            <button onClick={() => setRejectModal(u)} disabled={actionLoading === u.id} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ color: 'var(--color-error)' }}>
+                              Tolak
+                            </button>
+                          </>
+                        )}
+                        {u.status === 'active' && (
+                          <button onClick={() => handleToggleStatus(u)} disabled={actionLoading === u.id} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ color: 'var(--color-warning)' }}>
+                            Nonaktifkan
                           </button>
-                          <button onClick={() => setRejectModal(u)} disabled={actionLoading === u.id} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ color: 'var(--color-error)' }}>
-                            Tolak
+                        )}
+                        {u.status === 'inactive' && (
+                          <button onClick={() => handleToggleStatus(u)} disabled={actionLoading === u.id} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ color: 'var(--color-success)' }}>
+                            Aktifkan
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

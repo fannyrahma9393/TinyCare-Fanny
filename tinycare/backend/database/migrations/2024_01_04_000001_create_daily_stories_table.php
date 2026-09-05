@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('sleep_notes')->nullable(); // catatan tidur
             $table->text('admin_notes')->nullable(); // catatan admin
             $table->decimal('meal_rating', 3, 1)->nullable(); // rating makan 1-5
-            $table->decimal('sleep_hours', 4, 1)->Nullable(); // jam tidur
+            $table->decimal('sleep_hours', 4, 1)->nullable(); // jam tidur
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 

@@ -5,6 +5,18 @@ allprojects {
     }
 }
 
+// Firebase Google Services Gradle plugin (for generating Firebase config from
+// google-services.json). Applied conditionally so the build still works before
+// the file is provided from the Firebase Console. Once you drop google-services.json
+// into android/app/, this plugin activates automatically — no code change needed.
+buildscript {
+    dependencies {
+        if (file("app/google-services.json").exists()) {
+            classpath("com.google.gms:google-services:4.4.2")
+        }
+    }
+}
+
 val newBuildDir: Directory =
     rootProject.layout.buildDirectory
         .dir("../../build")

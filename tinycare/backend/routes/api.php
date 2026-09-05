@@ -6,11 +6,13 @@ use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChildController;
+use App\Http\Controllers\Api\ChildInformationController;
 use App\Http\Controllers\Api\DailyStoryController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DevelopmentController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\FcmTokenController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\NotificationController;
@@ -34,13 +36,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Public routes
-Route::prefix('v1/auth')->group(function () {
+// Public routes with rate limiting
+Route::prefix('v1/auth')->middleware('throttle:10,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register-parent', [RegistrationController::class, 'registerParent']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
+
+// Public stats (no auth required)
+Route::get('/v1/public/stats', [DashboardController::class, 'publicStats'])->middleware('throttle:30,1');
 
 // Payment webhook (no auth required)
 Route::post('/v1/payments/webhook', [PaymentController::class, 'webhook']);
@@ -59,6 +64,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 
+    // FCM tokens (shared between admin & parent, authenticated only)
+    Route::post('/fcm-tokens', [FcmTokenController::class, 'store']);
+    Route::delete('/fcm-tokens', [FcmTokenController::class, 'destroy']);
+
     // Admin routes (admin + admin_master)
     Route::middleware('role:admin,admin_master')->prefix('admin')->group(function () {
         // User Management
@@ -66,9 +75,12 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         Route::get('/users/pending', [UserManagementController::class, 'pending']);
         Route::post('/users/{user}/approve', [UserManagementController::class, 'approve']);
         Route::post('/users/{user}/reject', [UserManagementController::class, 'reject']);
+        Route::post('/users/{user}/activate', [UserManagementController::class, 'activate']);
+        Route::post('/users/{user}/deactivate', [UserManagementController::class, 'deactivate']);
 
         // Parents management
         Route::apiResource('parents', ParentController::class)->except(['show']);
+        Route::get('/parents/{parent}', [ParentController::class, 'show']);
 
         // Admins management (admin_master only for create/delete)
         Route::apiResource('admins', AdminController::class)->except(['show']);
@@ -77,6 +89,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // Children management
         Route::apiResource('children', ChildController::class)->except(['show']);
+        Route::get('/children/{child}', [ChildController::class, 'show']);
 
         // Packages management
         Route::apiResource('packages', PackageController::class);
@@ -125,6 +138,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // Announcements management
         Route::apiResource('announcements', AnnouncementController::class)->except(['show']);
+
+        // Child Information management
+        Route::apiResource('child-information', ChildInformationController::class);
 
         // Events management
         Route::apiResource('events', EventController::class)->except(['show']);
@@ -190,6 +206,10 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // Announcements
         Route::get('/announcements', [AnnouncementController::class, 'parentIndex']);
+
+        // Child Information
+        Route::get('/child-information', [ChildInformationController::class, 'parentIndex']);
+        Route::get('/child-information/{childInformation}', [ChildInformationController::class, 'parentShow']);
 
         // Events (Calendar)
         Route::get('/events', [EventController::class, 'parentIndex']);

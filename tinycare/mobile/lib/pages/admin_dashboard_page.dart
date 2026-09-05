@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
@@ -160,13 +159,14 @@ class _DashboardHomeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final stats = dashboardData?['statistics'] as Map<String, dynamic>? ?? {};
     // Safely parse all stats — backend may return String, int, double, or null
+    // Mirrors the web admin Dashboard stat cards.
     final totalChildren = CurrencyHelper.parseToInt(stats['total_children']);
     final totalParents = CurrencyHelper.parseToInt(stats['total_parents']);
+    final pendingParents = CurrencyHelper.parseToInt(stats['pending_parents']);
+    final totalChildInformation = CurrencyHelper.parseToInt(stats['total_child_information']);
     final pendingInvoices = CurrencyHelper.parseToInt(stats['pending_invoices']);
     final paidInvoices = CurrencyHelper.parseToInt(stats['paid_invoices']);
     final totalRevenue = CurrencyHelper.parseToDouble(stats['total_revenue']);
-    final todayAttendance = CurrencyHelper.parseToInt(stats['today_attendance']);
-    final todayPresent = CurrencyHelper.parseToInt(stats['today_present']);
 
     return RefreshIndicator(
       onRefresh: onRefresh,
@@ -218,17 +218,17 @@ class _DashboardHomeTab extends StatelessWidget {
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildQuickStat(context, 'Invoice Pending', '$pendingInvoices', AppColors.warning, Icons.receipt_long, '/invoices'),
+                _buildQuickStat(context, 'Pengguna Menunggu', '$pendingParents', AppColors.warning, Icons.pending_actions, '/users'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Lunas', '$paidInvoices', AppColors.success, Icons.check_circle, '/payments'),
+                _buildQuickStat(context, 'Informasi Anak', '$totalChildInformation', AppColors.info, Icons.fact_check_outlined, '/information'),
               ],
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildQuickStat(context, 'Hadir Hari Ini', '$todayPresent', AppColors.info, Icons.check_circle_outline, '/attendance'),
+                _buildQuickStat(context, 'Invoice Pending', '$pendingInvoices', AppColors.warning, Icons.receipt_long, '/invoices'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Total Absensi', '$todayAttendance', ThemeHelper.textSecondary(context), Icons.calendar_today, '/attendance'),
+                _buildQuickStat(context, 'Lunas', '$paidInvoices', AppColors.success, Icons.check_circle, '/payments'),
               ],
             ),
             if (totalRevenue > 0) ...[
@@ -319,7 +319,6 @@ class _DashboardHomeTab extends StatelessWidget {
       _QuickAction('Pengguna', Icons.people_outline, '/users'),
       _QuickAction('Anak', Icons.child_care_outlined, '/children'),
       _QuickAction('Invoice', Icons.receipt_long_outlined, '/invoices'),
-      _QuickAction('Laporan', Icons.assessment_outlined, '/reports'),
     ];
     final surfaceColor = ThemeHelper.surface(context);
     final borderColor = ThemeHelper.border(context);
@@ -377,13 +376,13 @@ class _DataManagementTab extends StatelessWidget {
             {'label': 'Pengguna', 'icon': Icons.people_outline, 'route': '/users', 'subtitle': 'Kelola semua pengguna'},
             {'label': 'Orang Tua', 'icon': Icons.family_restroom_outlined, 'route': '/parents', 'subtitle': 'Data orang tua'},
             {'label': 'Anak', 'icon': Icons.child_care_outlined, 'route': '/children', 'subtitle': 'Data anak terdaftar'},
+            {'label': 'Informasi Anak', 'icon': Icons.fact_check_outlined, 'route': '/information', 'subtitle': 'Catatan/informasi khusus'},
           ]),
           const SizedBox(height: 24),
 
           AppWidgets.sectionHeader('Operasional', context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Absensi', 'icon': Icons.calendar_today_outlined, 'route': '/attendance', 'subtitle': 'Kelola kehadiran'},
             {'label': 'Hari Ini', 'icon': Icons.auto_stories_outlined, 'route': '/daily-stories', 'subtitle': 'Cerita harian'},
             {'label': 'Perkembangan', 'icon': Icons.trending_up_outlined, 'route': '/development', 'subtitle': 'Data perkembangan'},
             {'label': 'Aktivitas', 'icon': Icons.emoji_events_outlined, 'route': '/activities', 'subtitle': 'Jadwal aktivitas'},
@@ -394,7 +393,6 @@ class _DataManagementTab extends StatelessWidget {
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
             {'label': 'Pengumuman', 'icon': Icons.campaign_outlined, 'route': '/announcements', 'subtitle': 'Kelola pengumuman'},
-            {'label': 'Acara', 'icon': Icons.event_outlined, 'route': '/events', 'subtitle': 'Jadwal kegiatan'},
             {'label': 'Feedback', 'icon': Icons.rate_review_outlined, 'route': '/feedback', 'subtitle': 'Respons feedback'},
           ]),
         ],
@@ -427,13 +425,6 @@ class _FinanceTab extends StatelessWidget {
           _buildMenuGroup(context, [
             {'label': 'Paket', 'icon': Icons.inventory_2_outlined, 'route': '/packages', 'subtitle': 'Paket langganan'},
             {'label': 'Voucher', 'icon': Icons.card_giftcard_outlined, 'route': '/vouchers', 'subtitle': 'Kode diskon'},
-          ]),
-          const SizedBox(height: 24),
-
-          AppWidgets.sectionHeader('Laporan', context: context),
-          const SizedBox(height: 12),
-          _buildMenuGroup(context, [
-            {'label': 'Laporan', 'icon': Icons.assessment_outlined, 'route': '/reports', 'subtitle': 'Laporan mingguan & bulanan'},
           ]),
         ],
       ),
@@ -471,7 +462,7 @@ class _MenuTab extends StatelessWidget {
 
           AppWidgets.sectionHeader('Tampilan', context: context),
           const SizedBox(height: 12),
-          _ThemeSwitcher(),
+          const ThemeSwitcher(),
           const SizedBox(height: 32),
 
           Center(
@@ -496,95 +487,6 @@ class _MenuTab extends StatelessWidget {
                   builder: (context) => Text('v1.0.0', style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ==================== THEME SWITCHER ====================
-class _ThemeSwitcher extends StatelessWidget {
-  const _ThemeSwitcher();
-
-  @override
-  Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    final surfaceColor = ThemeHelper.surface(context);
-    final borderColor = ThemeHelper.border(context);
-    final textColor = ThemeHelper.text(context);
-    final mutedColor = ThemeHelper.textMuted(context);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: surfaceColor,
-        borderRadius: AppRadius.lgAll,
-        border: Border.all(color: borderColor),
-        boxShadow: AppColors.cardShadow,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: AppRadius.smAll,
-            ),
-            child: Icon(
-              isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-              color: AppColors.primary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Mode Tampilan', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor)),
-                const SizedBox(height: 2),
-                Text(
-                  isDark ? 'Mode Gelap' : 'Mode Terang',
-                  style: TextStyle(fontSize: 12, color: mutedColor),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              themeProvider.setThemeMode(
-                isDark ? ThemeModeOption.light : ThemeModeOption.dark,
-              );
-            },
-            child: Container(
-              width: 52, height: 28,
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.primary : ThemeHelper.border(context),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 200),
-                alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  width: 22, height: 22,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      isDark ? Icons.dark_mode : Icons.light_mode,
-                      size: 12,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         ],

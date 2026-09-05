@@ -34,6 +34,24 @@ class ApiService {
     return 'http://localhost:8000/api';
   }
 
+  /// Base origin (scheme+host+port) without the /api path, e.g.
+  /// http://10.0.2.2:8000 — used to resolve relative storage/media URLs.
+  static String get baseOrigin {
+    final base = _baseUrl;
+    if (base.endsWith('/api')) return base.substring(0, base.length - 4);
+    return base;
+  }
+
+  /// Resolve a possibly-relative storage path (e.g. "child-photos/x.jpg",
+  /// "/storage/child-photos/x.jpg") into an absolute URL. Returns the input
+  /// unchanged when it is already absolute.
+  static String resolveMediaUrl(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    final clean = path.startsWith('/') ? path : '/$path';
+    if (clean.startsWith('/storage/')) return '$baseOrigin$clean';
+    return '$baseOrigin/storage$clean';
+  }
+
   late Dio _dio;
   String? _token;
   bool _isAdmin = false;
@@ -77,6 +95,29 @@ class ApiService {
         return handler.next(error);
       },
     ));
+
+  }
+
+  /// Retry a dio request up to [maxRetries] times for network errors
+  Future<Response<T>> _retryRequest<T>(Future<Response<T>> Function() request, {int maxRetries = 2}) async {
+    int attempts = 0;
+    while (true) {
+      try {
+        return await request();
+      } on DioException catch (e) {
+        attempts++;
+        final isNetworkError = e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.receiveTimeout;
+        if (isNetworkError && attempts <= maxRetries) {
+          debugPrint('[ApiService] Network error, retrying ($attempts/$maxRetries)...');
+          await Future.delayed(Duration(seconds: attempts));
+          continue;
+        }
+        rethrow;
+      }
+    }
   }
 
   // ==================== AUTH ====================
@@ -100,21 +141,57 @@ class ApiService {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> login(String email, String password, {String? adminAccessCode}) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     final data = <String, dynamic>{
       'email': email,
       'password': password,
     };
-    if (adminAccessCode != null && adminAccessCode.isNotEmpty) {
-      data['admin_access_code'] = adminAccessCode;
-    }
-    final response = await _dio.post('/v1/auth/login', data: data);
+    final response = await _retryRequest(() => _dio.post('/v1/auth/login', data: data));
+    return response.data;
+  }
+
+  /// Request a password reset link (public). The backend delivers the reset
+  /// token by email.
+  Future<Map<String, dynamic>> forgotPassword(String email) async {
+    final response = await _dio.post('/v1/auth/forgot-password', data: {
+      'email': email,
+    });
+    return response.data;
+  }
+
+  /// Reset password with the token from the reset email (public).
+  Future<Map<String, dynamic>> resetPassword({
+    required String token,
+    required String email,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final response = await _dio.post('/v1/auth/reset-password', data: {
+      'token': token,
+      'email': email,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+    return response.data;
+  }
+
+  /// Change password for the logged-in user.
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    final response = await _dio.put('/v1/auth/change-password', data: {
+      'current_password': currentPassword,
+      'password': newPassword,
+      'password_confirmation': newPasswordConfirmation,
+    });
     return response.data;
   }
 
   /// Get current user profile from /me endpoint
   Future<Map<String, dynamic>> getMe() async {
-    final response = await _dio.get('/v1/auth/me');
+    final response = await _retryRequest(() => _dio.get('/v1/auth/me'));
     return response.data;
   }
 
@@ -159,6 +236,38 @@ class ApiService {
     return null;
   }
 
+  // ==================== FCM TOKENS ====================
+
+  /// Register (upsert) the current user's FCM token on the backend.
+  /// Platform is 'android' by default in this mobile app. Failures are
+  /// non-fatal — push registration must never crash auth or the app.
+  Future<Map<String, dynamic>?> registerFcmToken(
+    String token, {
+    String platform = 'android',
+    String? device,
+  }) async {
+    try {
+      final response = await _retryRequest(() => _dio.post('/v1/fcm-tokens', data: {
+            'token': token,
+            'platform': platform,
+            'device': device ?? '',
+          }));
+      return response.data;
+    } catch (e) {
+      debugPrint('[ApiService] FCM token register error (non-critical): $e');
+      return null;
+    }
+  }
+
+  /// Remove the current user's FCM token on the backend (logout/cleanup).
+  Future<void> unregisterFcmToken(String token) async {
+    try {
+      await _dio.delete('/v1/fcm-tokens', data: {'token': token});
+    } catch (e) {
+      debugPrint('[ApiService] FCM token unregister error (non-critical): $e');
+    }
+  }
+
   // ==================== DASHBOARD ====================
 
   Future<Map<String, dynamic>> getDashboard() async {
@@ -200,31 +309,12 @@ class ApiService {
 
   // ==================== ATTENDANCE ====================
 
-  /// Get attendance list for admin.
-  /// Admin endpoint supports: date, status, search, per_page
-  Future<Map<String, dynamic>> getAttendanceList({String? date, String? status, String? search, int? perPage}) async {
-    final response = await _dio.get('/v1/admin/attendance', queryParameters: {
-      if (date != null) 'date': date,
-      if (status != null) 'status': status,
-      if (search != null) 'search': search,
-      if (perPage != null) 'per_page': perPage,
-    });
-    return response.data['data'] ?? {};
-  }
-
-  /// Get attendance for a parent's child (supports month/year filtering)
+  /// Get attendance for a parent's child (supports month/year filtering).
+  /// Attendance management was removed from the web, so this is parent-only.
   Future<Map<String, dynamic>> getAttendance(int childId, {String? month, String? year}) async {
-    if (_isAdmin) {
-      // Admin endpoint: get all attendance, optionally filtered by date
-      // We fetch with no date filter to get recent records, then the page filters client-side
-      final response = await _dio.get('/v1/admin/attendance', queryParameters: {
-        if (month != null && year != null) 'date': '$year-${month.padLeft(2, '0')}-01',
-      });
-      return response.data['data'] ?? {};
-    }
     final response = await _dio.get('/v1/parent/children/$childId/attendance', queryParameters: {
-      if (month != null) 'month': month,
-      if (year != null) 'year': year,
+      'month': ?month,
+      'year': ?year,
     });
     return response.data['data'] ?? {};
   }
@@ -276,7 +366,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> rejectPayment(int paymentId, {String? reason}) async {
     final response = await _dio.post('/v1/admin/payments/$paymentId/reject', data: {
-      if (reason != null) 'reason': reason,
+      'reason': ?reason,
     });
     return response.data;
   }
@@ -329,21 +419,6 @@ class ApiService {
     return data ?? [];
   }
 
-  // ==================== EVENTS ====================
-
-  Future<List<dynamic>> getEvents() async {
-    final response = await _dio.get(_isAdmin ? '/v1/admin/events' : '/v1/parent/events');
-    final respData = response.data;
-    if (respData is! Map) return [];
-    final data = respData['data'];
-    if (data is Map && data.containsKey('events')) {
-      final events = data['events'];
-      return events is List ? events : [];
-    }
-    if (data is List) return data;
-    return [];
-  }
-
   // ==================== FEEDBACK ====================
 
   Future<List<dynamic>> getFeedback() async {
@@ -369,7 +444,7 @@ class ApiService {
       'subject': subject,
       'message': message,
       'rating': rating,
-      if (childId != null) 'child_id': childId,
+      'child_id': ?childId,
     });
     return response.data;
   }
@@ -378,7 +453,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> getParents({String? filter, String? search}) async {
     final response = await _dio.get('/v1/admin/parents', queryParameters: {
-      if (search != null) 'search': search,
+      'search': ?search,
     });
     return response.data;
   }
@@ -443,9 +518,9 @@ class ApiService {
       'name': name,
       'price': price,
       'duration_days': durationDays,
-      if (description != null) 'description': description,
-      if (facilities != null) 'facilities': facilities,
-      if (quota != null) 'quota': quota,
+      'description': ?description,
+      'facilities': ?facilities,
+      'quota': ?quota,
     });
     return response.data;
   }
@@ -524,8 +599,8 @@ class ApiService {
       'max_usage': maxUsage,
       'start_date': startDate,
       'end_date': endDate,
-      if (description != null) 'description': description,
-      if (minTransaction != null) 'min_transaction': minTransaction,
+      'description': ?description,
+      'min_transaction': ?minTransaction,
     });
     return response.data;
   }
@@ -564,29 +639,29 @@ class ApiService {
 
   Future<Map<String, dynamic>> getWeeklyReports({int? perPage}) async {
     final response = await _dio.get('/v1/admin/reports/weekly', queryParameters: {
-      if (perPage != null) 'per_page': perPage,
+      'per_page': ?perPage,
     });
     return response.data;
   }
 
   Future<Map<String, dynamic>> getMonthlyReports({int? perPage}) async {
     final response = await _dio.get('/v1/admin/reports/monthly', queryParameters: {
-      if (perPage != null) 'per_page': perPage,
+      'per_page': ?perPage,
     });
     return response.data;
   }
 
   Future<Map<String, dynamic>> generateWeeklyReport(int childId, {String? weekStart}) async {
     final response = await _dio.post('/v1/admin/children/$childId/reports/weekly', data: {
-      if (weekStart != null) 'week_start': weekStart,
+      'week_start': ?weekStart,
     });
     return response.data;
   }
 
   Future<Map<String, dynamic>> generateMonthlyReport(int childId, {int? month, int? year}) async {
     final response = await _dio.post('/v1/admin/children/$childId/reports/monthly', data: {
-      if (month != null) 'month': month,
-      if (year != null) 'year': year,
+      'month': ?month,
+      'year': ?year,
     });
     return response.data;
   }
@@ -602,8 +677,8 @@ class ApiService {
 
   Future<Map<String, dynamic>> getUsers({String? filter, String? search}) async {
     final response = await _dio.get('/v1/admin/users', queryParameters: {
-      if (filter != null) 'filter': filter,
-      if (search != null) 'search': search,
+      'filter': ?filter,
+      'search': ?search,
     });
     return response.data;
   }
@@ -620,8 +695,18 @@ class ApiService {
 
   Future<Map<String, dynamic>> rejectUser(int userId, {String? reason}) async {
     final response = await _dio.post('/v1/admin/users/$userId/reject', data: {
-      if (reason != null) 'reason': reason,
+      'reason': ?reason,
     });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> activateUser(int userId) async {
+    final response = await _dio.post('/v1/admin/users/$userId/activate');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deactivateUser(int userId) async {
+    final response = await _dio.post('/v1/admin/users/$userId/deactivate');
     return response.data;
   }
 
@@ -644,9 +729,9 @@ class ApiService {
       'name': name,
       'email': email,
       'password': password,
-      if (phone != null) 'phone': phone,
-      if (position != null) 'position': position,
-      if (adminRole != null) 'admin_role': adminRole,
+      'phone': ?phone,
+      'position': ?position,
+      'admin_role': ?adminRole,
     });
     return response.data;
   }
@@ -704,6 +789,178 @@ class ApiService {
     return data ?? [];
   }
 
+  // ==================== PARENT PACKAGE ====================
+
+  /// Parent: view active package of their child (may be null when none active).
+  Future<Map<String, dynamic>?> getParentChildPackage(int childId) async {
+    final response = await _dio.get('/v1/parent/children/$childId/package');
+    final data = response.data['data'];
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return data.cast<String, dynamic>();
+    return null;
+  }
+
+  /// Parent: view the full package history of their child.
+  Future<List<dynamic>> getParentChildPackageHistory(int childId) async {
+    final response = await _dio.get('/v1/parent/children/$childId/package/history');
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  // ==================== PARENT VOUCHERS ====================
+
+  /// Parent: list currently-usable vouchers.
+  Future<List<dynamic>> getParentVouchers() async {
+    final response = await _dio.get('/v1/parent/vouchers');
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  /// Parent: apply a voucher code for a subtotal amount; returns discount
+  /// info (final_amount etc.) on success.
+  Future<Map<String, dynamic>> applyVoucher(String code, double amount) async {
+    final response = await _dio.post('/v1/parent/vouchers/apply', data: {
+      'code': code,
+      'amount': amount,
+    });
+    return response.data;
+  }
+
+  // ==================== CHILD INFORMATION ====================
+
+  /// Parent: list information for own children (optional child_id filter).
+  Future<List<dynamic>> getChildInformation({int? childId}) async {
+    final response = await _dio.get('/v1/parent/child-information', queryParameters: {
+      'child_id': ?childId,
+    });
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  /// Parent: detail of a single child information (backend enforces ownership).
+  Future<Map<String, dynamic>?> getChildInformationDetail(int id) async {
+    final response = await _dio.get('/v1/parent/child-information/$id');
+    final data = response.data['data'];
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return data.cast<String, dynamic>();
+    return null;
+  }
+
+  /// Admin: list child information (optional child_id/priority filter).
+  Future<List<dynamic>> getAdminChildInformation({int? childId, String? priority}) async {
+    final response = await _dio.get('/v1/admin/child-information', queryParameters: {
+      'child_id': ?childId,
+      'priority': ?priority,
+      'per_page': 100,
+    });
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  /// Admin: create child information (notifies parent(s) on backend).
+  Future<Map<String, dynamic>> createChildInformation({
+    required int childId,
+    int? parentId,
+    required String title,
+    required String content,
+    String priority = 'normal',
+  }) async {
+    final response = await _dio.post('/v1/admin/child-information', data: {
+      'child_id': childId,
+      'parent_id': ?parentId,
+      'title': title,
+      'content': content,
+      'priority': priority,
+    });
+    return response.data;
+  }
+
+  /// Admin: update child information.
+  Future<Map<String, dynamic>> updateChildInformation(int id, {
+    String? title,
+    String? content,
+    String? priority,
+    String? status,
+  }) async {
+    final response = await _dio.put('/v1/admin/child-information/$id', data: {
+      'title': ?title,
+      'content': ?content,
+      'priority': ?priority,
+      'status': ?status,
+    });
+    return response.data;
+  }
+
+  /// Admin: delete child information.
+  Future<Map<String, dynamic>> deleteChildInformation(int id) async {
+    final response = await _dio.delete('/v1/admin/child-information/$id');
+    return response.data;
+  }
+
+  // ==================== AUTHORIZED PICKUPS (PARENT) ====================
+
+  Future<List<dynamic>> getAuthorizedPickups(int childId) async {
+    final response = await _dio.get('/v1/parent/children/$childId/authorized-pickups');
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  Future<Map<String, dynamic>> storeAuthorizedPickup(int childId, {
+    required String name,
+    required String phone,
+    required String relationship,
+    String? idNumber,
+    String? notes,
+  }) async {
+    final response = await _dio.post('/v1/parent/children/$childId/authorized-pickups', data: {
+      'name': name,
+      'phone': phone,
+      'relationship': relationship,
+      'id_number': ?idNumber,
+      'notes': ?notes,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateAuthorizedPickup(int id, {
+    String? name,
+    String? phone,
+    String? relationship,
+    String? idNumber,
+    String? notes,
+    String? status,
+  }) async {
+    final response = await _dio.put('/v1/authorized-pickups/$id', data: {
+      'name': ?name,
+      'phone': ?phone,
+      'relationship': ?relationship,
+      'id_number': ?idNumber,
+      'notes': ?notes,
+      'status': ?status,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deleteAuthorizedPickup(int id) async {
+    final response = await _dio.delete('/v1/authorized-pickups/$id');
+    return response.data;
+  }
+
   // ==================== ADMIN CHILDREN CRUD ====================
 
   /// Create child - backend requires: name, birth_date, gender, parent_ids (array)
@@ -716,8 +973,9 @@ class ApiService {
     String? healthInfo,
     String? emergencyContactName,
     String? emergencyContactPhone,
+    String? photoPath,
   }) async {
-    final response = await _dio.post('/v1/admin/children', data: {
+    final data = <String, dynamic>{
       'name': name,
       'gender': gender,
       'birth_date': birthDate,
@@ -726,7 +984,8 @@ class ApiService {
       if (healthInfo != null && healthInfo.isNotEmpty) 'health_info': healthInfo,
       if (emergencyContactName != null && emergencyContactName.isNotEmpty) 'emergency_contact_name': emergencyContactName,
       if (emergencyContactPhone != null && emergencyContactPhone.isNotEmpty) 'emergency_contact_phone': emergencyContactPhone,
-    });
+    };
+    final response = await _dio.post('/v1/admin/children', data: _withOptionalPhoto(data, photoPath));
     return response.data;
   }
 
@@ -739,6 +998,9 @@ class ApiService {
     String? address,
     String? healthInfo,
     String? status,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    String? photoPath,
   }) async {
     final data = <String, dynamic>{};
     if (name != null) data['name'] = name;
@@ -748,8 +1010,19 @@ class ApiService {
     if (address != null) data['address'] = address;
     if (healthInfo != null) data['health_info'] = healthInfo;
     if (status != null) data['status'] = status;
-    final response = await _dio.put('/v1/admin/children/$id', data: data);
+    if (emergencyContactName != null) data['emergency_contact_name'] = emergencyContactName;
+    if (emergencyContactPhone != null) data['emergency_contact_phone'] = emergencyContactPhone;
+    final response = await _dio.put('/v1/admin/children/$id', data: _withOptionalPhoto(data, photoPath));
     return response.data;
+  }
+
+  /// Wrap request data in FormData when a local photo file is provided so the
+  /// backend's `photo` (file) field is populated. Plain JSON otherwise.
+  dynamic _withOptionalPhoto(Map<String, dynamic> data, String? photoPath) {
+    if (kIsWeb || photoPath == null || photoPath.isEmpty) return data;
+    final form = FormData.fromMap(data);
+    form.files.add(MapEntry('photo', MultipartFile.fromFileSync(photoPath)));
+    return form;
   }
 
   Future<Map<String, dynamic>> deleteChild(int id) async {
@@ -768,8 +1041,8 @@ class ApiService {
   }) async {
     final response = await _dio.post('/v1/admin/activities', data: {
       'name': name,
-      if (description != null) 'description': description,
-      if (category != null) 'category': category,
+      'description': ?description,
+      'category': ?category,
     });
     return response.data;
   }
@@ -794,40 +1067,6 @@ class ApiService {
 
   // ==================== ADMIN ATTENDANCE CRUD ====================
 
-  Future<Map<String, dynamic>> storeAttendance({
-    required int childId,
-    required String date,
-    required String status,
-    String? checkInTime,
-    String? checkOutTime,
-    String? notes,
-  }) async {
-    final response = await _dio.post('/v1/admin/attendance', data: {
-      'child_id': childId,
-      'date': date,
-      'status': status,
-      if (checkInTime != null) 'check_in_time': checkInTime,
-      if (checkOutTime != null) 'check_out_time': checkOutTime,
-      if (notes != null) 'notes': notes,
-    });
-    return response.data;
-  }
-
-  Future<Map<String, dynamic>> updateAttendance(int id, {
-    String? status,
-    String? checkInTime,
-    String? checkOutTime,
-    String? notes,
-  }) async {
-    final response = await _dio.put('/v1/admin/attendance/$id', data: {
-      if (status != null) 'status': status,
-      if (checkInTime != null) 'check_in_time': checkInTime,
-      if (checkOutTime != null) 'check_out_time': checkOutTime,
-      if (notes != null) 'notes': notes,
-    });
-    return response.data;
-  }
-
   // ==================== ADMIN DAILY STORIES CRUD ====================
 
   Future<Map<String, dynamic>> storeDailyStory({
@@ -839,15 +1078,17 @@ class ApiService {
     String? mealNotes,
     dynamic sleepHours,
     String? sleepNotes,
+    String? adminNotes,
   }) async {
     final response = await _dio.post('/v1/admin/children/$childId/daily-stories', data: {
-      if (date != null) 'date': date,
-      if (summary != null) 'summary': summary,
-      if (mood != null) 'mood': mood,
-      if (mealRating != null) 'meal_rating': mealRating,
-      if (mealNotes != null) 'meal_notes': mealNotes,
-      if (sleepHours != null) 'sleep_hours': sleepHours,
-      if (sleepNotes != null) 'sleep_notes': sleepNotes,
+      'date': ?date,
+      'summary': ?summary,
+      'mood': ?mood,
+      'meal_rating': ?mealRating,
+      'meal_notes': ?mealNotes,
+      'sleep_hours': ?sleepHours,
+      'sleep_notes': ?sleepNotes,
+      'admin_notes': ?adminNotes,
     });
     return response.data;
   }
@@ -859,14 +1100,16 @@ class ApiService {
     String? mealNotes,
     dynamic sleepHours,
     String? sleepNotes,
+    String? adminNotes,
   }) async {
     final response = await _dio.put('/v1/admin/daily-stories/$id', data: {
-      if (summary != null) 'summary': summary,
-      if (mood != null) 'mood': mood,
-      if (mealRating != null) 'meal_rating': mealRating,
-      if (mealNotes != null) 'meal_notes': mealNotes,
-      if (sleepHours != null) 'sleep_hours': sleepHours,
-      if (sleepNotes != null) 'sleep_notes': sleepNotes,
+      'summary': ?summary,
+      'mood': ?mood,
+      'meal_rating': ?mealRating,
+      'meal_notes': ?mealNotes,
+      'sleep_hours': ?sleepHours,
+      'sleep_notes': ?sleepNotes,
+      'admin_notes': ?adminNotes,
     });
     return response.data;
   }
@@ -887,8 +1130,8 @@ class ApiService {
   }) async {
     final response = await _dio.post('/v1/admin/development-categories', data: {
       'name': name,
-      if (description != null) 'description': description,
-      if (icon != null) 'icon': icon,
+      'description': ?description,
+      'icon': ?icon,
     });
     return response.data;
   }
@@ -909,7 +1152,7 @@ class ApiService {
       'indicator': indicator,
       'progress': progress,
       'observation_date': observationDate,
-      if (notes != null) 'notes': notes,
+      'notes': ?notes,
     });
     return response.data;
   }
@@ -945,9 +1188,9 @@ class ApiService {
   }) async {
     final response = await _dio.post('/v1/admin/announcements', data: {
       'title': title,
-      if (content != null) 'content': content,
-      if (priority != null) 'priority': priority,
-      if (publishDate != null) 'publish_date': publishDate,
+      'content': ?content,
+      'priority': ?priority,
+      'publish_date': ?publishDate,
     });
     return response.data;
   }
@@ -960,67 +1203,15 @@ class ApiService {
   }) async {
     final response = await _dio.put('/v1/admin/announcements/$id', data: {
       'title': title,
-      if (content != null) 'content': content,
-      if (priority != null) 'priority': priority,
-      if (publishDate != null) 'publish_date': publishDate,
+      'content': ?content,
+      'priority': ?priority,
+      'publish_date': ?publishDate,
     });
     return response.data;
   }
 
   Future<Map<String, dynamic>> deleteAnnouncement(int id) async {
     final response = await _dio.delete('/v1/admin/announcements/$id');
-    return response.data;
-  }
-
-  // ==================== ADMIN EVENTS CRUD ====================
-
-  /// Store event - backend requires: title, date (required).
-  /// Also: description, start_time, end_time, location, type, status
-  Future<Map<String, dynamic>> createEvent({
-    required String title,
-    required String date,
-    String? description,
-    String? type,
-    String? startTime,
-    String? endTime,
-    String? location,
-  }) async {
-    final response = await _dio.post('/v1/admin/events', data: {
-      'title': title,
-      'date': date,
-      if (description != null) 'description': description,
-      if (type != null) 'type': type,
-      if (startTime != null) 'start_time': startTime,
-      if (endTime != null) 'end_time': endTime,
-      if (location != null) 'location': location,
-    });
-    return response.data;
-  }
-
-  /// Update event - backend accepts: title, date, description, start_time, end_time, location, type, status
-  Future<Map<String, dynamic>> updateEvent(int id, {
-    String? title,
-    String? date,
-    String? description,
-    String? type,
-    String? startTime,
-    String? endTime,
-    String? location,
-  }) async {
-    final data = <String, dynamic>{};
-    if (title != null) data['title'] = title;
-    if (date != null) data['date'] = date;
-    if (description != null) data['description'] = description;
-    if (type != null) data['type'] = type;
-    if (startTime != null) data['start_time'] = startTime;
-    if (endTime != null) data['end_time'] = endTime;
-    if (location != null) data['location'] = location;
-    final response = await _dio.put('/v1/admin/events/$id', data: data);
-    return response.data;
-  }
-
-  Future<Map<String, dynamic>> deleteEvent(int id) async {
-    final response = await _dio.delete('/v1/admin/events/$id');
     return response.data;
   }
 
@@ -1039,6 +1230,71 @@ class ApiService {
       'status': status,
     });
     return result.data;
+  }
+
+  // ==================== ADMIN ATTENDANCE ====================
+
+  Future<List<dynamic>> getAdminAttendance({String? month, String? year}) async {
+    final response = await _dio.get('/v1/admin/attendance', queryParameters: {
+      'month': ?month,
+      'year': ?year,
+    });
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    if (data is List) return data;
+    return [];
+  }
+
+  // ==================== ADMIN EVENTS ====================
+
+  Future<List<dynamic>> getEvents() async {
+    final response = await _dio.get('/v1/admin/events');
+    final data = response.data['data'];
+    if (data is Map && data.containsKey('data')) {
+      return data['data'] ?? [];
+    }
+    return data ?? [];
+  }
+
+  Future<Map<String, dynamic>> createEvent({
+    required String title,
+    String? description,
+    required String startDate,
+    required String startTime,
+    String? status = 'active',
+  }) async {
+    final response = await _dio.post('/v1/admin/events', data: {
+      'title': title,
+      'description': ?description,
+      'start_date': startDate,
+      'start_time': startTime,
+      'status': status,
+    });
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateEvent(int id, {
+    String? title,
+    String? description,
+    String? startDate,
+    String? startTime,
+    String? status,
+  }) async {
+    final data = <String, dynamic>{};
+    if (title != null) data['title'] = title;
+    if (description != null) data['description'] = description;
+    if (startDate != null) data['start_date'] = startDate;
+    if (startTime != null) data['start_time'] = startTime;
+    if (status != null) data['status'] = status;
+    final response = await _dio.put('/v1/admin/events/$id', data: data);
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deleteEvent(int id) async {
+    final response = await _dio.delete('/v1/admin/events/$id');
+    return response.data;
   }
 
   // ==================== ADMIN INVOICES ====================

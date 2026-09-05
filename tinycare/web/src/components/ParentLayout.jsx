@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import FirebaseNotifications from './FirebaseNotifications';
 
 const parentMenu = [
   { name: 'Beranda', path: '/parent', icon: 'home' },
   { name: 'Anak Saya', path: '/parent/children', icon: 'child' },
-  { name: 'Kehadiran', path: '/parent/attendance', icon: 'attendance' },
   { name: 'Aktivitas', path: '/parent/activities', icon: 'activity' },
   { name: 'Perkembangan', path: '/parent/development', icon: 'development' },
   { name: 'Pengumuman', path: '/parent/announcements', icon: 'announcement' },
-  { name: 'Jadwal', path: '/parent/events', icon: 'event' },
+  { name: 'Informasi', path: '/parent/information', icon: 'info' },
   { name: 'Feedback', path: '/parent/feedback', icon: 'feedback' },
   { name: 'Tagihan', path: '/parent/invoices', icon: 'invoice' },
   { name: 'Profil', path: '/parent/profile', icon: 'profile' },
@@ -27,6 +27,7 @@ function SidebarIcon({ name, size = 18 }) {
     event: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
     feedback: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>,
     invoice: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>,
+    info: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>,
     profile: <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
   };
   return icons[name] || null;
@@ -137,8 +138,11 @@ function SidebarContent({ sidebarOpen, onNav }) {
 export default function ParentLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
@@ -152,6 +156,7 @@ export default function ParentLayout({ children }) {
 
   return (
     <div style={{ display: 'flex', height: '100vh', background: 'var(--color-bg)', overflow: 'hidden' }}>
+      <FirebaseNotifications />
       {/* Desktop Sidebar */}
       <aside
         className="tc-sidebar-desktop"
@@ -237,6 +242,74 @@ export default function ParentLayout({ children }) {
                 </svg>
               )}
             </button>
+
+            {/* Profile dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '4px 8px', borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+                  cursor: 'pointer', color: 'var(--color-text)',
+                }}
+              >
+                <div style={{
+                  width: '28px', height: '28px', borderRadius: 'var(--radius-full)',
+                  background: 'var(--color-primary-lighter)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <span style={{ color: 'var(--color-primary)', fontWeight: '700', fontSize: '11px' }}>
+                    {user?.name?.charAt(0) || 'P'}
+                  </span>
+                </div>
+                <span style={{ fontSize: '13px', fontWeight: '500', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</span>
+              </button>
+              {profileOpen && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 99 }} onClick={() => setProfileOpen(false)} />
+                  <div style={{
+                    position: 'absolute', right: 0, top: '100%', marginTop: '4px',
+                    background: 'var(--color-surface)', border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-lg)', padding: '6px', minWidth: '180px',
+                    zIndex: 100, boxShadow: 'var(--shadow-md)',
+                  }}>
+                    <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-border-light)', marginBottom: '4px' }}>
+                      <p style={{ fontSize: '13px', fontWeight: '600' }}>{user?.name}</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{user?.email}</p>
+                    </div>
+                    <button
+                      onClick={() => { setProfileOpen(false); navigate('/parent/profile'); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+                        padding: '8px 12px', border: 'none', borderRadius: 'var(--radius-md)',
+                        background: 'transparent', cursor: 'pointer', fontSize: '13px',
+                        color: 'var(--color-text)', textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = 'var(--color-bg-alt)'}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      Profil
+                    </button>
+                    <button
+                      onClick={() => { setProfileOpen(false); logout(); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+                        padding: '8px 12px', border: 'none', borderRadius: 'var(--radius-md)',
+                        background: 'transparent', cursor: 'pointer', fontSize: '13px',
+                        color: 'var(--color-error)', textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = 'var(--color-bg-alt)'}
+                      onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                      Keluar
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 

@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/currency.dart';
+import '../widgets/child_photo.dart';
+import 'child_detail_page.dart';
 import 'package:provider/provider.dart';
 
 class ChildrenPage extends StatefulWidget {
@@ -222,7 +228,6 @@ class _ChildrenPageState extends State<ChildrenPage> {
     final activePackage = packages.isNotEmpty ? packages.first['package'] : null;
     final status = child['status'] ?? 'active';
     final statusColor = status == 'active' ? AppColors.success : ThemeHelper.textMuted(context);
-    final initial = (child['name'] ?? '?')[0].toUpperCase();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -238,6 +243,9 @@ class _ChildrenPageState extends State<ChildrenPage> {
           if (isAdmin) {
             Navigator.push(context,
               MaterialPageRoute(builder: (_) => _ChildFormPage(child: child)));
+          } else {
+            Navigator.push(context,
+              MaterialPageRoute(builder: (_) => ChildDetailPage(childId: child['id'])));
           }
         },
         child: Padding(
@@ -247,24 +255,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 52,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryLighter,
-                      borderRadius: AppRadius.mdAll,
-                    ),
-                    child: Center(
-                      child: Text(
-                        initial,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ),
+                  ChildPhoto(child: child, width: 52),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -385,10 +376,15 @@ class _ChildFormPageState extends State<_ChildFormPage> {
   final _nameController = TextEditingController();
   final _birthDateController = TextEditingController();
   final _notesController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _healthController = TextEditingController();
+  final _emNameController = TextEditingController();
+  final _emPhoneController = TextEditingController();
   String _gender = 'male';
   int? _selectedParentId;
   bool _isSubmitting = false;
   String? _error;
+  String? _photoPath;
   List<dynamic> _parents = [];
   List<dynamic> _packages = [];
   int? _selectedPackageId;
@@ -404,6 +400,10 @@ class _ChildFormPageState extends State<_ChildFormPage> {
       _nameController.text = widget.child['name'] ?? '';
       _birthDateController.text = widget.child['birth_date'] ?? '';
       _notesController.text = widget.child['notes'] ?? '';
+      _addressController.text = widget.child['address'] ?? '';
+      _healthController.text = widget.child['health_info'] ?? '';
+      _emNameController.text = widget.child['emergency_contact_name'] ?? '';
+      _emPhoneController.text = widget.child['emergency_contact_phone'] ?? '';
       _gender = widget.child['gender'] ?? 'male';
       // Backend uses parents (many-to-many), not parent_id
       final parents = widget.child['parents'] as List? ?? [];
@@ -454,6 +454,11 @@ class _ChildFormPageState extends State<_ChildFormPage> {
     }
   }
 
+  Future<void> _pickPhoto() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) setState(() => _photoPath = picked.path);
+  }
+
   final ApiService _api = ApiService();
 
   @override
@@ -461,6 +466,10 @@ class _ChildFormPageState extends State<_ChildFormPage> {
     _nameController.dispose();
     _birthDateController.dispose();
     _notesController.dispose();
+    _addressController.dispose();
+    _healthController.dispose();
+    _emNameController.dispose();
+    _emPhoneController.dispose();
     super.dispose();
   }
 
@@ -483,6 +492,11 @@ class _ChildFormPageState extends State<_ChildFormPage> {
           gender: _gender,
           birthDate: _birthDateController.text.trim().isNotEmpty ? _birthDateController.text.trim() : null,
           parentIds: _selectedParentId != null ? [_selectedParentId!] : null,
+          address: _addressController.text.trim().isNotEmpty ? _addressController.text.trim() : null,
+          healthInfo: _healthController.text.trim().isNotEmpty ? _healthController.text.trim() : null,
+          emergencyContactName: _emNameController.text.trim().isNotEmpty ? _emNameController.text.trim() : null,
+          emergencyContactPhone: _emPhoneController.text.trim().isNotEmpty ? _emPhoneController.text.trim() : null,
+          photoPath: _photoPath,
         );
       } else {
         response = await _api.createChild(
@@ -490,6 +504,11 @@ class _ChildFormPageState extends State<_ChildFormPage> {
           gender: _gender,
           birthDate: _birthDateController.text.trim().isNotEmpty ? _birthDateController.text.trim() : '2020-01-01',
           parentIds: _selectedParentId != null ? [_selectedParentId!] : [],
+          address: _addressController.text.trim().isNotEmpty ? _addressController.text.trim() : null,
+          healthInfo: _healthController.text.trim().isNotEmpty ? _healthController.text.trim() : null,
+          emergencyContactName: _emNameController.text.trim().isNotEmpty ? _emNameController.text.trim() : null,
+          emergencyContactPhone: _emPhoneController.text.trim().isNotEmpty ? _emPhoneController.text.trim() : null,
+          photoPath: _photoPath,
         );
       }
 
@@ -555,6 +574,55 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 AppWidgets.errorAlert(_error!),
                 const SizedBox(height: 16),
               ],
+
+              // Photo picker
+              Center(
+                child: InkWell(
+                  onTap: _pickPhoto,
+                  borderRadius: AppRadius.mdAll,
+                  child: Container(
+                    width: 132,
+                    height: 132,
+                    decoration: BoxDecoration(
+                      color: ThemeHelper.bgAlt(context),
+                      borderRadius: AppRadius.mdAll,
+                      border: Border.all(color: ThemeHelper.border(context)),
+                    ),
+                    child: (!kIsWeb && _photoPath != null)
+                        ? ClipRRect(
+                            borderRadius: AppRadius.mdAll,
+                            child: Image.file(
+                              File(_photoPath!),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          )
+                        : _isEditing && widget.child?['photo_url'] != null
+                            ? ClipRRect(
+                                borderRadius: AppRadius.mdAll,
+                                child: Image.network(
+                                  ApiService.resolveMediaUrl(widget.child['photo_url']),
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                ),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.add_a_photo, color: AppColors.primary, size: 28),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    _isEditing ? 'Ganti Foto' : 'Unggah Foto',
+                                    style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context)),
+                                  ),
+                                ],
+                              ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
 
               TextFormField(
                 controller: _nameController,
@@ -746,6 +814,43 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                   labelText: 'Catatan',
                   alignLabelWithHint: true,
                 ),
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _addressController,
+                maxLines: 2,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Alamat',
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _healthController,
+                maxLines: 3,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Info Kesehatan',
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _emNameController,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(labelText: 'Kontak Darurat - Nama'),
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _emPhoneController,
+                textInputAction: TextInputAction.done,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(labelText: 'Kontak Darurat - Telepon'),
               ),
               const SizedBox(height: 24),
 

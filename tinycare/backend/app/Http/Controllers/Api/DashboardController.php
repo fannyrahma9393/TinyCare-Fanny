@@ -13,6 +13,7 @@ use App\Models\Feedback;
 use App\Models\Invoice;
 use App\Models\Package;
 use App\Models\ParentModel;
+use App\Models\User;
 use App\Models\Voucher;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +21,137 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    /**
+     * Public: stats for landing page (no auth required).
+     */
+    public function publicStats(): JsonResponse
+    {
+        $totalChildren = Child::count();
+        $totalParents = ParentModel::count();
+        $totalDailyStories = \App\Models\DailyStory::count();
+        $totalRevenue = Invoice::where('status', 'paid')->sum('total');
+        $todayAttendance = Attendance::whereDate('date', Carbon::today())->count();
+        $todayPresent = Attendance::whereDate('date', Carbon::today())->where('status', 'hadir')->count();
+
+        // Additional stats for landing page
+        $activePackages = Package::where('status', 'active')->count();
+        $totalAnnouncements = Announcement::where('is_published', true)->count();
+        $totalEvents = Event::where('date', '>=', Carbon::today())->count();
+        $totalActivities = \App\Models\Activity::where('status', 'active')->count();
+        $totalFeedback = Feedback::count();
+        $totalAssessments = \App\Models\DevelopmentAssessment::count();
+        $totalMedia = \App\Models\Media::count();
+        $totalVouchers = Voucher::where('status', 'active')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->count();
+
+        // Average satisfaction from feedback ratings
+        $avgRating = Feedback::whereNotNull('rating')->avg('rating');
+        $avgSatisfaction = $avgRating ? round(($avgRating / 5) * 100) : 0;
+
+        // Testimonials from feedback (high rated, with parent name)
+        $testimonials = Feedback::with(['parent.user', 'child'])
+            ->whereNotNull('rating')
+            ->where('rating', '>=', 4)
+            ->where('status', 'responded')
+            ->orderBy('rating', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get()
+            ->map(fn ($f) => [
+                'name' => $f->parent?->user?->name ?: 'Anonim',
+                'role' => 'Orang Tua',
+                'text' => $f->message,
+                'rating' => $f->rating,
+                'child_name' => $f->child?->name,
+            ]);
+
+        // Published announcements
+        $announcements = Announcement::where('is_published', true)
+            ->where(function ($q) {
+                $q->whereNull('publish_date')->orWhere('publish_date', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('expire_date')->orWhere('expire_date', '>=', now());
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(fn ($a) => [
+                'id' => $a->id,
+                'title' => $a->title,
+                'content' => $a->content,
+                'priority' => $a->priority,
+                'publish_date' => $a->publish_date?->toDateString(),
+            ]);
+
+        // Upcoming events
+        $events = Event::where('date', '>=', Carbon::today())
+            ->orderBy('date', 'asc')
+            ->limit(5)
+            ->get()
+            ->map(fn ($e) => [
+                'id' => $e->id,
+                'title' => $e->title,
+                'description' => $e->description,
+                'date' => $e->date->toDateString(),
+                'start_time' => $e->start_time,
+                'end_time' => $e->end_time,
+                'location' => $e->location,
+                'type' => $e->type,
+            ]);
+
+        // Active activities
+        $activities = \App\Models\Activity::where('status', 'active')
+            ->limit(6)
+            ->get()
+            ->map(fn ($a) => [
+                'id' => $a->id,
+                'name' => $a->name,
+                'description' => $a->description,
+                'category' => $a->category,
+            ]);
+
+        // Active packages
+        $packages = Package::where('status', 'active')
+            ->limit(4)
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'description' => $p->description,
+                'price' => $p->price,
+                'duration_days' => $p->duration_days,
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_children' => $totalChildren,
+                'total_parents' => $totalParents,
+                'total_reports' => $totalDailyStories,
+                'total_revenue' => $totalRevenue,
+                'today_attendance' => $todayAttendance,
+                'today_present' => $todayPresent,
+                'active_packages' => $activePackages,
+                'total_announcements' => $totalAnnouncements,
+                'total_events' => $totalEvents,
+                'total_activities' => $totalActivities,
+                'total_feedback' => $totalFeedback,
+                'total_assessments' => $totalAssessments,
+                'total_media' => $totalMedia,
+                'total_vouchers' => $totalVouchers,
+                'avg_satisfaction' => $avgSatisfaction,
+                'testimonials' => $testimonials,
+                'announcements' => $announcements,
+                'events' => $events,
+                'activities' => $activities,
+                'packages' => $packages,
+            ],
+        ]);
+    }
+
     /**
      * Admin: dashboard with real statistics from database.
      */
@@ -44,6 +176,9 @@ class DashboardController extends Controller
         $paidInvoices = Invoice::where('status', 'paid')->count();
         $pendingAmount = Invoice::where('status', 'pending')->sum('total');
         $totalRevenue = Invoice::where('status', 'paid')->sum('total');
+        $pendingParents = User::whereHas('role', fn ($q) => $q->where('name', 'parent'))
+            ->where('status', 'pending')
+            ->count();
 
         $recentDailyStories = DailyStory::with('child')
             ->orderBy('created_at', 'desc')
@@ -76,6 +211,7 @@ class DashboardController extends Controller
                     'paid_invoices' => $paidInvoices,
                     'pending_amount' => $pendingAmount,
                     'total_revenue' => $totalRevenue,
+                    'pending_parents' => $pendingParents,
                 ],
                 'recent_daily_stories' => $recentDailyStories,
                 'upcoming_events' => $upcomingEvents,
@@ -140,6 +276,9 @@ class DashboardController extends Controller
             return [
                 'id' => $child->id,
                 'name' => $child->name,
+                'photo' => $child->photo,
+                'photo_url' => $child->photo_url,
+                'image_url' => $child->image_url,
                 'birth_date' => $child->birth_date?->toDateString(),
                 'gender' => $child->gender,
                 'status' => $child->status,
