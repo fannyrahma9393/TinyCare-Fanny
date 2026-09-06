@@ -248,7 +248,9 @@ export const parentAPI = {
   invoices: () => api.get('/parent/invoices'),
   invoiceDetail: (invoiceId) => api.get(`/parent/invoices/${invoiceId}`),
   initiatePayment: (invoiceId, data) => api.post(`/parent/invoices/${invoiceId}/pay`, data),
-  submitPayment: (data) => api.post('/parent/payments', data),
+  submitPayment: (data) => api.post('/parent/payments', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
+  }),
   checkPaymentStatus: (paymentId) => api.get(`/parent/payments/${paymentId}/status`),
   invoicePayments: (invoiceId) => api.get(`/parent/invoices/${invoiceId}/payments`),
   announcements: () => api.get('/parent/announcements'),
