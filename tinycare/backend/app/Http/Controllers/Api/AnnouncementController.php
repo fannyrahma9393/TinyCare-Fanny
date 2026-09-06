@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\Child;
 use App\Models\User;
 use App\Services\FcmNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class AnnouncementController extends Controller
 {
@@ -16,7 +18,7 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Announcement::with('creator:id,name');
+        $query = Announcement::with(['creator:id,name', 'children:id,name']);
 
         // Filter by status
         if ($request->has('is_published')) {
@@ -50,22 +52,29 @@ class AnnouncementController extends Controller
             'publish_date' => 'nullable|date',
             'expire_date' => 'nullable|date|after_or_equal:publish_date',
             'is_published' => 'sometimes|boolean',
+            'child_ids' => 'nullable|array',
+            'child_ids.*' => 'exists:children,id',
         ]);
 
         $validated['created_by'] = $request->user()->id;
 
         $announcement = Announcement::create($validated);
 
-        // If published immediately, notify all active parents via FCM + DB notification.
+        if (! empty($validated['child_ids'])) {
+            $announcement->children()->sync($validated['child_ids']);
+        }
+
+        // If published immediately, notify the targeted parents via FCM + DB
+        // notification (all active parents when no children are targeted).
         $notifyResult = null;
         if (! empty($validated['is_published'])) {
-            $notifyResult = $this->notifyAllParents($announcement);
+            $notifyResult = $this->notifyTargetedParents($announcement);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil dibuat.',
-            'data' => $announcement,
+            'data' => $announcement->load(['children:id,name']),
             'notify' => $notifyResult,
         ], 201);
     }
@@ -82,21 +91,28 @@ class AnnouncementController extends Controller
             'publish_date' => 'nullable|date',
             'expire_date' => 'nullable|date|after_or_equal:publish_date',
             'is_published' => 'sometimes|boolean',
+            'child_ids' => 'nullable|array',
+            'child_ids.*' => 'exists:children,id',
         ]);
 
         $wasPublished = $announcement->is_published;
         $announcement->update($validated);
 
-        // If newly published (was draft, now published), notify all parents.
+        // Update targeting: empty array clears targets (becomes broadcast).
+        if ($request->exists('child_ids')) {
+            $announcement->children()->sync($validated['child_ids'] ?? []);
+        }
+
+        // If newly published (was draft, now published), notify targets.
         $notifyResult = null;
         if (! $wasPublished && ! empty($validated['is_published'])) {
-            $notifyResult = $this->notifyAllParents($announcement);
+            $notifyResult = $this->notifyTargetedParents($announcement);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil diperbarui.',
-            'data' => $announcement,
+            'data' => $announcement->load(['children:id,name']),
             'notify' => $notifyResult,
         ]);
     }
@@ -115,16 +131,44 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * Send FCM push + DB notification to every active parent user.
+     * Send FCM push + DB notification for a published announcement.
+     *
+     * When the announcement targets specific children, only the parent(s) of
+     * those children (with an active user) are notified — one notification per
+     * parent even if a parent has multiple targeted children. When no children
+     * are targeted, every active parent is notified (existing broadcast).
      *
      * @return array{targeted_parents: int, fcm_sent: int, fcm_failed: int, fcm_configured: bool}
      */
-    private function notifyAllParents(Announcement $announcement): array
+    private function notifyTargetedParents(Announcement $announcement): array
+    {
+        $announcement->load('children.parents.user');
+
+        if ($announcement->children->isNotEmpty()) {
+            $parentUsers = $announcement->children
+                ->flatMap(fn (Child $child) => $child->parents)
+                ->unique('id')
+                ->map->user
+                ->filter(fn ($user) => $user && $user->status === 'active')
+                ->values();
+        } else {
+            $parentUsers = User::whereHas('role', fn ($q) => $q->where('name', 'parent'))
+                ->where('status', 'active')
+                ->get();
+        }
+
+        return $this->notifyParentUsers($parentUsers, $announcement);
+    }
+
+    /**
+     * Create in-app DB notification + FCM push for a set of parent users.
+     *
+     * @param  Collection<int, User>  $parentUsers
+     * @return array{targeted_parents: int, fcm_sent: int, fcm_failed: int, fcm_configured: bool}
+     */
+    private function notifyParentUsers(Collection $parentUsers, Announcement $announcement): array
     {
         $fcm = app(FcmNotificationService::class);
-        $parentUsers = User::where('role', 'parent')
-            ->where('status', 'active')
-            ->get();
 
         $targeted = 0;
         $fcmSent = 0;

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { announcementsAPI } from '../services/api';
+import { announcementsAPI, childrenAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
 export default function Announcements() {
   const [announcements, setAnnouncements] = useState([]);
+  const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ title: '', content: '', priority: 'normal', publish_date: '', expire_date: '', is_published: true });
+  const [formData, setFormData] = useState({ title: '', content: '', priority: 'normal', publish_date: '', expire_date: '', is_published: true, child_ids: [] });
   const [error, setError] = useState('');
 
   async function loadAnnouncements() {
@@ -16,9 +17,24 @@ export default function Announcements() {
 
   useEffect(() => { loadAnnouncements(); }, []);
 
+  useEffect(() => {
+    childrenAPI.list({ per_page: 100 })
+      .then((res) => setChildren(res.data.data?.data || []))
+      .catch(() => setChildren([]));
+  }, []);
+
+  const toggleChild = (id) => {
+    setFormData((prev) => {
+      const ids = prev.child_ids.includes(id)
+        ? prev.child_ids.filter((v) => v !== id)
+        : [...prev.child_ids, id];
+      return { ...prev, child_ids: ids };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try { await announcementsAPI.create(formData); setShowModal(false); setFormData({ title: '', content: '', priority: 'normal', publish_date: '', expire_date: '', is_published: true }); loadAnnouncements(); }
+    try { await announcementsAPI.create(formData); setShowModal(false); setFormData({ title: '', content: '', priority: 'normal', publish_date: '', expire_date: '', is_published: true, child_ids: [] }); loadAnnouncements(); }
     catch (error) { alert(error.response?.data?.message || 'Gagal membuat pengumuman.'); }
   };
 
@@ -69,6 +85,17 @@ export default function Announcements() {
                     {item.publish_date && <span>Publish: {new Date(item.publish_date).toLocaleDateString('id-ID')}</span>}
                     {item.expire_date && <span>Berakhir: {new Date(item.expire_date).toLocaleDateString('id-ID')}</span>}
                   </div>
+                  {item.children?.length > 0 && (
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Target:</span>
+                      {item.children.map((c) => (
+                        <span key={c.id} className="tc-badge tc-badge-info">{c.name}</span>
+                      ))}
+                    </div>
+                  )}
+                  {item.children?.length === 0 && (
+                    <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--color-text-muted)' }}>Dikirim ke seluruh orang tua</p>
+                  )}
                 </div>
                 <button onClick={() => handleDelete(item.id)} style={{ border: 'none', background: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: '4px' }}>✕</button>
               </div>
@@ -112,6 +139,25 @@ export default function Announcements() {
                 <label className="tc-label">Tanggal Berakhir</label>
                 <input type="date" value={formData.expire_date} onChange={(e) => setFormData({ ...formData, expire_date: e.target.value })} className="tc-input" />
               </div>
+            </div>
+            <div>
+              <label className="tc-label">Target Orang Tua</label>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '8px' }}>
+                Pilih anak untuk mengirim notifikasi hanya ke orang tuanya. Kosongkan untuk mengirim ke seluruh orang tua.
+              </p>
+              {children.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '10px' }}>
+                  {children.map((child) => (
+                    <label key={child.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={formData.child_ids.includes(child.id)} onChange={() => toggleChild(child.id)} style={{ accentColor: 'var(--color-primary)' }} />
+                      {child.name}
+                      <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>{child.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Tidak ada anak — pengumuman dikirim ke semua orang tua.</p>
+              )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input type="checkbox" id="is_published" checked={formData.is_published} onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })} style={{ accentColor: 'var(--color-primary)' }} />

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Announcement extends Model
 {
@@ -27,6 +28,16 @@ class Announcement extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Targeted children. When empty, the announcement is broadcast to all
+     * active parents; when present, only the parents of these children are
+     * notified upon publish.
+     */
+    public function children(): BelongsToMany
+    {
+        return $this->belongsToMany(Child::class);
     }
 
     /**
