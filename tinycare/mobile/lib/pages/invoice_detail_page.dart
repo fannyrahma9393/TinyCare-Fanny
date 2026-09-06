@@ -212,7 +212,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             AppWidgets.infoRow('Anak', invoice['child']?['name'] ?? '-'),
             AppWidgets.infoRow('Paket', invoice['package']?['name'] ?? '-'),
             AppWidgets.infoRow('Subtotal', CurrencyHelper.formatRupiah(invoice['subtotal'])),
-            if ((invoice['discount'] ?? 0) > 0)
+            if (CurrencyHelper.parseToDouble(invoice['discount']) > 0)
               AppWidgets.infoRow('Diskon', '- ${CurrencyHelper.formatRupiah(invoice['discount'])}'),
             AppWidgets.infoRow('Total', CurrencyHelper.formatRupiah(invoice['total']), isTotal: true),
             Divider(height: 24, color: ThemeHelper.border(context)),
@@ -327,8 +327,8 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
 
   Widget _buildPaymentInfoSection({String? status}) {
     final info = _paymentInfo!;
-    final totalWithCode = (info['total_with_code'] ?? info['amount']) ?? 0;
-    final baseAmount = info['amount'] ?? 0;
+    final totalWithCode = CurrencyHelper.parseToDouble(info['total_with_code'] ?? info['amount']);
+    final baseAmount = CurrencyHelper.parseToDouble(info['amount']);
     final instructions = info['instructions'];
 
     return Column(
@@ -366,7 +366,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             ),
             const SizedBox(width: 8),
             OutlinedButton(
-              onPressed: () => _copyToClipboard('$totalWithCode'),
+              onPressed: () => _copyToClipboard(totalWithCode.toStringAsFixed(0)),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 minimumSize: Size.zero,
