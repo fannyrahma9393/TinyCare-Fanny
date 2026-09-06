@@ -87,6 +87,8 @@ class AuthController extends Controller
     {
         $user = $request->user()->load(['role', 'parent', 'admin']);
 
+        $phone = $user->phone ?: ($user->parent?->phone ?? null);
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -95,7 +97,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'role' => $user->role?->name,
                 'status' => $user->status,
-                'phone' => $user->phone,
+                'phone' => $phone,
                 'profile' => $user->parent ?? $user->admin,
             ],
         ]);

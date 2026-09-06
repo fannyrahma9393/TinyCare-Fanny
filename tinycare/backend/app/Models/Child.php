@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -129,10 +130,7 @@ class Child extends Model
         }
 
         if (Storage::disk('local')->exists($this->photo)) {
-            return Storage::disk('local')->temporaryUrl(
-                $this->photo,
-                now()->addMinutes(30)
-            );
+            return MediaUrl::temporary($this->photo);
         }
 
         return $this->photo;

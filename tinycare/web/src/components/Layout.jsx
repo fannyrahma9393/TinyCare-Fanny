@@ -292,6 +292,17 @@ export default function Layout({ children }) {
               )}
             </button>
 
+            <span
+              title="Versi aplikasi"
+              style={{
+                fontSize: '11px', fontWeight: '700', padding: '4px 8px',
+                borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-lighter)',
+                color: 'var(--color-primary)', whiteSpace: 'nowrap', userSelect: 'none',
+              }}
+            >
+              v1.3.1
+            </span>
+
             {/* Profile dropdown */}
             <div style={{ position: 'relative' }}>
               <button

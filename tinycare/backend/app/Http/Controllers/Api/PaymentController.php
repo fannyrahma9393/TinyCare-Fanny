@@ -148,7 +148,7 @@ class PaymentController extends Controller
             ->where('status', 'pending')
             ->first();
 
-        if ($existingPending) {
+        if ($existingPending && $existingPending->proof_file) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sudah ada pembayaran yang menunggu verifikasi.',
@@ -156,6 +156,22 @@ class PaymentController extends Controller
         }
 
         $proofPath = $request->file('proof_file')->store('payments/proof', 'local');
+
+        if ($existingPending) {
+            // Initiated payment (VA/manual) is waiting for proof: attach the
+            // uploaded proof to that same payment instead of creating a new one.
+            $existingPending->update([
+                'proof_file' => $proofPath,
+                'payment_method' => $validated['payment_method'] ?? $existingPending->payment_method,
+                'notes' => $validated['notes'] ?? $existingPending->notes,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi.',
+                'data' => $existingPending->load('invoice'),
+            ], 200);
+        }
 
         $payment = Payment::create([
             'invoice_id' => $invoice->id,
@@ -240,10 +256,7 @@ class PaymentController extends Controller
             ], 404);
         }
 
-        $url = Storage::disk('local')->temporaryUrl(
-            $payment->proof_file,
-            now()->addMinutes(30)
-        );
+        $url = \App\Support\MediaUrl::temporary($payment->proof_file);
 
         return response()->json([
             'success' => true,
@@ -268,7 +281,8 @@ class PaymentController extends Controller
 
         $payments = $invoice->payments()
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->each(fn (Payment $payment) => $payment->append('proof_url'));
 
         return response()->json([
             'success' => true,

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -108,9 +109,6 @@ class Payment extends Model
         }
 
         // Use temporary URL for private file access
-        return Storage::disk('local')->temporaryUrl(
-            $this->proof_file,
-            now()->addMinutes(30)
-        );
+        return MediaUrl::temporary($this->proof_file);
     }
 }

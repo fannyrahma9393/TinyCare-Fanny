@@ -47,6 +47,9 @@ Route::prefix('v1/auth')->middleware('throttle:10,1')->group(function () {
 // Public stats (no auth required)
 Route::get('/v1/public/stats', [DashboardController::class, 'publicStats'])->middleware('throttle:30,1');
 
+// Public media stream (signed URL, no auth required)
+Route::get('/v1/media/stream', [MediaController::class, 'stream'])->name('media.stream');
+
 // Payment webhook (no auth required)
 Route::post('/v1/payments/webhook', [PaymentController::class, 'webhook']);
 

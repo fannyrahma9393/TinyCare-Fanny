@@ -12,6 +12,12 @@ export default function Invoices() {
   const [searchParams] = useSearchParams();
   const [filter, setFilter] = useState(searchParams.get('filter') || '');
   const [formData, setFormData] = useState({ child_id: '', package_id: '', due_date: '', voucher_code: '', notes: '' });
+  const selectedChild = children.find((c) => String(c.id) === String(formData.child_id));
+  const availablePackages = selectedChild
+    ? (selectedChild.child_packages || [])
+        .filter((cp) => cp.status === 'active' && cp.package)
+        .map((cp) => ({ id: cp.package.id, name: cp.package.name, price: cp.package.price }))
+    : [];
 
   async function loadInvoices() {
     setLoading(true);
@@ -143,8 +149,11 @@ export default function Invoices() {
               </select>
             </div>
             <div>
-              <label className="tc-label">Package ID *</label>
-              <input type="text" value={formData.package_id} onChange={(e) => setFormData({ ...formData, package_id: e.target.value })} className="tc-input" required />
+              <label className="tc-label">Paket *</label>
+              <select value={formData.package_id} onChange={(e) => setFormData({ ...formData, package_id: e.target.value })} className="tc-select" required>
+                <option value="">{selectedChild ? '-- Pilih Paket --' : '-- Pilih Anak terlebih dahulu --'}</option>
+                {availablePackages.map((pkg) => <option key={pkg.id} value={pkg.id}>{pkg.name} · {formatCurrency(pkg.price)}</option>)}
+              </select>
             </div>
             <div>
               <label className="tc-label">Tanggal Jatuh Tempo *</label>

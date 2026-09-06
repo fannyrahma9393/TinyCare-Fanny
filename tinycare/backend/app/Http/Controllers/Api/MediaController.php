@@ -5,12 +5,45 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Child;
 use App\Models\Media;
+use App\Support\MediaUrl;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MediaController extends Controller
 {
+    /**
+     * Stream a private file from the local disk (signed URL).
+     *
+     * Path is passed base64url-encoded in the "file" query parameter so the
+     * URL never ends with an image extension (WAF blocks /storage/*.jpg).
+     */
+    public function stream(Request $request): StreamedResponse
+    {
+        if (! $request->hasValidSignature()) {
+            abort(403);
+        }
+
+        $path = MediaUrl::decode((string) $request->query('file', ''));
+
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+
+        $stream = Storage::disk('local')->readStream($path);
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }, 200, [
+            'Content-Type' => Storage::disk('local')->mimeType($path) ?: 'application/octet-stream',
+            'Cache-Control' => 'private, max-age=0, must-revalidate',
+            'Content-Disposition' => 'inline',
+        ]);
+    }
     /**
      * Admin: upload media documentation.
      */
@@ -117,10 +150,7 @@ class MediaController extends Controller
             ], 404);
         }
 
-        $url = Storage::disk('local')->temporaryUrl(
-            $media->file_path,
-            now()->addMinutes(30)
-        );
+        $url = MediaUrl::temporary($media->file_path);
 
         return response()->json([
             'success' => true,

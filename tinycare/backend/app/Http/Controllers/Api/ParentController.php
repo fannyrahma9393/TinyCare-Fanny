@@ -66,6 +66,7 @@ class ParentController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
+                'phone' => $validated['phone'] ?? null,
                 'password' => Hash::make($validated['password']),
                 'role_id' => $role->id,
                 'status' => 'active',
@@ -132,8 +133,8 @@ class ParentController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $parent) {
-            if (isset($validated['name']) || isset($validated['email'])) {
-                $parent->user->update(collect($validated)->only(['name', 'email'])->toArray());
+            if (isset($validated['name']) || isset($validated['email']) || isset($validated['phone'])) {
+                $parent->user->update(collect($validated)->only(['name', 'email', 'phone'])->toArray());
             }
             $parent->update(collect($validated)->except(['name', 'email'])->toArray());
         });

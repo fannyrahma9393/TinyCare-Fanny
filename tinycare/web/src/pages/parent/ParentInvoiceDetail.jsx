@@ -60,8 +60,7 @@ export default function ParentInvoiceDetail() {
       if (proofNotes) formData.append('notes', proofNotes);
       await parentAPI.submitPayment(formData);
       alert('Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.');
-      setShowProofForm(false);
-      loadData();
+      navigate('/parent/invoices');
     } catch (err) {
       alert(err.response?.data?.message || 'Gagal mengirim bukti pembayaran.');
     } finally {
@@ -98,6 +97,7 @@ export default function ParentInvoiceDetail() {
   const isPaid = invoice.status === 'paid';
   const isPending = invoice.status === 'pending';
   const hasPendingPayment = payments.some(p => p.status === 'pending');
+  const pendingNoProof = payments.find(p => p.status === 'pending' && !p.proof_file);
 
   return (
     <div>
@@ -217,9 +217,17 @@ export default function ParentInvoiceDetail() {
             /* Pay Button */
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '16px' }}>
-                {hasPendingPayment ? 'Pembayaran sebelumnya masih dalam proses verifikasi.' : 'Klik tombol di bawah untuk memulai pembayaran.'}
+                {pendingNoProof
+                  ? 'Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.'
+                  : hasPendingPayment
+                    ? 'Pembayaran sedang menunggu verifikasi admin.'
+                    : 'Klik tombol di bawah untuk memulai pembayaran.'}
               </p>
-              {!hasPendingPayment && (
+              {pendingNoProof ? (
+                <button onClick={() => setShowProofForm(!showProofForm)} className="tc-btn tc-btn-primary tc-btn-lg" style={{ width: '100%' }}>
+                  {showProofForm ? 'Tutup' : 'Kirim Bukti Pembayaran'}
+                </button>
+              ) : hasPendingPayment ? null : (
                 <button onClick={handleInitiatePayment} disabled={paying} className="tc-btn tc-btn-primary tc-btn-lg" style={{ width: '100%' }}>
                   {paying ? 'Memproses...' : 'Bayar Sekarang'}
                 </button>
@@ -259,17 +267,32 @@ export default function ParentInvoiceDetail() {
       {/* Payment History */}
       {payments.length > 0 && (
         <div className="tc-card" style={{ padding: '20px', marginTop: '20px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px' }}>Riwayat Pembayaran</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px' }}>Riwayat Pembayaran & Bukti</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {payments.map((p) => (
-              <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-alt)' }}>
-                <div>
-                  <p style={{ fontSize: '13px', fontWeight: '600' }}>{formatCurrency(p.amount)}</p>
-                  <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{p.payment_method || 'Bank Transfer'} · {new Date(p.created_at).toLocaleDateString('id-ID')}</p>
+              <div key={p.id} style={{ padding: '14px', borderRadius: 'var(--radius-md)', background: 'var(--color-bg-alt)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: '600' }}>{formatCurrency(p.amount)}</p>
+                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{p.payment_method || 'Bank Transfer'} · {new Date(p.created_at).toLocaleDateString('id-ID')}</p>
+                    {p.notes && <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '2px' }}>Catatan: {p.notes}</p>}
+                  </div>
+                  <span className={`tc-badge ${p.status === 'verified' ? 'tc-badge-success' : p.status === 'pending' ? 'tc-badge-warning' : 'tc-badge-error'}`}>
+                    {p.status === 'verified' ? '✓ Lunas' : p.status === 'pending' ? 'Menunggu Verifikasi' : 'Ditolak'}
+                  </span>
                 </div>
-                <span className={`tc-badge ${p.status === 'verified' ? 'tc-badge-success' : p.status === 'pending' ? 'tc-badge-warning' : 'tc-badge-error'}`}>
-                  {p.status === 'verified' ? 'Terverifikasi' : p.status === 'pending' ? 'Menunggu' : 'Ditolak'}
-                </span>
+                {p.proof_url && (
+                  <div style={{ marginTop: '12px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-text-muted)', marginBottom: '6px' }}>Bukti Pembayaran:</p>
+                    {/\.(jpg|jpeg|png|webp|gif)$/i.test(p.proof_file || '') ? (
+                      <a href={p.proof_url} target="_blank" rel="noreferrer">
+                        <img src={p.proof_url} alt="Bukti pembayaran" style={{ maxWidth: '220px', maxHeight: '180px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', objectFit: 'cover' }} />
+                      </a>
+                    ) : (
+                      <a href={p.proof_url} target="_blank" rel="noreferrer" className="tc-btn tc-btn-ghost tc-btn-sm" style={{ color: 'var(--color-info)' }}>Lihat Bukti (PDF)</a>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>

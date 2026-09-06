@@ -209,6 +209,7 @@ export default function Children() {
           <thead>
             <tr>
               <th>Anak</th>
+              <th>Paket</th>
               <th>Tanggal Lahir</th>
               <th>Gender</th>
               <th>Status</th>
@@ -223,6 +224,9 @@ export default function Children() {
                     <ChildPhoto child={child} width={40} />
                     <span style={{ fontWeight: '600' }}>{child.name}</span>
                   </div>
+                </td>
+                <td style={{ color: 'var(--color-text-secondary)' }}>
+                  {child.child_packages?.map(cp => cp.package?.name).filter(Boolean).join(', ') || '-'}
                 </td>
                 <td style={{ color: 'var(--color-text-secondary)' }}>
                   {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}

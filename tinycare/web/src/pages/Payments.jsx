@@ -6,7 +6,7 @@ export default function Payments() {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
-  const [selectedProof, setSelectedProof] = useState(null);
+  const [selectedDetail, setSelectedDetail] = useState(null);
   const [error, setError] = useState('');
 
   async function loadPayments() {
@@ -30,9 +30,16 @@ export default function Payments() {
     }
   };
 
-  const viewProof = async (id) => {
-    try { const res = await paymentsAPI.getProof(id); setSelectedProof(res.data.data); }
-    catch { alert('Gagal memuat bukti pembayaran.'); }
+  const viewDetail = async (payment) => {
+    try {
+      let proofUrl = null;
+      if (payment.proof_file) {
+        const res = await paymentsAPI.getProof(payment.id);
+        proofUrl = res.data.data?.url || null;
+      }
+      setSelectedDetail({ ...payment, proofUrl });
+    }
+    catch { setSelectedDetail({ ...payment, proofUrl: null }); }
   };
 
   const statusConfig = {
@@ -88,9 +95,7 @@ export default function Payments() {
                   <td><span className="tc-badge" style={{ background: status.bg, color: status.color }}>{status.label}</span></td>
                   <td>
                     <div style={{ display: 'flex', gap: '4px' }}>
-                      {payment.proof_file && (
-                        <button onClick={() => viewProof(payment.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-info)', padding: '4px 8px', fontSize: '12px' }}>Bukti</button>
-                      )}
+                      <button onClick={() => viewDetail(payment)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-info)', padding: '4px 8px', fontSize: '12px' }}>Detail</button>
                       {payment.status === 'pending' && (
                         <>
                           <button onClick={() => handleVerify(payment.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-success)', padding: '4px 8px', fontSize: '12px' }}>Verifikasi</button>
@@ -107,15 +112,51 @@ export default function Payments() {
         {payments.length === 0 && <EmptyState icon="💰" title="Belum ada pembayaran" />}
       </div>
 
-      <Modal open={!!selectedProof} onClose={() => setSelectedProof(null)} title="Bukti Pembayaran">
-        {selectedProof && (
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '16px' }}>
-              <a href={selectedProof.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
-                {selectedProof.url?.substring(0, 60)}...
-              </a>
-            </p>
-            <a href={selectedProof.url} target="_blank" rel="noopener noreferrer" className="tc-btn tc-btn-primary">Buka Bukti</a>
+      <Modal open={!!selectedDetail} onClose={() => setSelectedDetail(null)} title="Detail Pembayaran">
+        {selectedDetail && (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              {[
+                { label: 'No. Invoice', value: selectedDetail.invoice?.invoice_number || '-' },
+                { label: 'Anak', value: selectedDetail.invoice?.child?.name || '-' },
+                { label: 'Orang Tua', value: selectedDetail.invoice?.parent?.user?.name || '-' },
+                { label: 'Metode', value: selectedDetail.payment_method || '-' },
+                { label: 'Jumlah', value: formatCurrency(selectedDetail.amount) },
+                { label: 'Tanggal', value: new Date(selectedDetail.created_at).toLocaleString('id-ID') },
+              ].map((item) => (
+                <div key={item.label} style={{ background: 'var(--color-bg-alt)', padding: '10px 14px', borderRadius: '10px' }}>
+                  <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{item.label}</p>
+                  <p style={{ fontSize: '14px', fontWeight: '600', wordBreak: 'break-word' }}>{item.value}</p>
+                </div>
+              ))}
+            </div>
+            {selectedDetail.notes && (
+              <div style={{ background: 'var(--color-bg-alt)', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px' }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>Catatan</p>
+                <p style={{ fontSize: '13px' }}>{selectedDetail.notes}</p>
+              </div>
+            )}
+            {selectedDetail.status === 'rejected' && selectedDetail.notes && (
+              <div style={{ background: 'var(--color-error-bg)', padding: '10px 14px', borderRadius: '10px', marginBottom: '16px' }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-error)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>Alasan Penolakan</p>
+                <p style={{ fontSize: '13px', color: 'var(--color-error)' }}>{selectedDetail.notes}</p>
+              </div>
+            )}
+            {selectedDetail.proofUrl && (
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px' }}>Bukti Pembayaran</p>
+                {/\.(jpg|jpeg|png|webp|gif)$/i.test(selectedDetail.proof_file || '') ? (
+                  <a href={selectedDetail.proofUrl} target="_blank" rel="noopener noreferrer">
+                    <img src={selectedDetail.proofUrl} alt="Bukti pembayaran" style={{ maxWidth: '100%', maxHeight: '320px', borderRadius: '12px', border: '1px solid var(--color-border)', objectFit: 'contain' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                  </a>
+                ) : (
+                  <a href={selectedDetail.proofUrl} target="_blank" rel="noopener noreferrer" className="tc-btn tc-btn-primary">Buka Bukti (PDF)</a>
+                )}
+              </div>
+            )}
+            <div style={{ marginTop: '18px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedDetail(null)} className="tc-btn tc-btn-secondary tc-btn-sm">Tutup</button>
+            </div>
           </div>
         )}
       </Modal>

@@ -72,9 +72,17 @@ export const childrenAPI = {
   create: (data) => api.post('/admin/children', data, {
     headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
   }),
-  update: (id, data) => api.put(`/admin/children/${id}`, data, {
-    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
-  }),
+  update: (id, data) => {
+    if (data instanceof FormData) {
+      // Laravel/PHP does not populate $_FILES for real PUT multipart bodies,
+      // so spoof the method via POST + "_method=PUT" to ensure file uploads work.
+      data.append('_method', 'PUT');
+      return api.post(`/admin/children/${id}`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+    }
+    return api.put(`/admin/children/${id}`, data);
+  },
   delete: (id) => api.delete(`/admin/children/${id}`),
 };
 

@@ -281,12 +281,12 @@ export default function ChildDetail() {
         <div className="tc-card" style={{ padding: '20px' }}>
           <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Paket</h3>
           <div>
-            {child.packages && child.packages.length > 0 ? (
-              child.packages.map((pkg) => (
-                <div key={pkg.id || pkg.pivot?.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--color-border-light)' }}>
-                  <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{pkg.name}</p>
+            {child.child_packages && child.child_packages.length > 0 ? (
+              child.child_packages.map((cp) => (
+                <div key={cp.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--color-border-light)' }}>
+                  <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{cp.package?.name}</p>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                    Rp {new Intl.NumberFormat('id-ID').format(pkg.price)} · {pkg.pivot?.start_date ? `Mulai ${new Date(pkg.pivot.start_date).toLocaleDateString('id-ID')}` : ''}
+                    Rp {new Intl.NumberFormat('id-ID').format(cp.package?.price || 0)} · {cp.start_date ? `Mulai ${new Date(cp.start_date).toLocaleDateString('id-ID')}` : ''}
                   </p>
                 </div>
               ))

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
@@ -39,10 +39,7 @@ class Media extends Model
      */
     public function getUrlAttribute(): string
     {
-        return Storage::disk('local')->temporaryUrl(
-            $this->file_path,
-            now()->addMinutes(30)
-        );
+        return MediaUrl::temporary($this->file_path);
     }
 
     /**
