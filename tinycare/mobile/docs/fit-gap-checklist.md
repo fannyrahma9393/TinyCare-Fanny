@@ -110,6 +110,7 @@ Target: `mobile/` (Flutter).
 
 - `flutter analyze` clean; `flutter test` 12/12; backend `artisan test` 204/204; web vitest 9/9 + build + lint OK; `flutter build apk --debug` sukses.
 - APK terbaru: `mobile/build/app/outputs/flutter-apk/app-debug.apk` (≈167 MB, debug) — 2026-09-06.
+- **Build APK biar sesuai web (server production):** `flutter build apk --debug --dart-define=API_BASE_URL=https://tinycare.my.id/api`. Tanpa `API_BASE_URL`, APK default ke `10.0.2.2:8000` (server dev/emulator) sehingga foto & data anak beda dari web.
 - Fix build Android: `android/build.gradle.kts` buildscript kini punya `repositories { google(); mavenCentral() }` (dibutuhkan sejak `google-services.json` aktif untuk FCM → classpath `com.google.gms:google-services:4.4.2`).
 
 ## GAP CLOSURE (2026-09-06) — samakan fitur & tampilan dengan web online
