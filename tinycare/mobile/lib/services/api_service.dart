@@ -291,6 +291,46 @@ class ApiService {
     return response.data['data'];
   }
 
+  /// Parent: register their own child (no parent_ids required).
+  Future<Map<String, dynamic>> registerOwnChild({
+    required String name,
+    required String gender,
+    required String birthDate,
+    String? address,
+    String? healthInfo,
+    String? emergencyContactName,
+    String? emergencyContactPhone,
+    Uint8List? photoBytes,
+    String? photoName,
+  }) async {
+    final data = <String, dynamic>{
+      'name': name,
+      'gender': gender,
+      'birth_date': birthDate,
+      if (address != null && address.isNotEmpty) 'address': address,
+      if (healthInfo != null && healthInfo.isNotEmpty) 'health_info': healthInfo,
+      if (emergencyContactName != null && emergencyContactName.isNotEmpty) 'emergency_contact_name': emergencyContactName,
+      if (emergencyContactPhone != null && emergencyContactPhone.isNotEmpty) 'emergency_contact_phone': emergencyContactPhone,
+    };
+    final response = await _dio.post('/v1/parent/children', data: _withOptionalPhotoBytes(data, photoBytes, photoName));
+    return response.data;
+  }
+
+  /// Wrap request data in FormData with photo bytes. Used by parent
+  /// self-registration where the picked photo is already compressed.
+  dynamic _withOptionalPhotoBytes(Map<String, dynamic> data, Uint8List? bytes, String? name) {
+    if (kIsWeb || bytes == null || bytes.isEmpty) return data;
+    final form = FormData.fromMap(data);
+    form.files.add(MapEntry(
+      'photo',
+      MultipartFile.fromBytes(
+        bytes,
+        filename: name ?? 'photo.png',
+      ),
+    ));
+    return form;
+  }
+
   // ==================== DAILY STORIES ====================
 
   Future<List<dynamic>> getDailyStories(int childId) async {

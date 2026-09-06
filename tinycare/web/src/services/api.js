@@ -235,6 +235,9 @@ export const notificationsAPI = {
 export const parentAPI = {
   dashboard: () => api.get('/parent/dashboard'),
   children: () => api.get('/parent/children'),
+  addChild: (data) => api.post('/parent/children', data, {
+    headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {},
+  }),
   childDetail: (childId) => api.get(`/parent/children/${childId}`),
   childDevelopment: (childId) => api.get(`/parent/children/${childId}/development`),
   childDevelopmentTimeline: (childId) => api.get(`/parent/children/${childId}/development/timeline`),

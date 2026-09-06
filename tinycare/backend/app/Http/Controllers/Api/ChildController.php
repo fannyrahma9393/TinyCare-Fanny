@@ -89,8 +89,58 @@ class ChildController extends Controller
     }
 
     /**
-     * Show child detail.
+     * Parent: register/create their own child. The child is automatically
+     * linked to the authenticated parent.
      */
+    public function storeOwn(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->isParent()) {
+            abort(403, 'Hanya orang tua yang dapat menambahkan anak sendiri.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'birth_date' => 'required|date|before:today',
+            'gender' => 'required|in:male,female',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png,gif|max:5120',
+            'address' => 'nullable|string|max:500',
+            'health_info' => 'nullable|string|max:1000',
+            'emergency_contact_name' => 'nullable|string|max:255',
+            'emergency_contact_phone' => 'nullable|string|max:20',
+            'emergency_contact_relationship' => 'nullable|string|max:100',
+        ]);
+
+        // Handle file upload
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('child-photos', 'local');
+        }
+
+        $child = Child::create([
+            'name' => $validated['name'],
+            'birth_date' => $validated['birth_date'],
+            'gender' => $validated['gender'],
+            'photo' => $photoPath,
+            'address' => $validated['address'] ?? null,
+            'health_info' => $validated['health_info'] ?? null,
+            'emergency_contact_name' => $validated['emergency_contact_name'] ?? null,
+            'emergency_contact_phone' => $validated['emergency_contact_phone'] ?? null,
+            'emergency_contact_relationship' => $validated['emergency_contact_relationship'] ?? null,
+            'status' => 'active',
+        ]);
+
+        $child->parents()->attach($user->parent->id);
+
+        $child->parents()->get()->each->syncUserStatusFromChildren();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Anak berhasil ditambahkan.',
+            'data' => $child->load('parents.user'),
+        ], 201);
+    }
     public function show(Child $child): JsonResponse
     {
         $this->authorize('view', $child);

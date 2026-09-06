@@ -14,6 +14,7 @@ import '../pages/invoices_page.dart';
 import '../pages/parent_information_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/child_detail_page.dart';
+import '../pages/parent_child_form_page.dart';
 import 'child_photo.dart';
 
 /// Parent scaffold with bottom navigation bar matching web ParentLayout sidebar.
@@ -116,7 +117,22 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Anak Saya')),
+      appBar: AppBar(
+        title: const Text('Anak Saya'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: 'Tambah Anak',
+            onPressed: () async {
+              final added = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(builder: (_) => const ParentChildFormPage()),
+              );
+              if (added == true) _loadChildren();
+            },
+          ),
+        ],
+      ),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null

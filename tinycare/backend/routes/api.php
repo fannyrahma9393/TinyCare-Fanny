@@ -171,6 +171,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
         // View own children
         Route::get('/children', [ChildController::class, 'index']);
         Route::get('/children/{child}', [ChildController::class, 'show']);
+        Route::post('/children', [ChildController::class, 'storeOwn']);
 
         // View child's package
         Route::get('/children/{child}/package', [PackageController::class, 'parentChildPackage']);
