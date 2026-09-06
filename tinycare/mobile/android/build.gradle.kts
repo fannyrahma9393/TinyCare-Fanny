@@ -10,6 +10,10 @@ allprojects {
 // the file is provided from the Firebase Console. Once you drop google-services.json
 // into android/app/, this plugin activates automatically — no code change needed.
 buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
     dependencies {
         if (file("app/google-services.json").exists()) {
             classpath("com.google.gms:google-services:4.4.2")

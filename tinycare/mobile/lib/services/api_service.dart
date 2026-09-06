@@ -350,8 +350,11 @@ class ApiService {
 
   // ==================== PAYMENTS (Admin) ====================
 
-  Future<List<dynamic>> getAdminPayments() async {
-    final response = await _dio.get('/v1/admin/payments');
+  Future<List<dynamic>> getAdminPayments({String? status}) async {
+    final response = await _dio.get(
+      '/v1/admin/payments',
+      queryParameters: status != null ? {'status': status} : null,
+    );
     final data = response.data['data'];
     if (data is Map && data.containsKey('data')) {
       return data['data'] ?? [];

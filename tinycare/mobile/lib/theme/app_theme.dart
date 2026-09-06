@@ -8,14 +8,14 @@ class AppColors {
   // Primary Palette - Soft Green / Dark Green
   static const Color primary = Color(0xFF3A7059);
   static const Color primaryLight = Color(0xFF4A8C6F);
-  static const Color primaryDark = Color(0xFF2A5A45);
-  static const Color primarySubtle = Color(0xFFEDF5F0);
-  static const Color primaryLighter = Color(0xFFD1E8DA);
+  static const Color primaryDark = Color(0xFF2C5A47);
+  static const Color primarySubtle = Color(0xFFF0F7F3);
+  static const Color primaryLighter = Color(0xFFE8F4ED);
   static const Color primarySurface = Color(0xFFF0F7F3);
 
   // Background (light)
   static const Color bg = Color(0xFFF6F7F5);
-  static const Color bgAlt = Color(0xFFF0F2EE);
+  static const Color bgAlt = Color(0xFFEDEEF0);
   static const Color surface = Colors.white;
   static const Color surfaceElevated = Colors.white;
 
@@ -27,32 +27,32 @@ class AppColors {
 
   // Borders (light)
   static const Color border = Color(0xFFE2E4E0);
-  static const Color borderLight = Color(0xFFEEF0EC);
+  static const Color borderLight = Color(0xFFEDEEEC);
 
-  // Dark theme variants
-  static const Color darkBg = Color(0xFF121212);
-  static const Color darkBgAlt = Color(0xFF1E1E1E);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkSurfaceElevated = Color(0xFF2A2A2A);
-  static const Color darkText = Color(0xFFE8E8E8);
-  static const Color darkTextSecondary = Color(0xFFB0B0B0);
-  static const Color darkTextMuted = Color(0xFF888888);
-  static const Color darkBorder = Color(0xFF333333);
-  static const Color darkBorderLight = Color(0xFF2A2A2A);
-  static const Color darkSuccessBg = Color(0xFF1A2E1A);
-  static const Color darkWarningBg = Color(0xFF2E2A1A);
-  static const Color darkErrorBg = Color(0xFF2E1A1A);
-  static const Color darkInfoBg = Color(0xFF1A2A2E);
+  // Dark theme variants (mirror web dark palette)
+  static const Color darkBg = Color(0xFF0E1510);
+  static const Color darkBgAlt = Color(0xFF121B15);
+  static const Color darkSurface = Color(0xFF162019);
+  static const Color darkSurfaceElevated = Color(0xFF1E2A22);
+  static const Color darkText = Color(0xFFE4ECE6);
+  static const Color darkTextSecondary = Color(0xFF9CB0A2);
+  static const Color darkTextMuted = Color(0xFF5E7569);
+  static const Color darkBorder = Color(0xFF223028);
+  static const Color darkBorderLight = Color(0xFF1C2820);
+  static const Color darkSuccessBg = Color(0xFF152520);
+  static const Color darkWarningBg = Color(0xFF252015);
+  static const Color darkErrorBg = Color(0xFF251515);
+  static const Color darkInfoBg = Color(0xFF152025);
 
   // Status Colors
   static const Color success = Color(0xFF3A7059);
   static const Color successBg = Color(0xFFEDF5F0);
   static const Color warning = Color(0xFFB8862D);
-  static const Color warningBg = Color(0xFFFEF8EC);
+  static const Color warningBg = Color(0xFFFDF5E6);
   static const Color error = Color(0xFFB84040);
-  static const Color errorBg = Color(0xFFFEECEC);
-  static const Color info = Color(0xFF3B6FA0);
-  static const Color infoBg = Color(0xFFEBF2FA);
+  static const Color errorBg = Color(0xFFFBE9E9);
+  static const Color info = Color(0xFF3A6FA0);
+  static const Color infoBg = Color(0xFFEAF1F8);
 
   // Shadows
   static const List<BoxShadow> cardShadow = [
@@ -281,7 +281,7 @@ class AppTheme {
     useMaterial3: true,
     brightness: Brightness.dark,
     colorSchemeSeed: AppColors.primary,
-    scaffoldBackgroundColor: const Color(0xFF121212),
+    scaffoldBackgroundColor: AppColors.darkBg,
     fontFamily: AppTypography.fontFamily,
 
     appBarTheme: const AppBarTheme(
@@ -297,11 +297,11 @@ class AppTheme {
     ),
 
     cardTheme: CardThemeData(
-      color: const Color(0xFF1E1E1E),
+      color: AppColors.darkSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: AppRadius.lgAll,
-        side: const BorderSide(color: Color(0xFF333333), width: 1),
+        side: const BorderSide(color: AppColors.darkBorder, width: 1),
       ),
       margin: EdgeInsets.zero,
     ),
@@ -322,7 +322,7 @@ class AppTheme {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
-        side: const BorderSide(color: Color(0xFF333333)),
+        side: const BorderSide(color: AppColors.darkBorder),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.mdAll,
@@ -333,14 +333,14 @@ class AppTheme {
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF1E1E1E),
+      fillColor: AppColors.darkSurface,
       border: OutlineInputBorder(
         borderRadius: AppRadius.mdAll,
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderSide: const BorderSide(color: AppColors.darkBorder),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.mdAll,
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderSide: const BorderSide(color: AppColors.darkBorder),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.mdAll,
@@ -351,24 +351,24 @@ class AppTheme {
         borderSide: const BorderSide(color: AppColors.error),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      labelStyle: const TextStyle(color: Color(0xFF999999)),
-      hintStyle: const TextStyle(color: Color(0xFF666666)),
+      labelStyle: const TextStyle(color: AppColors.darkTextMuted),
+      hintStyle: const TextStyle(color: AppColors.darkTextMuted),
     ),
 
     dividerTheme: const DividerThemeData(
-      color: Color(0xFF333333),
+      color: AppColors.darkBorder,
       thickness: 1,
       space: 1,
     ),
 
     popupMenuTheme: const PopupMenuThemeData(
-      color: Color(0xFF1E1E1E),
+      color: AppColors.darkSurface,
     ),
 
     dropdownMenuTheme: const DropdownMenuThemeData(
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Color(0xFF1E1E1E),
+        fillColor: AppColors.darkSurface,
       ),
     ),
   );

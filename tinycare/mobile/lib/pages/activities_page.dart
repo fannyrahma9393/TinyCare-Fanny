@@ -57,9 +57,6 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   }
 
   Widget _buildParentPicker() {
-    final textColor = ThemeHelper.text(context);
-    final mutedColor = ThemeHelper.textMuted(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Aktivitas'),

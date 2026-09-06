@@ -109,3 +109,26 @@ Target: `mobile/` (Flutter).
 ## STATUS SESSION (latest)
 
 - `flutter analyze` clean; `flutter test` 12/12; backend `artisan test` 204/204; web vitest 9/9 + build + lint OK; `flutter build apk --debug` sukses.
+- APK terbaru: `mobile/build/app/outputs/flutter-apk/app-debug.apk` (≈167 MB, debug) — 2026-09-06.
+- Fix build Android: `android/build.gradle.kts` buildscript kini punya `repositories { google(); mavenCentral() }` (dibutuhkan sejak `google-services.json` aktif untuk FCM → classpath `com.google.gms:google-services:4.4.2`).
+
+## GAP CLOSURE (2026-09-06) — samakan fitur & tampilan dengan web online
+
+| Item | Sebelum | Sesudah |
+|---|---|---|
+| Admin Pembayaran: filter status | ❌ belum ada | ✅ tab Semua/Menunggu/Terverifikasi/Ditolak (`payments_page.dart`, `getAdminPayments({status})`) |
+| Admin Pembayaran: detail + bukti | ❌ `showPaymentProof` tidak dipakai | ✅ tombol Detail per kartu → bottom sheet (invoice/anak/ortua/metode/jumlah/tanggal/catatan/alasan tolak) + bukti gambar (viewer full-screen) / `Buka Bukti (PDF)` via url_launcher |
+| Admin Pembayaran: format rupiah | ❌ `Rp ${raw}` | ✅ `CurrencyHelper.formatRupiah` |
+| Parent: "Bayar Sekarang" (daftar tagihan) | 💀 buka `_InvoiceDetailPage` privat TANPA form bukti (buntu) | ✅ membuka `InvoiceDetailPage` penuh (VA + upload bukti); `_InvoiceDetailPage` privat DIHAPUS |
+| Parent: pending payment tanpa bukti | ❌ hanya "masih dalam proses verifikasi", tidak bisa kirim bukti | ✅ `pendingNoProof` → pesan + tombol `Kirim Bukti Pembayaran` (mirror web) |
+| Parent: riwayat pembayaran | ❌ tanpa bukti | ✅ header `Riwayat Pembayaran & Bukti` + thumbnail gambar (tap → viewer) / `Lihat Bukti (PDF)` + baris `Catatan` (mirror web) |
+| Desain token | 🟡 minor beda | ✅ light+dark disinkronkan dengan `web/src/index.css` (#2C5A47, #E8F4ED, #F0F7F3, #EDEEF0, #0E1510, #223028, dst) |
+| Admin form buat invoice | ❌ tanpa voucher | ✅ field `Kode Voucher` (opsional) dikirim via `createInvoice(voucherCode)` — cek: web voucher cuma dipakai di form ini (parent-apply TIDAK ada di web) |
+| Dead code | ❌ events/attendance/parent_invoices_detail/parent_payment/child_information_detail masih ada | ✅ 5 file halaman tidak ter-route DIHAPUS |
+| Depedensi | — | ✅ `url_launcher` (buka PDF/signed URL di browser) |
+
+### Catatan audit
+- Paket assign ke anak ✅ (form anak admin `_ChildFormPage` → `assignPackageToChild`).
+- Kelola Admin ✅ (list + status aktif/nonaktif + tambah + role admin/admin_master + guard `isAdminMaster`).
+- CRUD lain (anak, aktivitas, perkembangan, child info, pengumuman, feedback, users, voucher, daily story) sudah ✅ sesuai checklist.
+- `flutter analyze` 0 issues; `flutter test` 12/12.

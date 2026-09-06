@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
@@ -157,6 +158,9 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
     final status = invoice['status'] ?? 'pending';
     final isPaid = status == 'paid';
     final hasPendingPayment = _payments.any((p) => p['status'] == 'pending');
+    final pendingNoProof = _payments.any(
+      (p) => p['status'] == 'pending' && (p['proof_file'] == null || p['proof_file'].toString().isEmpty),
+    );
 
     final statusLabel = status == 'paid'
         ? 'Lunas'
@@ -239,7 +243,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             else if (_paymentInfo != null)
               _buildPaymentInfoSection(status: status)
             else
-              _buildPayButton(hasPendingPayment: hasPendingPayment),
+              _buildPayButton(hasPendingPayment: hasPendingPayment, pendingNoProof: pendingNoProof),
             if (_showProofForm) ...[
               const SizedBox(height: 16),
               _buildProofForm(),
@@ -261,7 +265,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Riwayat Pembayaran',
+              Text('Riwayat Pembayaran & Bukti',
                   style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
               const SizedBox(height: 12),
               ..._payments.map<Widget>((p) => _buildPaymentHistoryTile(p)),
@@ -413,27 +417,43 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
     );
   }
 
-  Widget _buildPayButton({required bool hasPendingPayment}) {
+  Widget _buildPayButton({required bool hasPendingPayment, required bool pendingNoProof}) {
+    final showProofToggle = pendingNoProof;
     return Column(
       children: [
         Text(
-          hasPendingPayment
-              ? 'Pembayaran sebelumnya masih dalam proses verifikasi.'
-              : 'Klik tombol di bawah untuk memulai pembayaran.',
+          pendingNoProof
+              ? 'Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.'
+              : hasPendingPayment
+                  ? 'Pembayaran sedang menunggu verifikasi admin.'
+                  : 'Klik tombol di bawah untuk memulai pembayaran.',
           style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context)),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 14),
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: hasPendingPayment || _paying ? null : _handleInitiatePayment,
-            child: _paying
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('Bayar Sekarang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        if (showProofToggle) ...[
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () => setState(() => _showProofForm = !_showProofForm),
+              child: Text(_showProofForm ? 'Tutup' : 'Kirim Bukti Pembayaran',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ),
           ),
-        ),
+        ] else if (!hasPendingPayment) ...[
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _paying ? null : _handleInitiatePayment,
+              child: _paying
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Text('Bayar Sekarang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -527,9 +547,9 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   Widget _buildPaymentHistoryTile(dynamic p) {
     final pStatus = p['status'] ?? '';
     final statusLabel = pStatus == 'verified'
-        ? 'Terverifikasi'
+        ? 'Lunas'
         : pStatus == 'pending'
-            ? 'Menunggu'
+            ? 'Menunggu Verifikasi'
             : 'Ditolak';
     final statusColor = pStatus == 'verified'
         ? AppColors.success
@@ -537,6 +557,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             ? AppColors.warning
             : AppColors.error;
     final createdAt = p['created_at'] ?? '-';
+    final notes = p['notes']?.toString();
+    final proofFile = p['proof_file']?.toString() ?? '';
+    final proofUrl = p['proof_url']?.toString();
+    final hasProof = proofFile.isNotEmpty && proofUrl != null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -545,22 +569,102 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         color: ThemeHelper.bgAlt(context),
         borderRadius: AppRadius.mdAll,
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(CurrencyHelper.formatRupiah(p['amount']),
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: ThemeHelper.text(context))),
-                const SizedBox(height: 2),
-                Text('${p['payment_method'] ?? 'Bank Transfer'} · ${_shortDate(createdAt)}',
-                    style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
-              ],
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(CurrencyHelper.formatRupiah(p['amount']),
+                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: ThemeHelper.text(context))),
+                    const SizedBox(height: 2),
+                    Text('${p['payment_method'] ?? 'Bank Transfer'} · ${_shortDate(createdAt)}',
+                        style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
+                    if (notes != null) ...[
+                      const SizedBox(height: 2),
+                      Text('Catatan: $notes',
+                          style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
+                    ],
+                  ],
+                ),
+              ),
+              AppWidgets.statusBadge(statusLabel, statusColor),
+            ],
+          ),
+          if (hasProof) ...[
+            const SizedBox(height: 10),
+            Text('BUKTI PEMBAYARAN',
+                style: AppTypography.label.copyWith(color: ThemeHelper.textMuted(context))),
+            const SizedBox(height: 6),
+            if (_isImageFile(proofFile))
+              GestureDetector(
+                onTap: () => _showProofImage(proofUrl),
+                child: ClipRRect(
+                  borderRadius: AppRadius.mdAll,
+                  child: Image.network(
+                    proofUrl,
+                    width: 132,
+                    height: 96,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stack) => Container(
+                      width: 132,
+                      height: 96,
+                      color: ThemeHelper.surface(context),
+                      alignment: Alignment.center,
+                      child: Text('Gagal dimuat',
+                          style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
+                    ),
+                  ),
+                ),
+              )
+            else
+              OutlinedButton.icon(
+                onPressed: () => _openUrl(proofUrl),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.info,
+                  side: BorderSide(color: AppColors.info.withValues(alpha: 0.5)),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                ),
+                icon: const Icon(Icons.picture_as_pdf, size: 16),
+                label: Text('Lihat Bukti (PDF)', style: const TextStyle(fontSize: 12)),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  bool _isImageFile(String file) {
+    return RegExp(r'\.(jpg|jpeg|png|webp|gif)$', caseSensitive: false).hasMatch(file);
+  }
+
+  Future<void> _openUrl(String url) async {
+    final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      _showToast('Tidak dapat membuka dokumen.', isError: true);
+    }
+  }
+
+  void _showProofImage(String url) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              maxScale: 5,
+              child: Image.network(url),
             ),
           ),
-          AppWidgets.statusBadge(statusLabel, statusColor),
-        ],
+        ),
       ),
     );
   }

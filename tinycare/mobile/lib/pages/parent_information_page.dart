@@ -157,9 +157,6 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
           itemCount: _children.length,
           itemBuilder: (context, index) {
             final child = _children[index];
-            final status = child['status'] ?? 'active';
-            final statusColor =
-                status == 'active' ? AppColors.success : mutedColor;
 
             return GestureDetector(
               onTap: () => _selectChild(child['id']),
