@@ -67,14 +67,12 @@ class DashboardController extends Controller
                 'child_name' => $f->child?->name,
             ]);
 
-        // Published announcements
+        // Published announcements (public page: broadcast-only, so targeted
+        // announcements never leak to visitors)
         $announcements = Announcement::where('is_published', true)
-            ->where(function ($q) {
-                $q->whereNull('publish_date')->orWhere('publish_date', '<=', now());
-            })
-            ->where(function ($q) {
-                $q->whereNull('expire_date')->orWhere('expire_date', '>=', now());
-            })
+            ->withinActiveWindow()
+            ->whereDoesntHave('children')
+            ->whereDoesntHave('parents')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
@@ -318,16 +316,9 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Active announcements
-        $announcements = Announcement::where('is_published', true)
-            ->where(function ($query) {
-                $query->whereNull('publish_date')
-                    ->orWhere('publish_date', '<=', now());
-            })
-            ->where(function ($query) {
-                $query->whereNull('expire_date')
-                    ->orWhere('expire_date', '>=', now());
-            })
+        // Active announcements visible to this parent (broadcast + targeted)
+        $parentChildIds = $children->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $announcements = Announcement::visibleToParent($parent->id, $parentChildIds)
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();

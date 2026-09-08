@@ -37,6 +37,25 @@ void main() {
       expect(n.childId, isNull);
       expect(n.informationId, isNull);
     });
+
+    test('parses announcement_id from backend payload', () {
+      final n = FcmNotification.fromData({
+        'link': '/announcements',
+        'type': 'announcement',
+        'announcement_id': '42',
+      }, title: 'Pengumuman Baru', body: 'Isi pengumuman.');
+
+      expect(n.title, 'Pengumuman Baru');
+      expect(n.body, 'Isi pengumuman.');
+      expect(n.type, 'announcement');
+      expect(n.announcementId, 42);
+    });
+
+    test('announcement without id routes to the announcements list', () {
+      final n = FcmNotification.fromData({'type': 'announcement'});
+      expect(n.announcementId, isNull);
+      expect(n.resolveRoute(), '/announcements');
+    });
   });
 
   group('FcmNotification.resolveRoute', () {

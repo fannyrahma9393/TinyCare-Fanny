@@ -462,6 +462,16 @@ class ApiService {
     return data ?? [];
   }
 
+  /// Parent: single announcement detail. Backend enforces visibility, so a
+  /// non-visible announcement results in a 404 and returns null.
+  Future<Map<String, dynamic>?> getAnnouncement(int id) async {
+    final response = await _dio.get('/v1/parent/announcements/$id');
+    final data = response.data['data'];
+    if (data is Map<String, dynamic>) return data;
+    if (data is Map) return data.cast<String, dynamic>();
+    return null;
+  }
+
   // ==================== FEEDBACK ====================
 
   Future<List<dynamic>> getFeedback() async {

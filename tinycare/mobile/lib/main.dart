@@ -12,6 +12,7 @@ import 'pages/daily_stories_page.dart';
 import 'pages/development_page.dart';
 import 'pages/invoices_page.dart';
 import 'pages/announcements_page.dart';
+import 'pages/announcement_detail_page.dart';
 import 'pages/feedback_page.dart';
 import 'pages/admin_dashboard_page.dart';
 import 'pages/register_page.dart';
@@ -63,6 +64,20 @@ void main() {
   FcmService.instance.onNotificationTap = (notification) {
     final nav = navigatorKey.currentState;
     if (nav == null) return;
+    // Announcement pushes carry announcement_id -> open the exact announcement
+    // instead of the plain list. Auth-guarded: not-logged-in users are sent
+    // to login first.
+    if (notification.type == 'announcement' &&
+        notification.announcementId != null) {
+      nav.push(MaterialPageRoute(
+        builder: (_) => _AuthGuard(
+          child: AnnouncementDetailPage(
+            announcementId: notification.announcementId!,
+          ),
+        ),
+      ));
+      return;
+    }
     nav.pushNamed(notification.resolveRoute());
   };
 

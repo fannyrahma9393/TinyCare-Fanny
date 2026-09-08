@@ -165,6 +165,7 @@ class FcmService {
 
   bool _configured = false;
   bool _initialized = false;
+  bool _initialMessageHandled = false;
   String? _currentToken;
 
   StreamSubscription<RemoteMessage>? _foregroundSub;
@@ -301,7 +302,13 @@ class FcmService {
     _handleInitialMessage(messaging);
   }
 
+  /// Process the notification that launched the app (terminated state).
+  /// Guarded so it only ever fires once per app run — setupForLoggedInUser()
+  /// is safe to call multiple times (login + session restore) without the
+  /// initial tap being routed twice.
   Future<void> _handleInitialMessage(FirebaseMessaging messaging) async {
+    if (_initialMessageHandled) return;
+    _initialMessageHandled = true;
     try {
       final initial = await messaging.getInitialMessage();
       if (initial != null) {

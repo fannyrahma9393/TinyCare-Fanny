@@ -43,6 +43,14 @@ class AuthProvider extends ChangeNotifier {
             final role = userData['role'];
             _api.setAdminStatus(role == 'admin' || role == 'admin_master');
             _isLoggedIn = true;
+
+            // Session restored without a fresh login: re-arm FCM so push
+            // listeners and token registration keep working after the app is
+            // reopened. setupForLoggedInUser() is idempotent, so calling it
+            // here AND after login is safe (no duplicate listeners).
+            if (isParent) {
+              _setupFcm();
+            }
           } else {
             await logout();
           }

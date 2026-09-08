@@ -210,6 +210,7 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // Announcements
         Route::get('/announcements', [AnnouncementController::class, 'parentIndex']);
+        Route::get('/announcements/{announcement}', [AnnouncementController::class, 'parentShow']);
 
         // Child Information
         Route::get('/child-information', [ChildInformationController::class, 'parentIndex']);

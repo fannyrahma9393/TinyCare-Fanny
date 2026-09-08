@@ -18,7 +18,7 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Announcement::with(['creator:id,name', 'children:id,name']);
+        $query = Announcement::with(['creator:id,name', 'children:id,name', 'parents:id,user_id,phone', 'parents.user:id,name']);
 
         // Filter by status
         if ($request->has('is_published')) {
@@ -54,6 +54,8 @@ class AnnouncementController extends Controller
             'is_published' => 'sometimes|boolean',
             'child_ids' => 'nullable|array',
             'child_ids.*' => 'exists:children,id',
+            'parent_ids' => 'nullable|array',
+            'parent_ids.*' => 'exists:parents,id',
         ]);
 
         $validated['created_by'] = $request->user()->id;
@@ -62,6 +64,10 @@ class AnnouncementController extends Controller
 
         if (! empty($validated['child_ids'])) {
             $announcement->children()->sync($validated['child_ids']);
+        }
+
+        if (! empty($validated['parent_ids'])) {
+            $announcement->parents()->sync($validated['parent_ids']);
         }
 
         // If published immediately, notify the targeted parents via FCM + DB
@@ -74,7 +80,7 @@ class AnnouncementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil dibuat.',
-            'data' => $announcement->load(['children:id,name']),
+            'data' => $announcement->load(['children:id,name', 'parents:id,user_id,phone', 'parents.user:id,name']),
             'notify' => $notifyResult,
         ], 201);
     }
@@ -93,6 +99,8 @@ class AnnouncementController extends Controller
             'is_published' => 'sometimes|boolean',
             'child_ids' => 'nullable|array',
             'child_ids.*' => 'exists:children,id',
+            'parent_ids' => 'nullable|array',
+            'parent_ids.*' => 'exists:parents,id',
         ]);
 
         $wasPublished = $announcement->is_published;
@@ -101,6 +109,10 @@ class AnnouncementController extends Controller
         // Update targeting: empty array clears targets (becomes broadcast).
         if ($request->exists('child_ids')) {
             $announcement->children()->sync($validated['child_ids'] ?? []);
+        }
+
+        if ($request->exists('parent_ids')) {
+            $announcement->parents()->sync($validated['parent_ids'] ?? []);
         }
 
         // If newly published (was draft, now published), notify targets.
@@ -112,7 +124,7 @@ class AnnouncementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pengumuman berhasil diperbarui.',
-            'data' => $announcement->load(['children:id,name']),
+            'data' => $announcement->load(['children:id,name', 'parents:id,user_id,phone', 'parents.user:id,name']),
             'notify' => $notifyResult,
         ]);
     }
@@ -133,20 +145,27 @@ class AnnouncementController extends Controller
     /**
      * Send FCM push + DB notification for a published announcement.
      *
-     * When the announcement targets specific children, only the parent(s) of
-     * those children (with an active user) are notified — one notification per
-     * parent even if a parent has multiple targeted children. When no children
-     * are targeted, every active parent is notified (existing broadcast).
+     * Targets are resolved as:
+     *  - direct parent targets (announcement_parent pivot) — the listed
+     *    parents themselves, plus
+     *  - child targets (announcement_child pivot) — the parents of the listed
+     *    children.
+     * Parents are de-duplicated (one notification per parent even when a
+     * parent appears through several targets). When neither pivot has rows,
+     * every active parent is notified (existing broadcast).
      *
      * @return array{targeted_parents: int, fcm_sent: int, fcm_failed: int, fcm_configured: bool}
      */
     private function notifyTargetedParents(Announcement $announcement): array
     {
-        $announcement->load('children.parents.user');
+        $announcement->load(['children.parents.user', 'parents.user']);
 
-        if ($announcement->children->isNotEmpty()) {
+        $hasTargets = $announcement->children->isNotEmpty() || $announcement->parents->isNotEmpty();
+
+        if ($hasTargets) {
             $parentUsers = $announcement->children
                 ->flatMap(fn (Child $child) => $child->parents)
+                ->concat($announcement->parents)
                 ->unique('id')
                 ->map->user
                 ->filter(fn ($user) => $user && $user->status === 'active')
@@ -215,19 +234,15 @@ class AnnouncementController extends Controller
     }
 
     /**
-     * Parent: view published announcements.
+     * Parent: view published announcements visible to the requesting parent.
+     * Visibility is enforced on the backend (broadcast, direct parent target
+     * or parent of a targeted child).
      */
     public function parentIndex(Request $request): JsonResponse
     {
-        $announcements = Announcement::where('is_published', true)
-            ->where(function ($query) {
-                $query->whereNull('publish_date')
-                    ->orWhere('publish_date', '<=', now());
-            })
-            ->where(function ($query) {
-                $query->whereNull('expire_date')
-                    ->orWhere('expire_date', '>=', now());
-            })
+        [$parentId, $childIds] = $this->parentTargetContext($request);
+
+        $announcements = Announcement::visibleToParent($parentId, $childIds)
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -235,5 +250,48 @@ class AnnouncementController extends Controller
             'success' => true,
             'data' => $announcements,
         ]);
+    }
+
+    /**
+     * Parent: view a single announcement. Returns 404 when the announcement is
+     * not visible to the requesting parent (never leaks existence).
+     */
+    public function parentShow(Request $request, Announcement $announcement): JsonResponse
+    {
+        [$parentId, $childIds] = $this->parentTargetContext($request);
+
+        $visible = Announcement::whereKey($announcement->id)
+            ->visibleToParent($parentId, $childIds)
+            ->exists();
+
+        if (! $visible) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengumuman tidak ditemukan.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $announcement,
+        ]);
+    }
+
+    /**
+     * Resolve the parent model id + child ids used for visibility checks.
+     *
+     * @return array{0: int|null, 1: array<int, int>}
+     */
+    private function parentTargetContext(Request $request): array
+    {
+        $parent = $request->user()->parent;
+
+        if (! $parent) {
+            return [null, []];
+        }
+
+        $childIds = $parent->children()->pluck('children.id')->map(fn ($id) => (int) $id)->all();
+
+        return [$parent->id, $childIds];
     }
 }
