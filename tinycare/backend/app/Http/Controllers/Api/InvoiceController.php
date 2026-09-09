@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Package;
 use App\Models\Voucher;
 use App\Models\VoucherUsage;
+use App\Services\FcmNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,6 +145,32 @@ class InvoiceController extends Controller
 
             return $invoice->load(['child', 'package', 'parent.user']);
         });
+
+        // Notify the parent about the new invoice (DB + FCM)
+        $parentUser = $invoice->parent->user ?? null;
+        if ($parentUser && $parentUser->status === 'active') {
+            $fcm = app(FcmNotificationService::class);
+            $fcm->notifyUser(
+                $parentUser,
+                [
+                    'type' => 'invoice_created',
+                    'title' => 'Tagihan Baru',
+                    'message' => "Tagihan baru untuk {$child->name}: {$package->name}",
+                    'link' => '/invoices',
+                    'data' => [
+                        'type' => 'invoice_created',
+                        'invoice_id' => (string) $invoice->id,
+                    ],
+                ],
+                'Tagihan Baru',
+                "Tagihan baru untuk {$child->name}: {$package->name}",
+                '/invoices',
+                [
+                    'type' => 'invoice_created',
+                    'invoice_id' => (string) $invoice->id,
+                ]
+            );
+        }
 
         return response()->json([
             'success' => true,

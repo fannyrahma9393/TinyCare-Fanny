@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\FcmToken;
 use App\Models\Child;
 use App\Models\Notification;
+use App\Models\User;
 use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\Facades\Log;
 
@@ -145,6 +146,81 @@ class FcmNotificationService
 
         return [
             'targeted_parents' => $targetedParents,
+            'fcm_sent' => $fcmSent,
+            'fcm_failed' => $fcmFailed,
+            'fcm_configured' => $this->isConfigured(),
+        ];
+    }
+
+    /**
+     * Create an in-app DB notification AND send an FCM push to a single user.
+     * General-purpose helper for user-targeted events (invoice, payment, feedback).
+     *
+     * @param  array{type: string, title: string, message: string, data?: array}  $notif
+     * @return array{fcm_sent: int, fcm_failed: int, fcm_configured: bool}
+     */
+    public function notifyUser(User $user, array $notif, string $pushTitle, string $pushBody, ?string $pushLink = null, array $pushData = []): array
+    {
+        if ($user->status !== 'active') {
+            return ['fcm_sent' => 0, 'fcm_failed' => 0, 'fcm_configured' => $this->isConfigured()];
+        }
+
+        Notification::create([
+            'user_id' => $user->id,
+            'type' => $notif['type'] ?? 'general',
+            'title' => $notif['title'] ?? '',
+            'message' => $notif['message'] ?? '',
+            'link' => $notif['link'] ?? null,
+            'data' => $notif['data'] ?? [],
+        ]);
+
+        $result = $this->sendToUser($user->id, $pushTitle, $pushBody, $pushLink, $pushData);
+
+        return [
+            'fcm_sent' => $result['success'],
+            'fcm_failed' => $result['failed'],
+            'fcm_configured' => $this->isConfigured(),
+        ];
+    }
+
+    /**
+     * Notify every active admin and admin_master user: create an in-app DB
+     * notification AND send an FCM push. Used for events that admins need
+     * to see (payment submissions, new feedback, etc.).
+     *
+     * @param  array{type: string, title: string, message: string, data?: array}  $notif
+     * @return array{targeted_admins: int, fcm_sent: int, fcm_failed: int, fcm_configured: bool}
+     */
+    public function notifyAdmins(array $notif, string $pushTitle, string $pushBody, ?string $pushLink = null, array $pushData = []): array
+    {
+        $adminUsers = User::whereHas('role', fn ($q) => $q->whereIn('name', ['admin', 'admin_master']))
+            ->where('status', 'active')
+            ->get();
+
+        $targeted = 0;
+        $fcmSent = 0;
+        $fcmFailed = 0;
+
+        foreach ($adminUsers as $user) {
+            Notification::create([
+                'user_id' => $user->id,
+                'type' => $notif['type'] ?? 'general',
+                'title' => $notif['title'] ?? '',
+                'message' => $notif['message'] ?? '',
+                'link' => $notif['link'] ?? null,
+                'data' => $notif['data'] ?? [],
+            ]);
+
+            $targeted++;
+
+            $result = $this->sendToUser($user->id, $pushTitle, $pushBody, $pushLink, $pushData);
+
+            $fcmSent += $result['success'];
+            $fcmFailed += $result['failed'];
+        }
+
+        return [
+            'targeted_admins' => $targeted,
             'fcm_sent' => $fcmSent,
             'fcm_failed' => $fcmFailed,
             'fcm_configured' => $this->isConfigured(),

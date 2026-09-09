@@ -31,6 +31,7 @@ import 'pages/forgot_password_page.dart';
 import 'pages/reset_password_page.dart';
 import 'pages/notifications_page.dart';
 import 'pages/change_password_page.dart';
+import 'pages/invoice_detail_page.dart';
 import 'widgets/parent_scaffold.dart';
 
 /// Global navigator key so FCM notification taps can route navigation even
@@ -64,6 +65,7 @@ void main() {
   FcmService.instance.onNotificationTap = (notification) {
     final nav = navigatorKey.currentState;
     if (nav == null) return;
+
     // Announcement pushes carry announcement_id -> open the exact announcement
     // instead of the plain list. Auth-guarded: not-logged-in users are sent
     // to login first.
@@ -78,6 +80,18 @@ void main() {
       ));
       return;
     }
+
+    // Invoice/payment notifications (invoice_created, payment_verified,
+    // payment_rejected) carry invoice_id -> open the invoice detail directly.
+    if (notification.canOpenInvoiceDetail) {
+      nav.push(MaterialPageRoute(
+        builder: (_) => _AuthGuard(
+          child: InvoiceDetailPage(invoiceId: notification.invoiceId!),
+        ),
+      ));
+      return;
+    }
+
     nav.pushNamed(notification.resolveRoute());
   };
 
@@ -131,7 +145,7 @@ class TinyCareApp extends StatelessWidget {
           theme: AppTheme.theme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.flutterThemeMode,
-          initialRoute: '/login',
+          home: const _InitialRoute(),
           routes: {
             '/login': (context) => const LoginPage(),
             '/register': (context) => const RegisterPage(),
@@ -162,6 +176,45 @@ class TinyCareApp extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Widget that routes the user to the correct first page on app open.
+/// While AuthProvider.init() is running it shows a loading spinner; once
+/// resolved it redirects to the role-appropriate dashboard when logged in,
+/// or to the login page when not. This lets a previously-logged-in user skip
+/// the login screen and land straight on their dashboard.
+class _InitialRoute extends StatelessWidget {
+  const _InitialRoute();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        if (auth.isLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            ),
+          );
+        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          if (!auth.isLoggedIn) {
+            Navigator.pushReplacementNamed(context, '/login');
+          } else if (auth.isAdmin) {
+            Navigator.pushReplacementNamed(context, '/dashboard');
+          } else {
+            Navigator.pushReplacementNamed(context, '/parent');
+          }
+        });
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
+        );
+      },
     );
   }
 }

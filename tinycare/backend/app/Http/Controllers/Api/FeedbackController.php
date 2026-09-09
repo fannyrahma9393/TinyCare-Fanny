@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Services\FcmNotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -61,6 +62,9 @@ class FeedbackController extends Controller
             'status' => 'pending',
         ]);
 
+        // Notify all active admins/admin_masters about new feedback (DB + FCM)
+        $this->notifyAdminsFeedbackCreated($feedback, $request->user()->name);
+
         return response()->json([
             'success' => true,
             'message' => 'Feedback berhasil dikirim.',
@@ -83,6 +87,9 @@ class FeedbackController extends Controller
             'responded_by' => $request->user()->id,
             'responded_at' => now(),
         ]);
+
+        // Notify the parent that their feedback was replied to (DB + FCM)
+        $this->notifyParentFeedbackReplied($feedback);
 
         return response()->json([
             'success' => true,
@@ -122,5 +129,66 @@ class FeedbackController extends Controller
             'success' => true,
             'data' => $feedback,
         ]);
+    }
+
+    /**
+     * Notify all active admins/admin_masters about a new feedback.
+     */
+    private function notifyAdminsFeedbackCreated(Feedback $feedback, string $parentName): void
+    {
+        $fcm = app(FcmNotificationService::class);
+        $fcm->notifyAdmins(
+            [
+                'type' => 'feedback_created',
+                'title' => 'Feedback Baru',
+                'message' => "{$parentName} mengirim feedback: {$feedback->subject}",
+                'link' => '/feedback',
+                'data' => [
+                    'type' => 'feedback_created',
+                    'feedback_id' => (string) $feedback->id,
+                ],
+            ],
+            'Feedback Baru',
+            "{$parentName} mengirim feedback: {$feedback->subject}",
+            '/feedback',
+            [
+                'type' => 'feedback_created',
+                'feedback_id' => (string) $feedback->id,
+            ]
+        );
+    }
+
+    /**
+     * Notify the parent that their feedback was replied to.
+     */
+    private function notifyParentFeedbackReplied(Feedback $feedback): void
+    {
+        $parent = $feedback->parent;
+        $user = $parent?->user;
+        if (! $user || $user->status !== 'active') {
+            return;
+        }
+
+        $fcm = app(FcmNotificationService::class);
+        $fcm->notifyUser(
+            $user,
+            [
+                'type' => 'feedback_replied',
+                'title' => 'Feedback Dibalas',
+                'message' => "Admin menjawab feedback Anda: {$feedback->subject}",
+                'link' => '/feedback',
+                'data' => [
+                    'type' => 'feedback_replied',
+                    'feedback_id' => (string) $feedback->id,
+                ],
+            ],
+            'Feedback Dibalas',
+            "Admin menjawab feedback Anda: {$feedback->subject}",
+            '/feedback',
+            [
+                'type' => 'feedback_replied',
+                'feedback_id' => (string) $feedback->id,
+            ]
+        );
     }
 }

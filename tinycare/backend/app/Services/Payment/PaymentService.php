@@ -4,6 +4,8 @@ namespace App\Services\Payment;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\User;
+use App\Services\FcmNotificationService;
 use Illuminate\Support\Facades\Log;
 
 class PaymentService
@@ -109,6 +111,12 @@ class PaymentService
             'invoice_id' => $payment->invoice_id,
             'verified_by' => $adminId,
         ]);
+
+        // Notify the parent that their payment was verified (DB + FCM)
+        $this->notifyParent($payment, 'payment_verified', 'Pembayaran Diverifikasi',
+            'Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.',
+            'Pembayaran Diverifikasi',
+            'Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.');
     }
 
     /**
@@ -132,6 +140,54 @@ class PaymentService
             'invoice_id' => $payment->invoice_id,
             'reason' => $reason,
         ]);
+
+        // Notify the parent that their payment was rejected (DB + FCM)
+        $note = $reason ? " Alasan: {$reason}" : '';
+        $this->notifyParent($payment, 'payment_rejected', 'Pembayaran Ditolak',
+            "Pembayaran Anda ditolak dan belum diverifikasi.{$note}",
+            'Pembayaran Ditolak',
+            "Pembayaran Anda ditolak dan belum diverifikasi.{$note}");
+    }
+
+    /**
+     * Notify the parent of a payment's invoice about a payment event.
+     */
+    private function notifyParent(Payment $payment, string $type, string $title, string $message, string $pushTitle, string $pushBody): void
+    {
+        $invoice = $payment->invoice;
+        if (! $invoice) {
+            return;
+        }
+
+        $parent = $invoice->parent;
+        $user = $parent?->user;
+        if (! $user || $user->status !== 'active') {
+            return;
+        }
+
+        $fcm = app(FcmNotificationService::class);
+        $fcm->notifyUser(
+            $user,
+            [
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'link' => '/invoices',
+                'data' => [
+                    'type' => $type,
+                    'payment_id' => (string) $payment->id,
+                    'invoice_id' => (string) $invoice->id,
+                ],
+            ],
+            $pushTitle,
+            $pushBody,
+            '/invoices',
+            [
+                'type' => $type,
+                'payment_id' => (string) $payment->id,
+                'invoice_id' => (string) $invoice->id,
+            ]
+        );
     }
 
     /**

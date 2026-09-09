@@ -16,6 +16,9 @@ class FcmNotification {
     this.childId,
     this.informationId,
     this.announcementId,
+    this.invoiceId,
+    this.paymentId,
+    this.feedbackId,
   });
 
   final String title;
@@ -25,6 +28,9 @@ class FcmNotification {
   final int? childId;
   final int? informationId;
   final int? announcementId;
+  final int? invoiceId;
+  final int? paymentId;
+  final int? feedbackId;
 
   factory FcmNotification.fromRemoteMessage(RemoteMessage message) {
     final notification = message.notification;
@@ -36,7 +42,8 @@ class FcmNotification {
   }
 
   /// Pure parser — works with the backend `data` payload (keys: title, body,
-  /// link, type, child_id, information_id) and optional notification strings.
+  /// link, type, child_id, information_id, announcement_id, invoice_id,
+  /// payment_id, feedback_id) and optional notification strings.
   /// Kept dependency-free so it is unit-testable without Firebase channels.
   factory FcmNotification.fromData(
     Map<String, dynamic> data, {
@@ -51,6 +58,9 @@ class FcmNotification {
       childId: _toInt(data['child_id']),
       informationId: _toInt(data['information_id']),
       announcementId: _toInt(data['announcement_id']),
+      invoiceId: _toInt(data['invoice_id']),
+      paymentId: _toInt(data['payment_id']),
+      feedbackId: _toInt(data['feedback_id']),
     );
   }
 
@@ -72,10 +82,32 @@ class FcmNotification {
         return '/development';
       case 'child_information':
         return '/information';
+      case 'invoice':
+      case 'invoice_created':
+      case 'payment_verified':
+      case 'payment_rejected':
+        return '/invoices';
+      case 'payment_submitted':
+        return '/payments';
+      case 'feedback':
+      case 'feedback_created':
+      case 'feedback_replied':
+        return '/feedback';
       default:
         return '/dashboard';
     }
   }
+
+  /// Whether this notification can open an invoice detail page
+  /// (requires a valid invoice_id in the payload).
+  bool get canOpenInvoiceDetail =>
+      invoiceId != null &&
+      (type == 'invoice_created' ||
+          type == 'payment_verified' ||
+          type == 'payment_rejected' ||
+          type == 'invoice' ||
+          type == 'payment_submitted');
+  
 
   static int? _toInt(dynamic value) {
     if (value == null) return null;
@@ -89,6 +121,8 @@ class FcmNotification {
       return '/daily-stories';
     }
     if (lower.contains('/parent/information')) return '/parent/information';
+    if (lower.contains('/admin/payments')) return '/payments';
+    if (lower.contains('/parent/invoices')) return '/invoices';
     return link;
   }
 
@@ -108,6 +142,7 @@ class FcmNotification {
       case '/vouchers':
       case '/reports':
       case '/activities':
+      case '/payments':
         return link;
       default:
         return null;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'announcement_detail_page.dart';
+import 'invoice_detail_page.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -53,19 +54,23 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
-  /// Open the target page for a notification. Announcement notifications
-  /// (type=announcement with data.announcement_id) open the announcement
-  /// detail; other types just mark as read.
+  /// Open the target page for a notification.
+  /// - announcement (with announcement_id) opens the announcement detail.
+  /// - invoice/payment events (with invoice_id) open the invoice detail.
+  /// - payment_submitted (admin) opens the payments list.
+  /// - feedback events open the feedback list.
+  /// Other types just mark as read.
   void _handleTap(dynamic n) {
     final id = n['id'] as int;
     final isRead = n['is_read'] == true;
     final type = n['type'] as String?;
+    final data = n['data'];
+    final dataMap = (data is Map) ? data : const <dynamic, dynamic>{};
+
+    int? asInt(dynamic v) => v == null ? null : int.tryParse(v.toString());
 
     if (type == 'announcement') {
-      final data = n['data'];
-      final announcementId = (data is Map && data['announcement_id'] != null)
-          ? int.tryParse(data['announcement_id'].toString())
-          : null;
+      final announcementId = asInt(dataMap['announcement_id']);
       if (announcementId != null) {
         if (!isRead) _markRead(id);
         Navigator.push(
@@ -76,6 +81,40 @@ class _NotificationsPageState extends State<NotificationsPage> {
         );
         return;
       }
+    }
+
+    // Invoice / payment notifications that carry an invoice_id open the
+    // invoice detail directly (parent view).
+    final invoiceId = asInt(dataMap['invoice_id']);
+    const invoiceDeepLinkTypes = {
+      'invoice',
+      'invoice_created',
+      'payment_verified',
+      'payment_rejected',
+    };
+    if (invoiceId != null && invoiceDeepLinkTypes.contains(type)) {
+      if (!isRead) _markRead(id);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => InvoiceDetailPage(invoiceId: invoiceId),
+        ),
+      );
+      return;
+    }
+
+    // Feedback notifications -> feedback page (no standalone detail page).
+    if (type == 'feedback' || type == 'feedback_created' || type == 'feedback_replied') {
+      if (!isRead) _markRead(id);
+      Navigator.pushNamed(context, '/feedback');
+      return;
+    }
+
+    // Payment submitted (admin) -> payments page.
+    if (type == 'payment_submitted' || type == 'payment') {
+      if (!isRead) _markRead(id);
+      Navigator.pushNamed(context, '/payments');
+      return;
     }
 
     if (!isRead) _markRead(id);
@@ -102,8 +141,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
   IconData _iconForType(String? type) {
     switch (type) {
       case 'payment':
+      case 'payment_submitted':
         return Icons.payment;
+      case 'payment_verified':
+        return Icons.verified;
+      case 'payment_rejected':
+        return Icons.cancel;
       case 'invoice':
+      case 'invoice_created':
         return Icons.receipt_long;
       case 'attendance':
         return Icons.calendar_today;
@@ -118,6 +163,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'event':
         return Icons.event;
       case 'feedback':
+      case 'feedback_created':
+      case 'feedback_replied':
         return Icons.rate_review;
       default:
         return Icons.notifications_outlined;

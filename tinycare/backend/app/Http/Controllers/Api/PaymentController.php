@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Services\FcmNotificationService;
 use App\Services\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -166,6 +167,9 @@ class PaymentController extends Controller
                 'notes' => $validated['notes'] ?? $existingPending->notes,
             ]);
 
+            // Notify admins about the payment submission (DB + FCM)
+            $this->notifyAdminsPaymentSubmitted($existingPending, $invoice);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi.',
@@ -181,6 +185,9 @@ class PaymentController extends Controller
             'proof_file' => $proofPath,
             'notes' => $validated['notes'] ?? null,
         ]);
+
+        // Notify admins about the payment submission (DB + FCM)
+        $this->notifyAdminsPaymentSubmitted($payment, $invoice);
 
         return response()->json([
             'success' => true,
@@ -305,5 +312,34 @@ class PaymentController extends Controller
 
             return response()->json(['success' => false], 500);
         }
+    }
+
+    /**
+     * Notify all active admins/admin_masters that a payment was submitted.
+     */
+    private function notifyAdminsPaymentSubmitted(Payment $payment, Invoice $invoice): void
+    {
+        $fcm = app(FcmNotificationService::class);
+        $fcm->notifyAdmins(
+            [
+                'type' => 'payment_submitted',
+                'title' => 'Pembayaran Baru',
+                'message' => "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}",
+                'link' => '/payments',
+                'data' => [
+                    'type' => 'payment_submitted',
+                    'payment_id' => (string) $payment->id,
+                    'invoice_id' => (string) $invoice->id,
+                ],
+            ],
+            'Pembayaran Baru',
+            "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}",
+            '/payments',
+            [
+                'type' => 'payment_submitted',
+                'payment_id' => (string) $payment->id,
+                'invoice_id' => (string) $invoice->id,
+            ]
+        );
     }
 }

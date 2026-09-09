@@ -56,6 +56,91 @@ void main() {
       expect(n.announcementId, isNull);
       expect(n.resolveRoute(), '/announcements');
     });
+
+    test('parses invoice_created payload with invoice_id', () {
+      final n = FcmNotification.fromData({
+        'link': '/invoices',
+        'type': 'invoice_created',
+        'invoice_id': '123',
+      }, title: 'Tagihan Baru', body: 'Tagihan baru untuk Budi.');
+
+      expect(n.type, 'invoice_created');
+      expect(n.invoiceId, 123);
+      expect(n.canOpenInvoiceDetail, isTrue);
+      expect(n.resolveRoute(), '/invoices');
+    });
+
+    test('parses payment_submitted payload for admins', () {
+      final n = FcmNotification.fromData({
+        'link': '/payments',
+        'type': 'payment_submitted',
+        'payment_id': '55',
+        'invoice_id': '123',
+      }, title: 'Pembayaran Baru', body: 'Menunggu verifikasi.');
+
+      expect(n.paymentId, 55);
+      expect(n.invoiceId, 123);
+      expect(n.resolveRoute(), '/payments');
+    });
+
+    test('parses payment_verified payload', () {
+      final n = FcmNotification.fromData({
+        'link': '/invoices',
+        'type': 'payment_verified',
+        'payment_id': '55',
+        'invoice_id': '123',
+      }, title: 'Pembayaran Diverifikasi', body: 'Tagihan lunas.');
+
+      expect(n.type, 'payment_verified');
+      expect(n.paymentId, 55);
+      expect(n.invoiceId, 123);
+      expect(n.canOpenInvoiceDetail, isTrue);
+    });
+
+    test('parses payment_rejected payload', () {
+      final n = FcmNotification.fromData({
+        'link': '/invoices',
+        'type': 'payment_rejected',
+        'payment_id': '55',
+        'invoice_id': '123',
+      }, title: 'Pembayaran Ditolak', body: 'Alasan: saldo kurang.');
+
+      expect(n.type, 'payment_rejected');
+      expect(n.paymentId, 55);
+      expect(n.invoiceId, 123);
+      expect(n.canOpenInvoiceDetail, isTrue);
+    });
+
+    test('parses feedback_created payload for admins', () {
+      final n = FcmNotification.fromData({
+        'link': '/feedback',
+        'type': 'feedback_created',
+        'feedback_id': '9',
+      }, title: 'Feedback Baru', body: 'Parent A mengirim feedback.');
+
+      expect(n.feedbackId, 9);
+      expect(n.resolveRoute(), '/feedback');
+    });
+
+    test('parses feedback_replied payload for parents', () {
+      final n = FcmNotification.fromData({
+        'link': '/feedback',
+        'type': 'feedback_replied',
+        'feedback_id': '9',
+      }, title: 'Feedback Dibalas', body: 'Admin menjawab feedback Anda.');
+
+      expect(n.type, 'feedback_replied');
+      expect(n.feedbackId, 9);
+      expect(n.resolveRoute(), '/feedback');
+    });
+
+    test('payment_submitted admin link maps to /payments', () {
+      final n = FcmNotification.fromData({
+        'link': '/admin/payments',
+        'type': 'payment_submitted',
+      });
+      expect(n.resolveRoute(), '/payments');
+    });
   });
 
   group('FcmNotification.resolveRoute', () {
@@ -101,6 +186,36 @@ void main() {
         'type': 'development',
       });
       expect(n.resolveRoute(), '/development');
+    });
+
+    test('invoice_created -> /invoices', () {
+      final n = FcmNotification.fromData({'type': 'invoice_created'});
+      expect(n.resolveRoute(), '/invoices');
+    });
+
+    test('payment_submitted -> /payments', () {
+      final n = FcmNotification.fromData({'type': 'payment_submitted'});
+      expect(n.resolveRoute(), '/payments');
+    });
+
+    test('payment_verified -> /invoices', () {
+      final n = FcmNotification.fromData({'type': 'payment_verified'});
+      expect(n.resolveRoute(), '/invoices');
+    });
+
+    test('payment_rejected -> /invoices', () {
+      final n = FcmNotification.fromData({'type': 'payment_rejected'});
+      expect(n.resolveRoute(), '/invoices');
+    });
+
+    test('feedback_created -> /feedback', () {
+      final n = FcmNotification.fromData({'type': 'feedback_created'});
+      expect(n.resolveRoute(), '/feedback');
+    });
+
+    test('feedback_replied -> /feedback', () {
+      final n = FcmNotification.fromData({'type': 'feedback_replied'});
+      expect(n.resolveRoute(), '/feedback');
     });
   });
 }

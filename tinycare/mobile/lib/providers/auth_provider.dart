@@ -26,7 +26,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final token = await _api.getToken();
+      final savedUser = await _api.getSavedUser();
+      String? token;
+      try {
+        token = await _api.getToken();
+      } catch (e) {
+        debugPrint('[AuthProvider] getToken failed: $e');
+      }
+
       if (token != null) {
         try {
           final meResponse = await _api.getMe();
@@ -48,15 +55,30 @@ class AuthProvider extends ChangeNotifier {
             // listeners and token registration keep working after the app is
             // reopened. setupForLoggedInUser() is idempotent, so calling it
             // here AND after login is safe (no duplicate listeners).
-            if (isParent) {
-              _setupFcm();
-            }
+            _setupFcm();
           } else {
             await logout();
           }
         } catch (e) {
-          debugPrint('[AuthProvider] Token validation failed: $e');
-          await logout();
+          // The backend could not be reached (network error, timeout, or a
+          // transient 5xx). This is NOT proof the session is invalid, so we
+          // keep the session and the stored token/cached user instead of
+          // logging the user out. A real 401 is handled by the Dio
+          // interceptor (ApiService.onError), which will call logout for us.
+          debugPrint('[AuthProvider] Token validation failed (network/transient): $e');
+          if (_user == null) {
+            // Restore from cache so the user can still enter the app offline.
+            if (savedUser != null) {
+              _user = savedUser;
+              final role = savedUser['role'];
+              _api.setAdminStatus(role == 'admin' || role == 'admin_master');
+              _isLoggedIn = true;
+              _setupFcm();
+            }
+            // If we have a token but no cached user and no network, the
+            // session cannot be validated. Keep the token (do not wipe); the
+            // user will be asked to log in.
+          }
         }
       }
     } catch (e) {
@@ -101,11 +123,10 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
 
-        // Push notifications target parents only. Register this Android device
-        // for FCM. Best-effort: never blocks login or throws.
-        if (isParent) {
-          _setupFcm();
-        }
+        // Register this device for FCM push. Parents receive child/payment/
+        // feedback events; admins receive payment_submitted + feedback_created.
+        // Best-effort: never blocks login or throws.
+        _setupFcm();
         return true;
       } else {
         _error = response['message'] ?? 'Login gagal. Silakan coba lagi.';
@@ -169,7 +190,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Register this device for push (parents only). Best-effort + async.
+  /// Register this device for push (all roles). Best-effort + async.
   void _setupFcm() {
     FcmService.instance.setupForLoggedInUser(platform: 'android').then((result) {
       debugPrint('[AuthProvider] FCM setup result: ${result.reason} token=${result.token ?? '-'}');
