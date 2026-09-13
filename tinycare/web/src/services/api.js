@@ -148,6 +148,12 @@ export const developmentAPI = {
   deleteAssessment: (id) => api.delete(`/admin/development-assessments/${id}`),
 };
 
+export const unwrapList = (res, fallback = []) => {
+  const data = res?.data?.data;
+  if (Array.isArray(data)) return data;
+  return data?.data ?? fallback;
+};
+
 // Invoices API
 export const invoicesAPI = {
   list: (params) => api.get('/admin/invoices', { params }),

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { parentAPI } from '../../services/api';
+import { parentAPI, unwrapList } from '../../services/api';
 
 export default function ParentInvoices() {
   const [invoices, setInvoices] = useState([]);
@@ -10,7 +10,7 @@ export default function ParentInvoices() {
 
   useEffect(() => {
     parentAPI.invoices()
-      .then((res) => setInvoices(res.data.data.data || []))
+      .then((res) => setInvoices(unwrapList(res)))
       .catch(() => setError('Gagal memuat invoice.'))
       .finally(() => setLoading(false));
   }, []);

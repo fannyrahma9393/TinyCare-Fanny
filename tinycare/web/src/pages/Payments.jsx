@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { paymentsAPI } from '../services/api';
+import { paymentsAPI, unwrapList } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
 export default function Payments() {
@@ -11,7 +11,7 @@ export default function Payments() {
 
   async function loadPayments() {
     setLoading(true);
-    try { const params = { per_page: 50 }; if (filter) params.status = filter; const res = await paymentsAPI.list(params); setPayments(res.data.data.data || []); }
+    try { const params = { per_page: 50 }; if (filter) params.status = filter; const res = await paymentsAPI.list(params); setPayments(unwrapList(res)); }
     catch (error) { setError(error.response?.data?.message || 'Gagal memuat data pembayaran.'); } finally { setLoading(false); }
   }
 

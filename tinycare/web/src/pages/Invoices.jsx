@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { invoicesAPI, childrenAPI } from '../services/api';
+import { invoicesAPI, childrenAPI, unwrapList } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
 export default function Invoices() {
@@ -26,7 +26,7 @@ export default function Invoices() {
       const params = { per_page: 50 };
       if (filter) params.status = filter;
       const res = await invoicesAPI.list(params);
-      setInvoices(res.data.data.data || []);
+      setInvoices(unwrapList(res));
     } catch (error) {
       setError(error.response?.data?.message || 'Gagal memuat daftar invoice.');
     } finally {
@@ -34,7 +34,7 @@ export default function Invoices() {
     }
   }
   async function loadChildren() {
-    try { const res = await childrenAPI.list({ per_page: 100 }); setChildren(res.data.data.data || []); }
+    try { const res = await childrenAPI.list({ per_page: 100 }); setChildren(unwrapList(res)); }
     catch (error) { setError(error.response?.data?.message || 'Gagal memuat data anak.'); }
   }
 
