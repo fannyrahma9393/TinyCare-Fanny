@@ -66,25 +66,20 @@ class WeeklyReport extends Model
             ->with('category:id,name')
             ->whereBetween('observation_date', [$weekStart, $weekEnd])
             ->get()
-            ->groupBy(fn ($a) => $a->category->name)
-            ->map(fn ($items) => $items->pluck('progress_label')->implode(', '));
+            ->groupBy(fn ($a) => $a->category->name);
 
-        // Build summaries
-        $attendanceSummary = 'Hadir: '.($attendance->get('hadir', 0)).
-            ', Izin: '.($attendance->get('izin', 0)).
-            ', Sakit: '.($attendance->get('sakit', 0)).
-            ', Tidak Hadir: '.($attendance->get('tidak_hadir', 0));
-
-        $activitySummary = 'Total '.$activitiesCount.' aktivitas diikuti.';
-
+        // Development-focused summary. Attendance is no longer part of the
+        // development report, so no "hadir X dari Y hari" text is generated.
         $developmentSummary = $developments->isEmpty()
             ? 'Belum ada penilaian perkembangan minggu ini.'
-            : $developments->map(fn ($prog, $cat) => "$cat: $prog")->implode('; ');
+            : $developments
+                ->map(fn ($items, $category) => '- '.$category.': '.$items->pluck('progress_label')->implode(', '))
+                ->values()
+                ->implode("\n");
 
-        $overallSummary = "Minggu ini $child->name hadir ".
-            ($attendance->get('hadir', 0)).' dari '.
-            $attendance->sum().' hari. '.
-            $activitySummary.' '.$developmentSummary;
+        $overallSummary = $developments->isEmpty()
+            ? "Perkembangan $child->name Minggu Ini\nBelum ada penilaian perkembangan minggu ini."
+            : "Perkembangan $child->name Minggu Ini\n".$developmentSummary;
 
         return static::updateOrCreate(
             ['child_id' => $child->id, 'week_start' => $weekStart],
@@ -93,8 +88,8 @@ class WeeklyReport extends Model
                 'total_attendance' => $attendance->get('hadir', 0),
                 'total_activities' => $activitiesCount,
                 'total_daily_stories' => $dailyStoriesCount,
-                'attendance_summary' => $attendanceSummary,
-                'activity_summary' => $activitySummary,
+                'attendance_summary' => null,
+                'activity_summary' => null,
                 'development_summary' => $developmentSummary,
                 'overall_summary' => $overallSummary,
                 'is_generated' => true,

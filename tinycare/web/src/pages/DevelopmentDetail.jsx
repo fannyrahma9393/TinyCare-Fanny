@@ -305,7 +305,7 @@ export default function DevelopmentDetail() {
                         }
                       </p>
                       {report.overall_summary && (
-                        <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '6px', lineHeight: 1.5 }}>{report.overall_summary}</p>
+                        <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)', marginTop: '6px', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{report.overall_summary}</p>
                       )}
                     </div>
                   ))}

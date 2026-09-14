@@ -67,28 +67,22 @@ class MonthlyReport extends Model
             ->with('category:id,name')
             ->whereBetween('observation_date', [$startDate, $endDate])
             ->get()
-            ->groupBy(fn ($a) => $a->category->name)
-            ->map(fn ($items) => $items->pluck('progress_label')->implode(', '));
-
-        // Build summaries
-        $totalDays = $attendance->sum();
-        $attendanceSummary = 'Hadir: '.($attendance->get('hadir', 0)).
-            ', Izin: '.($attendance->get('izin', 0)).
-            ', Sakit: '.($attendance->get('sakit', 0)).
-            ', Tidak Hadir: '.($attendance->get('tidak_hadir', 0)).
-            " dari $totalDays hari kerja.";
-
-        $activitySummary = 'Total '.$activitiesCount.' aktivitas diikuti selama bulan ini.';
-
-        $developmentSummary = $developments->isEmpty()
-            ? 'Belum ada penilaian perkembangan bulan ini.'
-            : $developments->map(fn ($prog, $cat) => "$cat: $prog")->implode('; ');
+            ->groupBy(fn ($a) => $a->category->name);
 
         $monthName = Carbon::createFromDate($year, $month, 1)->locale('id')->isoFormat('MMMM YYYY');
 
-        $overallSummary = "Laporan bulanan $monthName untuk $child->name. ".
-            'Kehadiran: '.($attendance->get('hadir', 0))." dari $totalDays hari. ".
-            $activitySummary.' '.$developmentSummary;
+        // Development-focused summary. Attendance is no longer part of the
+        // development report, so no "hadir X dari Y hari" text is generated.
+        $developmentSummary = $developments->isEmpty()
+            ? 'Belum ada penilaian perkembangan bulan ini.'
+            : $developments
+                ->map(fn ($items, $category) => '- '.$category.': '.$items->pluck('progress_label')->implode(', '))
+                ->values()
+                ->implode("\n");
+
+        $overallSummary = $developments->isEmpty()
+            ? "Perkembangan $child->name — $monthName\nBelum ada penilaian perkembangan bulan ini."
+            : "Perkembangan $child->name — $monthName\n".$developmentSummary;
 
         return static::updateOrCreate(
             ['child_id' => $child->id, 'month' => $month, 'year' => $year],
@@ -96,8 +90,8 @@ class MonthlyReport extends Model
                 'total_attendance' => $attendance->get('hadir', 0),
                 'total_activities' => $activitiesCount,
                 'total_daily_stories' => $dailyStoriesCount,
-                'attendance_summary' => $attendanceSummary,
-                'activity_summary' => $activitySummary,
+                'attendance_summary' => null,
+                'activity_summary' => null,
                 'development_summary' => $developmentSummary,
                 'overall_summary' => $overallSummary,
                 'is_generated' => true,

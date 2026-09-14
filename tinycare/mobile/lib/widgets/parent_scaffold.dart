@@ -157,7 +157,8 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
 
   Widget _buildChildCard(dynamic child) {
     final packages = child['child_packages'] ?? [];
-    final activePackage = packages.isNotEmpty ? packages.first['package'] : null;
+    final childPackage = packages.isNotEmpty ? packages.first : null;
+    final package = childPackage?['package'] as Map<String, dynamic>?;
     final textColor = ThemeHelper.text(context);
     final mutedColor = ThemeHelper.textMuted(context);
 
@@ -197,7 +198,7 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
                 Icon(Icons.chevron_right, color: mutedColor),
               ],
             ),
-            if (activePackage != null) ...[
+            if (childPackage != null) ...[
               const SizedBox(height: 14),
               Container(
                 width: double.infinity,
@@ -209,9 +210,27 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(activePackage['name'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.success)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(package?['name'] ?? '-',
+                              style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.success)),
+                        ),
+                        AppWidgets.statusBadge(
+                          _packageStatusLabel(childPackage['status']?.toString()),
+                          _packageStatusColor(childPackage['status']?.toString()),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 2),
-                    Text('Berlaku s/d ${activePackage['end_date'] ?? '-'}', style: TextStyle(fontSize: 12, color: mutedColor)),
+                    Text(
+                      '${childPackage['start_date'] ?? '-'} s/d ${childPackage['end_date'] ?? '-'}',
+                      style: TextStyle(fontSize: 12, color: mutedColor),
+                    ),
                   ],
                 ),
               ),
@@ -244,6 +263,32 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
         ),
       ),
     );
+  }
+
+  String _packageStatusLabel(String? status) {
+    switch (status) {
+      case 'active':
+        return 'Aktif';
+      case 'expired':
+        return 'Expired';
+      case 'cancelled':
+        return 'Dibatalkan';
+      default:
+        return status ?? '-';
+    }
+  }
+
+  Color _packageStatusColor(String? status) {
+    switch (status) {
+      case 'active':
+        return AppColors.success;
+      case 'expired':
+        return AppColors.error;
+      case 'cancelled':
+        return AppColors.info;
+      default:
+        return ThemeHelper.textMuted(context);
+    }
   }
 }
 

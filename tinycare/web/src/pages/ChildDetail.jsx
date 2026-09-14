@@ -284,9 +284,15 @@ export default function ChildDetail() {
             {child.child_packages && child.child_packages.length > 0 ? (
               child.child_packages.map((cp) => (
                 <div key={cp.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--color-border-light)' }}>
-                  <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{cp.package?.name}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{cp.package?.name}</p>
+                    <span className={`tc-badge ${cp.status === 'active' ? 'tc-badge-success' : cp.status === 'expired' ? 'tc-badge-error' : 'tc-badge-info'}`} style={{ fontSize: '11px' }}>
+                      {cp.status === 'active' ? 'Aktif' : cp.status === 'expired' ? 'Expired' : 'Dibatalkan'}
+                    </span>
+                  </div>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                     Rp {new Intl.NumberFormat('id-ID').format(cp.package?.price || 0)} · {cp.start_date ? `Mulai ${new Date(cp.start_date).toLocaleDateString('id-ID')}` : ''}
+                    {cp.end_date ? ` · Sampai ${new Date(cp.end_date).toLocaleDateString('id-ID')}` : ''}
                   </p>
                 </div>
               ))

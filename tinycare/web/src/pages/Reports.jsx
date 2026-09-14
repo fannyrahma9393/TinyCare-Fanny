@@ -187,44 +187,13 @@ export default function Reports() {
                 <StatusBadge status="generated" config={{ generated: { label: 'Generated', color: 'var(--color-success)', bg: 'var(--color-success-bg)' } }} />
               </div>
 
-              {/* Stats Grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
-                <div style={{
-                  background: 'var(--color-info-bg)', borderRadius: 'var(--radius-lg)',
-                  padding: '14px', textAlign: 'center',
-                }}>
-                  <p style={{ fontSize: '24px', fontWeight: '700', color: 'var(--color-info)', lineHeight: 1 }}>
-                    {report.total_attendance ?? 0}
-                  </p>
-                  <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>Hadir</p>
-                </div>
-                <div style={{
-                  background: 'var(--color-success-bg)', borderRadius: 'var(--radius-lg)',
-                  padding: '14px', textAlign: 'center',
-                }}>
-                  <p style={{ fontSize: '24px', fontWeight: '700', color: 'var(--color-success)', lineHeight: 1 }}>
-                    {report.total_activities ?? 0}
-                  </p>
-                  <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>Aktivitas</p>
-                </div>
-                <div style={{
-                  background: 'var(--color-primary-lighter)', borderRadius: 'var(--radius-lg)',
-                  padding: '14px', textAlign: 'center',
-                }}>
-                  <p style={{ fontSize: '24px', fontWeight: '700', color: 'var(--color-primary)', lineHeight: 1 }}>
-                    {report.total_daily_stories ?? 0}
-                  </p>
-                  <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>Cerita</p>
-                </div>
-              </div>
-
               {/* Summary */}
               {report.overall_summary && (
                 <div style={{
                   background: 'var(--color-bg-alt)', borderRadius: 'var(--radius-lg)',
                   padding: '14px 16px', marginTop: '4px',
                 }}>
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>
+                  <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, whiteSpace: 'pre-line' }}>
                     {report.overall_summary}
                   </p>
                 </div>

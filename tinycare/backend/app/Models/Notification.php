@@ -63,6 +63,7 @@ class Notification extends Model
             'activity_new' => 'Aktivitas Baru',
             'check_in' => 'Check In',
             'check_out' => 'Check Out',
+            'package_expiring_reminder' => 'Pengingat Masa Aktif Paket',
             default => $this->type,
         };
     }
@@ -90,6 +91,7 @@ class Notification extends Model
             'activity_new' => '🎨',
             'check_in' => '✅',
             'check_out' => '🏠',
+            'package_expiring_reminder' => '⏰',
             default => '🔔',
         };
     }

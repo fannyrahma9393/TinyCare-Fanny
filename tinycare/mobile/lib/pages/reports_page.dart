@@ -373,25 +373,6 @@ class _ReportsPageState extends State<ReportsPage> {
             ],
           ),
           const SizedBox(height: 14),
-          Row(
-            children: [
-              _buildStatChip(
-                  'Hadir', '${report['total_attendance'] ?? 0}', AppColors.info),
-              const SizedBox(width: 8),
-              _buildStatChip('Aktivitas', '${report['total_activities'] ?? 0}',
-                  AppColors.success),
-              const SizedBox(width: 8),
-              _buildStatChip(
-                  'Cerita',
-                  '${report['total_daily_stories'] ?? 0}',
-                  Colors.purple),
-            ],
-          ),
-          if (report['attendance_summary'] != null &&
-              report['attendance_summary'].toString().isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildSummaryRow('Kehadiran', '${report['attendance_summary']}'),
-          ],
           if (report['overall_summary'] != null &&
               report['overall_summary'].toString().isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -473,25 +454,6 @@ class _ReportsPageState extends State<ReportsPage> {
             ],
           ),
           const SizedBox(height: 14),
-          Row(
-            children: [
-              _buildStatChip(
-                  'Hadir', '${report['total_attendance'] ?? 0}', AppColors.info),
-              const SizedBox(width: 8),
-              _buildStatChip('Aktivitas', '${report['total_activities'] ?? 0}',
-                  AppColors.success),
-              const SizedBox(width: 8),
-              _buildStatChip(
-                  'Cerita',
-                  '${report['total_daily_stories'] ?? 0}',
-                  Colors.purple),
-            ],
-          ),
-          if (report['attendance_summary'] != null &&
-              report['attendance_summary'].toString().isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildSummaryRow('Kehadiran', '${report['attendance_summary']}'),
-          ],
           if (report['overall_summary'] != null &&
               report['overall_summary'].toString().isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -509,50 +471,6 @@ class _ReportsPageState extends State<ReportsPage> {
             ),
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('$label: ',
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: ThemeHelper.textSecondary(context))),
-        Expanded(
-          child: Text(value,
-              style:
-                  TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatChip(String label, String value, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
-        decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.08),
-            borderRadius: AppRadius.smAll),
-        child: Column(
-          children: [
-            Text(value,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: color)),
-            const SizedBox(height: 2),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 10,
-                    color: color,
-                    fontWeight: FontWeight.w500)),
-          ],
-        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Child;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -189,10 +190,19 @@ class ChildController extends Controller
             $data['photo'] = $photoPath;
         }
 
+        $wasActive = $child->status === 'active';
+
         $child->update($data);
 
         if (isset($validated['parent_ids'])) {
             $child->parents()->sync($validated['parent_ids']);
+        }
+
+        // When the child is ACTIVATED, any active package that has not started
+        // yet is snapped to start from the activation date (never overwrites a
+        // package that is already running).
+        if (! $wasActive && $child->status === 'active') {
+            $this->startPendingActivePackage($child);
         }
 
         $child->parents()->get()->each->syncUserStatusFromChildren();
@@ -202,6 +212,42 @@ class ChildController extends Controller
             'message' => 'Data anak berhasil diperbarui.',
             'data' => $child->load('parents.user'),
         ]);
+    }
+
+    /**
+     * When a child is activated, an assigned-but-not-yet-started active package
+     * automatically starts on the activation date. Already-running packages are
+     * left untouched; no new package row is ever created here.
+     */
+    private function startPendingActivePackage(Child $child): void
+    {
+        $today = Carbon::today();
+
+        $pending = $child->childPackages()
+            ->where('status', 'active')
+            ->where('start_date', '>', $today->toDateString())
+            ->orderBy('start_date')
+            ->first();
+
+        if (! $pending) {
+            return;
+        }
+
+        $package = $pending->package;
+
+        if (! $package || ! $package->duration_days) {
+            return;
+        }
+
+        $startDate = $today;
+        $endDate = $startDate->copy()->addDays($package->duration_days);
+
+        if ($endDate->greaterThanOrEqualTo($startDate)) {
+            $pending->update([
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+            ]);
+        }
     }
 
     /**
