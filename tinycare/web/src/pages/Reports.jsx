@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { reportsAPI, childrenAPI } from '../services/api';
 import { EmptyState, StatusBadge } from '../components/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 export default function Reports() {
+  const { t } = useTranslation();
   const [weeklyReports, setWeeklyReports] = useState([]);
   const [monthlyReports, setMonthlyReports] = useState([]);
   const [children, setChildren] = useState([]);
@@ -21,7 +23,7 @@ export default function Reports() {
       setWeeklyReports(weeklyRes.data.data.data || []);
       setMonthlyReports(monthlyRes.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data laporan.');
+      setError(error.response?.data?.message || t('Gagal memuat data laporan.'));
     } finally {
       setLoading(false);
     }
@@ -32,7 +34,7 @@ export default function Reports() {
       const res = await childrenAPI.list({ per_page: 100 });
       setChildren(res.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data anak.');
+      setError(error.response?.data?.message || t('Gagal memuat data anak.'));
     }
   }
 
@@ -53,7 +55,7 @@ export default function Reports() {
       await reportsAPI.generateWeekly(selectedChild, { week_start: weekStart });
       loadReports();
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal membuat laporan mingguan.');
+      setError(error.response?.data?.message || t('Gagal membuat laporan mingguan.'));
     } finally {
       setGenerating(false);
     }
@@ -70,7 +72,7 @@ export default function Reports() {
       });
       loadReports();
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal membuat laporan bulanan.');
+      setError(error.response?.data?.message || t('Gagal membuat laporan bulanan.'));
     } finally {
       setGenerating(false);
     }
@@ -80,7 +82,7 @@ export default function Reports() {
     return (
       <div className="tc-loading-screen">
         <div className="tc-spinner tc-spinner-lg"></div>
-        <p>Memuat laporan...</p>
+        <p>{t('Memuat laporan...')}</p>
       </div>
     );
   }
@@ -98,17 +100,17 @@ export default function Reports() {
         marginBottom: '28px',
       }}>
         <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '4px', letterSpacing: '-0.02em' }}>
-          Laporan Perkembangan
+          {t('Laporan Perkembangan')}
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-          Pantau perkembangan anak melalui laporan mingguan dan bulanan.
+          {t('Pantau perkembangan anak melalui laporan mingguan dan bulanan.')}
         </p>
       </div>
 
       {error && (
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={() => { setError(''); loadReports(); loadChildren(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={() => { setError(''); loadReports(); loadChildren(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       )}
 
@@ -123,13 +125,13 @@ export default function Reports() {
             onClick={() => setActiveTab('weekly')}
             className={activeTab === 'weekly' ? 'tc-btn tc-btn-primary tc-btn-sm' : 'tc-btn tc-btn-secondary tc-btn-sm'}
           >
-            Laporan Mingguan
+            {t('Laporan Mingguan')}
           </button>
           <button
             onClick={() => setActiveTab('monthly')}
             className={activeTab === 'monthly' ? 'tc-btn tc-btn-primary tc-btn-sm' : 'tc-btn tc-btn-secondary tc-btn-sm'}
           >
-            Laporan Bulanan
+            {t('Laporan Bulanan')}
           </button>
         </div>
 
@@ -141,7 +143,7 @@ export default function Reports() {
             className="tc-select tc-select-sm"
             style={{ width: 'auto', minWidth: '160px' }}
           >
-            <option value="">Pilih Anak</option>
+            <option value="">{t('Pilih Anak')}</option>
             {children.map((child) => (
               <option key={child.id} value={child.id}>{child.name}</option>
             ))}
@@ -154,7 +156,7 @@ export default function Reports() {
             {generating ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div className="tc-spinner tc-spinner-sm" style={{ borderTopColor: 'white' }}></div>
-                Membuat...
+                {t('Membuat...')}
               </span>
             ) : 'Generate'}</button>
         </div>
@@ -164,8 +166,8 @@ export default function Reports() {
       {reports.length === 0 ? (
         <EmptyState
           icon={activeTab === 'weekly' ? '📅' : '📆'}
-          title={activeTab === 'weekly' ? 'Belum ada laporan mingguan' : 'Belum ada laporan bulanan'}
-          description="Klik Generate untuk membuat laporan baru."
+          title={activeTab === 'weekly' ? t('Belum ada laporan mingguan') : t('Belum ada laporan bulanan')}
+          description={t('Klik Generate untuk membuat laporan baru.')}
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

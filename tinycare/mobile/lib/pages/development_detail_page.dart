@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../l10n/app_strings.dart';
 
 /// Development detail for one child — mirrors web DevelopmentDetail.jsx.
 /// Shows child header, category cards, assessment history, and reports section.
@@ -71,7 +72,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data perkembangan.';
+        _error = tr('Gagal memuat data perkembangan.');
         _isLoading = false;
       });
     }
@@ -89,7 +90,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Laporan mingguan berhasil dibuat.'),
+          content: Text(tr('Laporan mingguan berhasil dibuat.')),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -100,7 +101,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Gagal membuat laporan mingguan.'),
+          content: Text(tr('Gagal membuat laporan mingguan.')),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -123,7 +124,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Laporan bulanan berhasil dibuat.'),
+          content: Text(tr('Laporan bulanan berhasil dibuat.')),
           backgroundColor: AppColors.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -134,7 +135,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Gagal membuat laporan bulanan.'),
+          content: Text(tr('Gagal membuat laporan bulanan.')),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -152,7 +153,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
     final textColor = ThemeHelper.text(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Perkembangan Anak')),
+      appBar: AppBar(title: Text(tr('Perkembangan Anak'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -169,7 +170,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
               : _child == null
                   ? AppWidgets.emptyState(
                       icon: Icons.child_care,
-                      title: 'Anak tidak ditemukan.',
+                      title: tr('Anak tidak ditemukan.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadData,
@@ -180,12 +181,12 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
                           // Child header
                           ChildHeader(
                             child: _child,
-                            subtitle: 'Perkembangan & penilaian anak Anda.',
+                            subtitle: tr('Perkembangan & penilaian anak Anda.'),
                           ),
                           const SizedBox(height: 20),
 
                           // Category cards
-                          Text('Kategori Perkembangan',
+                          Text(tr('Kategori Perkembangan'),
                               style: AppTypography.h3
                                   .copyWith(color: textColor)),
                           const SizedBox(height: 14),
@@ -208,7 +209,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
       return [
         AppWidgets.emptyState(
           icon: Icons.trending_up,
-          title: 'Belum ada penilaian',
+          title: tr('Belum ada penilaian'),
         ),
       ];
     }
@@ -239,7 +240,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Laporan Perkembangan',
+              Text(tr('Laporan Perkembangan'),
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -257,7 +258,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.add, size: 16),
-                label: Text(_generating ? 'Membuat...' : 'Generate'),
+                label: Text(_generating ? tr('Membuat...') : tr('Generate')),
                 style: ElevatedButton.styleFrom(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -271,9 +272,9 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
           // Tab buttons (Mingguan / Bulanan)
           Row(
             children: [
-              _buildReportTab('weekly', 'Mingguan'),
+              _buildReportTab('weekly', tr('Mingguan')),
               const SizedBox(width: 6),
-              _buildReportTab('monthly', 'Bulanan'),
+              _buildReportTab('monthly', tr('Bulanan')),
             ],
           ),
           const SizedBox(height: 14),
@@ -282,8 +283,12 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
           if (reports.isEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(
-                'Belum ada laporan ${_reportTab == 'weekly' ? 'mingguan' : 'bulanan'}. Klik Generate untuk membuat.',
+              child: Text(                        tr('Belum ada laporan {{type}}. Klik Generate untuk membuat.',
+                            {
+                              'type': _reportTab == 'weekly'
+                                  ? tr('Mingguan').toLowerCase()
+                                  : tr('Bulanan').toLowerCase(),
+                            }),
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: mutedColor),
               ),
@@ -326,13 +331,13 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
     if (_reportTab == 'weekly') {
       final start = report['week_start'] ?? '';
       final end = report['week_end'] ?? '';
-      periodText = '$start — $end';
+      periodText = tr('{{start}} — {{end}}', {'start': start, 'end': end});
     } else {
       final month = report['month'] ?? 1;
       final year = report['year'] ?? DateTime.now().year;
       final months = [
-        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        '', tr('Januari'), tr('Februari'), tr('Maret'), tr('April'), tr('Mei'), tr('Juni'),
+        tr('Juli'), tr('Agustus'), tr('September'), tr('Oktober'), tr('November'), tr('Desember')
       ];
       periodText =
           '${months[month > 0 && month <= 12 ? month : 1]} $year';
@@ -358,7 +363,7 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
                     fontWeight: FontWeight.w600,
                     color: textColor),
               ),
-              AppWidgets.statusBadge('Generated', AppColors.success),
+              AppWidgets.statusBadge(tr('Generated'), AppColors.success),
             ],
           ),
           const SizedBox(height: 4),
@@ -431,7 +436,7 @@ class _CategoryCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: textColor)),
                     const SizedBox(height: 2),
-                    Text('$total penilaian',
+                    Text(tr('{{total}} penilaian', {'total': total}),
                         style: AppTypography.caption
                             .copyWith(color: mutedColor)),
                   ],

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { parentAPI } from '../../services/api';
 import ChildPhoto from '../../components/ChildPhoto';
+import { useTranslation } from 'react-i18next';
 
 export default function ParentChildDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [child, setChild] = useState(null);
@@ -21,11 +23,11 @@ export default function ParentChildDetail() {
       parentAPI.childAttendance(id).then((r) => setAttendance(r.data.data?.attendance?.data || [])),
       parentAPI.childActivities(id).then((r) => setActivities(r.data.data?.data || [])),
     ]).catch((_err) => {
-      setError('Gagal memuat data anak.');
+      setError(t('Gagal memuat data anak.'));
     }).finally(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat data...</p></div>;
+  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat data...')}</p></div>;
 
   if (error) return (
     <div className="tc-error-state">
@@ -37,23 +39,23 @@ export default function ParentChildDetail() {
   if (!child) return (
     <div className="tc-card">
       <div className="tc-empty-state">
-        <p className="tc-empty-state-title">Anak tidak ditemukan.</p>
+        <p className="tc-empty-state-title">{t('Anak tidak ditemukan.')}</p>
       </div>
     </div>
   );
 
   const tabs = [
-    { key: 'overview', label: 'Ringkasan' },
-    { key: 'development', label: 'Perkembangan' },
-    { key: 'attendance', label: 'Kehadiran' },
-    { key: 'activities', label: 'Aktivitas' },
+    { key: 'overview', label: t('Ringkasan') },
+    { key: 'development', label: t('Perkembangan') },
+    { key: 'attendance', label: t('Kehadiran') },
+    { key: 'activities', label: t('Aktivitas') },
   ];
 
   return (
     <div>
       <button onClick={() => navigate('/parent/children')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Kembali ke Anak Saya
+        {t('Kembali ke Anak Saya')}
       </button>
 
       {/* Child Profile */}
@@ -62,7 +64,7 @@ export default function ParentChildDetail() {
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em' }}>{child.name}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-            {child.gender === 'male' ? 'Laki-laki' : 'Perempuan'} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}
+            {child.gender === 'male' ? t('Laki-laki') : t('Perempuan')} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}
           </p>
         </div>
       </div>
@@ -84,13 +86,13 @@ export default function ParentChildDetail() {
             <div key={cat.id} className="tc-card tc-card-hover" style={{ padding: '18px' }}>
               <h3 style={{ fontSize: '13px', fontWeight: '600', textTransform: 'capitalize', marginBottom: '10px' }}>{cat.icon || '📊'} {cat.name}</h3>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Progress</span>
+                <span style={{ color: 'var(--color-text-muted)' }}>{t('Progress')}</span>
                 <span style={{ fontWeight: '600' }}>{cat.average_progress}%</span>
               </div>
               <div style={{ width: '100%', height: '4px', borderRadius: 'var(--radius-full)', background: 'var(--color-bg-alt)' }}>
                 <div style={{ height: '4px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary)', width: `${cat.average_progress}%` }} />
               </div>
-              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '6px' }}>{cat.total_assessments} penilaian</p>
+              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '6px' }}>{t('{{count}} penilaian', { count: cat.total_assessments })}</p>
             </div>
           ))}
         </div>
@@ -98,7 +100,7 @@ export default function ParentChildDetail() {
 
       {activeTab === 'development' && development && (
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px' }}>Riwayat Penilaian</h2>
+          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px' }}>{t('Riwayat Penilaian')}</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {development.categories?.flatMap(cat => cat.recent_assessments?.map((a) => (
               <div key={a.id} style={{
@@ -115,7 +117,7 @@ export default function ParentChildDetail() {
             ))) || []}
             {(!development.categories || development.categories.every(c => !c.recent_assessments?.length)) && (
               <div className="tc-empty-state" style={{ padding: '24px' }}>
-                <p className="tc-empty-state-desc">Belum ada penilaian.</p>
+                <p className="tc-empty-state-desc">{t('Belum ada penilaian.')}</p>
               </div>
             )}
           </div>
@@ -126,7 +128,7 @@ export default function ParentChildDetail() {
         <div className="tc-card" style={{ overflow: 'hidden' }}>
           {attendance.length > 0 ? (
             <table className="tc-table">
-              <thead><tr><th>Tanggal</th><th>Status</th><th>Masuk</th><th>Keluar</th></tr></thead>
+              <thead><tr><th>{t('Tanggal')}</th><th>{t('Status')}</th><th>{t('Masuk')}</th><th>Keluar</th></tr></thead>
               <tbody>
                 {attendance.map((r) => (
                   <tr key={r.id}>
@@ -140,7 +142,7 @@ export default function ParentChildDetail() {
             </table>
           ) : (
             <div className="tc-empty-state">
-              <p className="tc-empty-state-desc">Belum ada catatan kehadiran.</p>
+              <p className="tc-empty-state-desc">{t('Belum ada catatan kehadiran.')}</p>
             </div>
           )}
         </div>
@@ -157,7 +159,7 @@ export default function ParentChildDetail() {
           )) : (
             <div className="tc-card" style={{ gridColumn: '1 / -1' }}>
               <div className="tc-empty-state">
-                <p className="tc-empty-state-desc">Belum ada aktivitas.</p>
+                <p className="tc-empty-state-desc">{t('Belum ada aktivitas.')}</p>
               </div>
             </div>
           )}

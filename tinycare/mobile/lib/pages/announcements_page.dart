@@ -3,6 +3,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
 
 class AnnouncementsPage extends StatefulWidget {
   const AnnouncementsPage({super.key});
@@ -29,7 +30,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
       final data = await _api.getAnnouncements();
       setState(() { _announcements = data; _isLoading = false; });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat pengumuman.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat pengumuman.'); _isLoading = false; });
     }
   }
 
@@ -49,14 +50,14 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Pengumuman'),
-        content: Text('Hapus "${item['title'] ?? ''}"?'),
+        title: Text(tr('Hapus Pengumuman')),
+        content: Text(tr('Hapus "{{title}}"?', {'title': item['title'] ?? ''})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -66,13 +67,13 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
     try {
       final response = await _api.deleteAnnouncement(item['id']);
       if (response['success'] == true) {
-        _showToast('Pengumuman berhasil dihapus.');
+        _showToast(tr('Pengumuman berhasil dihapus.'));
         _loadAnnouncements();
       } else {
-        _showToast(response['message'] ?? 'Gagal menghapus.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menghapus.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menghapus pengumuman.', isError: true);
+      _showToast(tr('Gagal menghapus pengumuman.'), isError: true);
     }
   }
 
@@ -87,10 +88,10 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
   String _getPriorityLabel(String? priority) {
     switch (priority) {
-      case 'urgent': return 'Mendesak';
-      case 'high': return 'Penting';
-      case 'normal': return 'Normal';
-      case 'low': return 'Rendah';
+      case 'urgent': return tr('Mendesak');
+      case 'high': return tr('Penting');
+      case 'normal': return tr('Normal');
+      case 'low': return tr('Rendah');
       default: return priority ?? '-';
     }
   }
@@ -111,7 +112,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pengumuman'),
+        title: Text(tr('Pengumuman')),
         actions: [
           if (isAdmin)
             IconButton(
@@ -121,7 +122,7 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                   MaterialPageRoute(builder: (_) => const _AnnouncementFormPage()));
                 if (result == true) _loadAnnouncements();
               },
-              tooltip: 'Tambah Pengumuman',
+              tooltip: tr('Tambah Pengumuman'),
             ),
         ],
       ),
@@ -132,8 +133,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
               : _announcements.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.campaign_outlined,
-                      title: 'Tidak ada pengumuman',
-                      subtitle: isAdmin ? 'Tekan tombol + untuk membuat pengumuman.' : null,
+                      title: tr('Tidak ada pengumuman'),
+                      subtitle: isAdmin ? tr('Tekan tombol + untuk membuat pengumuman.') : null,
                     )
                   : RefreshIndicator(
                       onRefresh: _loadAnnouncements,
@@ -205,8 +206,8 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                            const PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                            PopupMenuItem(value: 'edit', child: Text(tr('Edit'))),
+                            PopupMenuItem(value: 'delete', child: Text(tr('Hapus'))),
                           ],
                         ),
                     ],
@@ -348,7 +349,7 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Pengumuman diperbarui.' : 'Pengumuman dibuat.'),
+              content: Text(_isEditing ? tr('Pengumuman diperbarui.') : tr('Pengumuman dibuat.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -357,17 +358,17 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
           Navigator.pop(context, true);
         }
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal menyimpan.'; _isSubmitting = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal menyimpan.'); _isSubmitting = false; });
       }
     } catch (e) {
-      setState(() { _error = 'Gagal menyimpan. Silakan coba lagi.'; _isSubmitting = false; });
+      setState(() { _error = tr('Gagal menyimpan. Silakan coba lagi.'); _isSubmitting = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit Pengumuman' : 'Tambah Pengumuman')),
+      appBar: AppBar(title: Text(_isEditing ? tr('Edit Pengumuman') : tr('Tambah Pengumuman'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -382,35 +383,35 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
               TextFormField(
                 controller: _titleController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Judul *'),
-                validator: (v) => v == null || v.isEmpty ? 'Judul tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Judul *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Judul tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _contentController,
                 maxLines: 6,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Isi Pengumuman *', alignLabelWithHint: true),
-                validator: (v) => v == null || v.isEmpty ? 'Isi pengumuman tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Isi Pengumuman *'), alignLabelWithHint: true),
+                validator: (v) => v == null || v.isEmpty ? tr('Isi pengumuman tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _dateController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Tanggal Publikasi', hintText: 'YYYY-MM-DD'),
+                decoration: InputDecoration(labelText: tr('Tanggal Publikasi'), hintText: tr('YYYY-MM-DD')),
                 keyboardType: TextInputType.datetime,
               ),
               const SizedBox(height: 16),
-              Text('Prioritas', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+              Text(tr('Prioritas'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildPriorityChip('low', 'Rendah'),
-                  _buildPriorityChip('normal', 'Normal'),
-                  _buildPriorityChip('high', 'Penting'),
-                  _buildPriorityChip('urgent', 'Mendesak'),
+                  _buildPriorityChip('low', tr('Rendah')),
+                  _buildPriorityChip('normal', tr('Normal')),
+                  _buildPriorityChip('high', tr('Penting')),
+                  _buildPriorityChip('urgent', tr('Mendesak')),
                 ],
               ),
               const SizedBox(height: 24),
@@ -420,7 +421,7 @@ class _AnnouncementFormPageState extends State<_AnnouncementFormPage> {
                   onPressed: _isSubmitting ? null : _handleSave,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(_isEditing ? 'Simpan Perubahan' : 'Buat Pengumuman',
+                      : Text(_isEditing ? tr('Simpan Perubahan') : tr('Buat Pengumuman'),
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),

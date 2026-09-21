@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { childrenAPI } from '../services/api';
 import ChildPhoto from '../components/ChildPhoto';
 
 const PHOTO_ACCEPT = 'image/jpeg,image/png,image/gif';
 const PHOTO_MAX_MB = 5;
 
-function validatePhotoFile(file) {
+function validatePhotoFile(file, t) {
   if (!file) return null;
-  if (file.size > PHOTO_MAX_MB * 1024 * 1024) return `Ukuran foto maksimal ${PHOTO_MAX_MB}MB.`;
-  if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) return 'Format foto harus JPG, PNG, atau GIF.';
+  if (file.size > PHOTO_MAX_MB * 1024 * 1024) return t('Ukuran foto maksimal {{max}}MB.', { max: PHOTO_MAX_MB });
+  if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) return t('Format foto harus JPG, PNG, atau GIF.');
   return null;
 }
 
 export default function ChildDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [child, setChild] = useState(null);
@@ -38,7 +40,7 @@ export default function ChildDetail() {
       setChild(res.data.data);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal memuat data anak.');
+      setError(err.response?.data?.message || t('Gagal memuat data anak.'));
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ export default function ChildDetail() {
     const file = e.target.files?.[0];
     setEditPhotoError('');
     if (!file) { setEditPhotoFile(null); setEditPhotoPreview(null); return; }
-    const err = validatePhotoFile(file);
+    const err = validatePhotoFile(file, t);
     if (err) {
       setEditPhotoError(err);
       setEditPhotoFile(null);
@@ -119,10 +121,10 @@ export default function ChildDetail() {
           const first = Object.values(errors)[0];
           setEditError(Array.isArray(first) ? first[0] : first);
         } else {
-          setEditError(err.response.data.message || 'Data tidak valid.');
+          setEditError(err.response.data.message || t('Data tidak valid.'));
         }
       } else {
-        setEditError(err.response?.data?.message || 'Gagal menyimpan perubahan.');
+        setEditError(err.response?.data?.message || t('Gagal menyimpan perubahan.'));
       }
     } finally {
       setEditSubmitting(false);
@@ -133,20 +135,20 @@ export default function ChildDetail() {
     if (!child) return;
     const targetStatus = child.status === 'active' ? 'inactive' : 'active';
     if (targetStatus === 'inactive') {
-      if (!confirm(`Nonaktifkan ${child.name}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.`)) return;
+      if (!confirm(t('Nonaktifkan {{name}}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.', { name: child.name }))) return;
     } else {
-      if (!confirm(`Aktifkan ${child.name} kembali?`)) return;
+      if (!confirm(t('Aktifkan {{name}} kembali?', { name: child.name }))) return;
     }
     try {
       await childrenAPI.update(child.id, { status: targetStatus });
       setChild({ ...child, status: targetStatus });
     } catch (e) {
-      alert(e.response?.data?.message || 'Gagal mengubah status anak.');
+      alert(e.response?.data?.message || t('Gagal mengubah status anak.'));
     }
   };
 
   if (loading) {
-    return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat data anak...</p></div>;
+    return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat data anak...')}</p></div>;
   }
 
   if (error) {
@@ -154,12 +156,12 @@ export default function ChildDetail() {
       <div>
         <button onClick={() => navigate('/children')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Kembali
+          {t('Kembali')}
         </button>
         <div className="tc-error-state">
           <div className="tc-error-state-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={loadChild} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={loadChild} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       </div>
     );
@@ -170,9 +172,9 @@ export default function ChildDetail() {
       <div>
         <button onClick={() => navigate('/children')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Kembali
+          {t('Kembali')}
         </button>
-        <div className="tc-card"><div className="tc-empty-state"><p className="tc-empty-state-title">Anak tidak ditemukan.</p></div></div>
+        <div className="tc-card"><div className="tc-empty-state"><p className="tc-empty-state-title">{t('Anak tidak ditemukan.')}</p></div></div>
       </div>
     );
   }
@@ -188,7 +190,7 @@ export default function ChildDetail() {
     <div>
       <button onClick={() => navigate('/children')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Kembali ke Daftar Anak
+        {t('Kembali ke Daftar Anak')}
       </button>
 
       {/* Header Section */}
@@ -198,13 +200,13 @@ export default function ChildDetail() {
           <h1 style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '6px' }}>{child.name}</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             <span className={`tc-badge ${child.status === 'active' ? 'tc-badge-success' : 'tc-badge-info'}`}>
-              {child.status === 'active' ? 'Aktif' : 'Nonaktif'}
+              {child.status === 'active' ? t('Aktif') : t('Nonaktif')}
             </span>
           </div>
         </div>
         <button onClick={openEditModal} className="tc-btn tc-btn-primary">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          Edit
+          {t('Edit')}
         </button>
       </div>
 
@@ -212,48 +214,48 @@ export default function ChildDetail() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         {/* Identitas */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Identitas</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Identitas')}</h3>
           <div>
-            <InfoRow label="Nama" value={child.name} />
-            <InfoRow label="Tanggal Lahir" value={child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
-            <InfoRow label="Gender" value={child.gender === 'male' ? 'Laki-laki' : 'Perempuan'} />
-            <InfoRow label="Alamat" value={child.address} />
+            <InfoRow label={t('Nama')} value={child.name} />
+            <InfoRow label={t('Tanggal Lahir')} value={child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
+            <InfoRow label={t('Gender')} value={child.gender === 'male' ? t('Laki-laki') : t('Perempuan')} />
+            <InfoRow label={t('Alamat')} value={child.address} />
           </div>
         </div>
 
         {/* Informasi Kesehatan */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Informasi Kesehatan</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Informasi Kesehatan')}</h3>
           <div>
             <div style={{ fontSize: '13px', color: child.health_info ? 'var(--color-text)' : 'var(--color-text-muted)', fontStyle: child.health_info ? 'normal' : 'italic', lineHeight: 1.6 }}>
-              {child.health_info || 'Tidak ada informasi kesehatan yang tercatat.'}
+              {child.health_info || t('Tidak ada informasi kesehatan yang tercatat.')}
             </div>
           </div>
         </div>
 
         {/* Kontak Darurat */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Kontak Darurat</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Kontak Darurat')}</h3>
           <div>
-            <InfoRow label="Nama" value={child.emergency_contact_name} />
-            <InfoRow label="Telepon" value={child.emergency_contact_phone} />
-            <InfoRow label="Hubungan" value={child.emergency_contact_relationship} />
+            <InfoRow label={t('Nama')} value={child.emergency_contact_name} />
+            <InfoRow label={t('Telepon')} value={child.emergency_contact_phone} />
+            <InfoRow label={t('Hubungan')} value={child.emergency_contact_relationship} />
           </div>
         </div>
 
         {/* Status */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Status</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Status')}</h3>
           <div>
-            <InfoRow label="Status Akun" value={child.status === 'active' ? 'Aktif' : 'Nonaktif'} />
-            <InfoRow label="Dibuat" value={child.created_at ? new Date(child.created_at).toLocaleDateString('id-ID') : '-'} />
-            <InfoRow label="Diperbarui" value={child.updated_at ? new Date(child.updated_at).toLocaleDateString('id-ID') : '-'} />
+            <InfoRow label={t('Status Akun')} value={child.status === 'active' ? t('Aktif') : t('Nonaktif')} />
+            <InfoRow label={t('Dibuat')} value={child.created_at ? new Date(child.created_at).toLocaleDateString('id-ID') : '-'} />
+            <InfoRow label={t('Diperbarui')} value={child.updated_at ? new Date(child.updated_at).toLocaleDateString('id-ID') : '-'} />
           </div>
         </div>
 
         {/* Orang Tua */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Orang Tua</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Orang Tua')}</h3>
           <div>
             {child.parents && child.parents.length > 0 ? (
               child.parents.map((parent) => (
@@ -272,14 +274,14 @@ export default function ChildDetail() {
                 </div>
               ))
             ) : (
-              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Tidak ada orang tua terdaftar.</p>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>{t('Tidak ada orang tua terdaftar.')}</p>
             )}
           </div>
         </div>
 
         {/* Paket */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Paket</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Paket')}</h3>
           <div>
             {child.child_packages && child.child_packages.length > 0 ? (
               child.child_packages.map((cp) => (
@@ -287,17 +289,17 @@ export default function ChildDetail() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{cp.package?.name}</p>
                     <span className={`tc-badge ${cp.status === 'active' ? 'tc-badge-success' : cp.status === 'expired' ? 'tc-badge-error' : 'tc-badge-info'}`} style={{ fontSize: '11px' }}>
-                      {cp.status === 'active' ? 'Aktif' : cp.status === 'expired' ? 'Expired' : 'Dibatalkan'}
+                      {cp.status === 'active' ? t('Aktif') : cp.status === 'expired' ? 'Expired' : t('Dibatalkan')}
                     </span>
                   </div>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                    Rp {new Intl.NumberFormat('id-ID').format(cp.package?.price || 0)} · {cp.start_date ? `Mulai ${new Date(cp.start_date).toLocaleDateString('id-ID')}` : ''}
-                    {cp.end_date ? ` · Sampai ${new Date(cp.end_date).toLocaleDateString('id-ID')}` : ''}
+                    Rp {new Intl.NumberFormat('id-ID').format(cp.package?.price || 0)} · {cp.start_date ? t('Mulai {{date}}', { date: new Date(cp.start_date).toLocaleDateString('id-ID') }) : ''}
+                    {cp.end_date ? ` · ${t('Sampai {{date}}', { date: new Date(cp.end_date).toLocaleDateString('id-ID') })}` : ''}
                   </p>
                 </div>
               ))
             ) : (
-              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Belum ada paket aktif.</p>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>{t('Belum ada paket aktif.')}</p>
             )}
           </div>
         </div>
@@ -305,11 +307,11 @@ export default function ChildDetail() {
 
       {/* Quick Links */}
       <div className="tc-card" style={{ padding: '20px', marginBottom: '24px' }}>
-        <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Akses Cepat</h3>
+        <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Akses Cepat')}</h3>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button onClick={() => navigate(`/development?child=${child.id}`)} className="tc-btn tc-btn-secondary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            Perkembangan
+            {t('Perkembangan')}
           </button>
           <button onClick={() => navigate(`/daily-stories?child=${child.id}`)} className="tc-btn tc-btn-secondary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
@@ -317,7 +319,7 @@ export default function ChildDetail() {
           </button>
           <button onClick={() => navigate(`/child-information/${child.id}`)} className="tc-btn tc-btn-secondary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            Informasi Anak
+            {t('Informasi Anak')}
           </button>
         </div>
       </div>
@@ -329,7 +331,7 @@ export default function ChildDetail() {
           className={`tc-btn ${child.status === 'active' ? 'tc-btn-ghost' : 'tc-btn-primary'}`}
           style={child.status === 'active' ? { color: 'var(--color-warning)', borderColor: 'var(--color-warning)' } : {}}
         >
-          {child.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
+          {child.status === 'active' ? t('Nonaktifkan') : t('Aktifkan')}
         </button>
       </div>
 
@@ -338,7 +340,7 @@ export default function ChildDetail() {
         <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)' }}
           onClick={(e) => { if (e.target === e.currentTarget) setShowEditModal(false); }}>
           <div className="tc-card" style={{ width: '100%', maxWidth: '560px', maxHeight: '90vh', overflow: 'auto', padding: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '18px' }}>Edit Data Anak</h2>
+            <h2 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '18px' }}>{t('Edit Data Anak')}</h2>
             {editError && (
               <div style={{ padding: '10px 14px', background: 'var(--color-error-bg)', border: '1px solid var(--color-error)', borderRadius: 'var(--radius-md)', color: 'var(--color-error)', fontSize: '13px', marginBottom: '14px' }}>{editError}</div>
             )}
@@ -346,7 +348,7 @@ export default function ChildDetail() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                 {/* Photo */}
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="tc-label">Foto Profil Anak</label>
+                  <label className="tc-label">{t('Foto Profil Anak')}</label>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                     <div style={{
                       width: '60px', height: '90px', borderRadius: 'var(--radius-lg)',
@@ -364,61 +366,61 @@ export default function ChildDetail() {
                       <input ref={editFileRef} type="file" accept={PHOTO_ACCEPT} onChange={handleEditPhotoChange} className="tc-input" style={{ fontSize: '13px', padding: '8px 10px' }} />
                       {editPhotoPreview && (
                         <button type="button" onClick={removeEditPhoto} className="tc-btn tc-btn-ghost tc-btn-sm" style={{ fontSize: '12px', color: 'var(--color-error)', alignSelf: 'flex-start' }}>
-                          Hapus Foto Baru
+                          {t('Hapus Foto Baru')}
                         </button>
                       )}
                       {editPhotoError && <p style={{ fontSize: '12px', color: 'var(--color-error)' }}>{editPhotoError}</p>}
-                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Kosongkan jika tidak ingin mengganti foto.</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Kosongkan jika tidak ingin mengganti foto.')}</p>
                     </div>
                   </div>
                 </div>
 
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="tc-label">Nama Anak *</label>
+                  <label className="tc-label">{t('Nama Anak *')}</label>
                   <input type="text" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="tc-input" required />
                 </div>
                 <div>
-                  <label className="tc-label">Tanggal Lahir *</label>
+                  <label className="tc-label">{t('Tanggal Lahir *')}</label>
                   <input type="date" value={editForm.birth_date} onChange={(e) => setEditForm({ ...editForm, birth_date: e.target.value })} className="tc-input" required />
                 </div>
                 <div>
-                  <label className="tc-label">Gender *</label>
+                  <label className="tc-label">{t('Gender *')}</label>
                   <select value={editForm.gender} onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })} className="tc-select">
-                    <option value="male">Laki-laki</option>
-                    <option value="female">Perempuan</option>
+                    <option value="male">{t('Laki-laki')}</option>
+                    <option value="female">{t('Perempuan')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="tc-label">Status</label>
+                  <label className="tc-label">{t('Status')}</label>
                   <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })} className="tc-select">
-                    <option value="active">Aktif</option>
-                    <option value="inactive">Nonaktif</option>
+                    <option value="active">{t('Aktif')}</option>
+                    <option value="inactive">{t('Nonaktif')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="tc-label">Kontak Darurat - Nama</label>
+                  <label className="tc-label">{t('Kontak Darurat - Nama')}</label>
                   <input type="text" value={editForm.emergency_contact_name} onChange={(e) => setEditForm({ ...editForm, emergency_contact_name: e.target.value })} className="tc-input" />
                 </div>
                 <div>
-                  <label className="tc-label">Kontak Darurat - Telepon</label>
+                  <label className="tc-label">{t('Kontak Darurat - Telepon')}</label>
                   <input type="text" value={editForm.emergency_contact_phone} onChange={(e) => setEditForm({ ...editForm, emergency_contact_phone: e.target.value })} className="tc-input" />
                 </div>
                 <div>
-                  <label className="tc-label">Kontak Darurat - Hubungan</label>
+                  <label className="tc-label">{t('Kontak Darurat - Hubungan')}</label>
                   <input type="text" value={editForm.emergency_contact_relationship} onChange={(e) => setEditForm({ ...editForm, emergency_contact_relationship: e.target.value })} className="tc-input" />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="tc-label">Informasi Kesehatan</label>
+                  <label className="tc-label">{t('Informasi Kesehatan')}</label>
                   <textarea value={editForm.health_info} onChange={(e) => setEditForm({ ...editForm, health_info: e.target.value })} className="tc-input" rows="2" />
                 </div>
                 <div style={{ gridColumn: 'span 2' }}>
-                  <label className="tc-label">Alamat</label>
+                  <label className="tc-label">{t('Alamat')}</label>
                   <textarea value={editForm.address} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} className="tc-input" rows="2" />
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <button type="button" onClick={() => setShowEditModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
-                <button type="submit" disabled={editSubmitting} className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{editSubmitting ? 'Menyimpan...' : 'Simpan'}</button>
+                <button type="button" onClick={() => setShowEditModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
+                <button type="submit" disabled={editSubmitting} className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{editSubmitting ? t('Menyimpan...') : t('Simpan')}</button>
               </div>
             </form>
           </div>

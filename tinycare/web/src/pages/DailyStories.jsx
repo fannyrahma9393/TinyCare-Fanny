@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { childrenAPI } from '../services/api';
 import { PageHeader, EmptyState } from '../components/PageHeader';
 import ChildPhoto from '../components/ChildPhoto';
 
-const statusConfig = {
-  active: { label: 'Aktif', className: 'tc-badge-success' },
-  inactive: { label: 'Nonaktif', className: 'tc-badge-info' },
-};
+const statusConfig = (t) => ({
+  active: { label: t('Aktif'), className: 'tc-badge-success' },
+  inactive: { label: t('Nonaktif'), className: 'tc-badge-info' },
+});
 
 export default function DailyStories() {
+  const { t } = useTranslation();
   const [childrenList, setChildrenList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -22,7 +24,7 @@ export default function DailyStories() {
       const res = await childrenAPI.list({ per_page: 100 });
       setChildrenList(res.data.data.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal memuat data anak.');
+      setError(err.response?.data?.message || t('Gagal memuat data anak.'));
     } finally {
       setLoading(false);
     }
@@ -40,18 +42,20 @@ export default function DailyStories() {
     );
   }
 
+  const stConfig = statusConfig(t);
+
   return (
     <div>
       <PageHeader
         title="Daily Stories"
-        subtitle="Pilih anak untuk melihat cerita hariannya"
+        subtitle={t('Pilih anak untuk melihat cerita hariannya')}
       />
 
       {error && (
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
           <button onClick={loadChildren} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>
-            Coba Lagi
+            {t('Coba Lagi')}
           </button>
         </div>
       )}
@@ -59,15 +63,15 @@ export default function DailyStories() {
       {!error && childrenList.length === 0 && (
         <EmptyState
           icon="📖"
-          title="Belum ada data anak"
-          description="Tambahkan data anak terlebih dahulu untuk melihat Daily Stories."
+          title={t('Belum ada data anak')}
+          description={t('Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.')}
         />
       )}
 
       {!error && childrenList.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
           {childrenList.map((child) => {
-            const st = statusConfig[child.status] || statusConfig.active;
+            const st = stConfig[child.status] || stConfig.active;
             return (
               <div
                 key={child.id}

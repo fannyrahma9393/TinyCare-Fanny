@@ -11,6 +11,7 @@ import '../utils/currency.dart';
 import '../widgets/child_photo.dart';
 import 'child_detail_page.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
 
 class ChildrenPage extends StatefulWidget {
   const ChildrenPage({super.key});
@@ -45,7 +46,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data anak. Silakan coba lagi.';
+        _error = tr('Gagal memuat data anak. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -73,21 +74,24 @@ class _ChildrenPageState extends State<ChildrenPage> {
   Future<void> _toggleChildStatus(dynamic child) async {
     final isActive = (child['status'] ?? 'active') == 'active';
     final newStatus = isActive ? 'inactive' : 'active';
-    final action = isActive ? 'menonaktifkan' : 'mengaktifkan';
+    final action = isActive ? tr('menonaktifkan') : tr('mengaktifkan');
 
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${isActive ? 'Nonaktifkan' : 'Aktifkan'} Anak'),
-        content: Text('Apakah Anda yakin ingin $action ${child['name'] ?? 'anak ini'}?'),
+        title: Text(isActive ? tr('Nonaktifkan Anak') : tr('Aktifkan Anak')),
+        content: Text(tr('Apakah Anda yakin ingin {{action}} {{name}}?', {
+          'action': action,
+          'name': child['name'] ?? tr('anak ini'),
+        })),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(
               foregroundColor: isActive ? AppColors.error : AppColors.primary,
             ),
-            child: Text(isActive ? 'Nonaktifkan' : 'Aktifkan'),
+            child: Text(isActive ? tr('Nonaktifkan') : tr('Aktifkan')),
           ),
         ],
       ),
@@ -97,13 +101,14 @@ class _ChildrenPageState extends State<ChildrenPage> {
     try {
       final response = await _api.updateChild(child['id'], status: newStatus);
       if (response['success'] == true) {
-        _showToast('Anak berhasil $action.');
+        _showToast(tr('Anak berhasil {{action}}.',
+            {'action': isActive ? tr('dinonaktifkan') : tr('diaktifkan')}));
         _loadChildren();
       } else {
-        _showToast(response['message'] ?? 'Gagal $action anak.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal {{action}} anak.', {'action': action}), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal $action anak. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal {{action}} anak. Silakan coba lagi.', {'action': action}), isError: true);
     }
   }
 
@@ -111,14 +116,15 @@ class _ChildrenPageState extends State<ChildrenPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Anak'),
-        content: Text('Apakah Anda yakin ingin menghapus ${child['name'] ?? 'anak ini'}?'),
+        title: Text(tr('Hapus Anak')),
+        content: Text(tr('Apakah Anda yakin ingin menghapus {{name}}?',
+            {'name': child['name'] ?? tr('anak ini')})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -128,13 +134,13 @@ class _ChildrenPageState extends State<ChildrenPage> {
     try {
       final response = await _api.deleteChild(child['id']);
       if (response['success'] == true) {
-        _showToast('Anak berhasil dihapus.');
+        _showToast(tr('Anak berhasil dihapus.'));
         _loadChildren();
       } else {
-        _showToast(response['message'] ?? 'Gagal menghapus anak.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menghapus anak.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menghapus anak. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal menghapus anak. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -145,7 +151,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Anak'),
+        title: Text(tr('Anak')),
         actions: [
           if (isAdmin)
             IconButton(
@@ -155,7 +161,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
                   MaterialPageRoute(builder: (_) => const _ChildFormPage()));
                 if (result == true) _loadChildren();
               },
-              tooltip: 'Tambah Anak',
+              tooltip: tr('Tambah Anak'),
             ),
         ],
       ),
@@ -168,7 +174,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
               child: TextField(
                 onChanged: (v) => setState(() => _searchQuery = v),
                 decoration: InputDecoration(
-                  hintText: 'Cari nama anak...',
+                  hintText: tr('Cari nama anak...'),
                   prefixIcon: const Icon(Icons.search, size: 20),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -201,11 +207,11 @@ class _ChildrenPageState extends State<ChildrenPage> {
                         ? AppWidgets.emptyState(
                             icon: Icons.child_care,
                             title: _searchQuery.isNotEmpty
-                                ? 'Tidak ditemukan'
-                                : 'Belum ada anak terdaftar',
+                                ? tr('Tidak ditemukan')
+                                : tr('Belum ada anak terdaftar'),
                             subtitle: _searchQuery.isNotEmpty
-                                ? 'Coba kata kunci lain.'
-                                : 'Tekan tombol + untuk menambah anak.',
+                                ? tr('Coba kata kunci lain.')
+                                : tr('Tekan tombol + untuk menambah anak.'),
                           )
                         : RefreshIndicator(
                             onRefresh: _loadChildren,
@@ -264,14 +270,14 @@ class _ChildrenPageState extends State<ChildrenPage> {
                         Text(child['name'] ?? '-', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                         const SizedBox(height: 4),
                         Text(
-                          '${child['gender'] == 'male' ? 'Laki-laki' : child['gender'] == 'female' ? 'Perempuan' : '-'} · ${child['birth_date'] ?? '-'}',
+                          '${child['gender'] == 'male' ? tr('Laki-laki') : child['gender'] == 'female' ? tr('Perempuan') : '-'} · ${child['birth_date'] ?? '-'}',
                           style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)),
                         ),
                       ],
                     ),
                   ),
                   AppWidgets.statusBadge(
-                    status == 'active' ? 'Aktif' : 'Nonaktif',
+                    status == 'active' ? tr('Aktif') : tr('Nonaktif'),
                     statusColor,
                   ),
                 ],
@@ -287,25 +293,25 @@ class _ChildrenPageState extends State<ChildrenPage> {
                 child: Column(
                   children: [
                     AppWidgets.infoRow(
-                      'Paket Aktif',
-                      activePackage?['name'] ?? 'Belum ada paket',
+                      tr('Paket Aktif'),
+                      activePackage?['name'] ?? tr('Belum ada paket'),
                     ),
                     if (activePackage != null)
                       AppWidgets.infoRow(
-                        'Harga',
+                        tr('Harga'),
                         CurrencyHelper.formatRupiah(activePackage['price']),
                       ),
                     // Backend uses parents (many-to-many), not parent
                     if (child['parents'] != null && (child['parents'] as List).isNotEmpty)
                       AppWidgets.infoRow(
-                        'Orang Tua',
+                        tr('Orang Tua'),
                         (child['parents'] as List)
                             .map((p) => p['user']?['name'] ?? '-')
                             .join(', '),
                       )
                     else if (child['parent'] != null || child['user'] != null)
                       AppWidgets.infoRow(
-                        'Orang Tua',
+                        tr('Orang Tua'),
                         child['parent']?['user']?['name'] ??
                             child['user']?['name'] ?? '-',
                       ),
@@ -324,7 +330,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
                           if (result == true) _loadChildren();
                         },
                         icon: const Icon(Icons.edit, size: 16),
-                        label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                        label: Text(tr('Edit'), style: TextStyle(fontSize: 12)),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -332,7 +338,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _toggleChildStatus(child),
                         icon: Icon(status == 'active' ? Icons.pause_circle_outline : Icons.play_circle_outline, size: 16),
-                        label: Text(status == 'active' ? 'Nonaktifkan' : 'Aktifkan', style: const TextStyle(fontSize: 12)),
+                        label: Text(status == 'active' ? tr('Nonaktifkan') : tr('Aktifkan'), style: const TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: status == 'active' ? AppColors.warning : AppColors.success,
                           side: BorderSide(color: status == 'active' ? AppColors.warning : AppColors.success),
@@ -344,7 +350,7 @@ class _ChildrenPageState extends State<ChildrenPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _deleteChild(child),
                         icon: const Icon(Icons.delete, size: 16),
-                        label: const Text('Hapus', style: TextStyle(fontSize: 12)),
+                        label: Text(tr('Hapus'), style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
                           side: const BorderSide(color: AppColors.error),
@@ -450,7 +456,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
       if (mounted) setState(() { _packages = packages; _isLoadingPackages = false; });
     } catch (e) {
       debugPrint('[ChildForm] Failed to load packages: $e');
-      if (mounted) setState(() { _packageError = 'Gagal memuat paket. Silakan coba lagi.'; _isLoadingPackages = false; });
+      if (mounted) setState(() { _packageError = tr('Gagal memuat paket. Silakan coba lagi.'); _isLoadingPackages = false; });
     }
   }
 
@@ -538,7 +544,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Anak berhasil diperbarui.' : 'Anak berhasil ditambahkan.'),
+              content: Text(_isEditing ? tr('Anak berhasil diperbarui.') : tr('Anak berhasil ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -548,7 +554,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan data.';
+          _error = response['message'] ?? tr('Gagal menyimpan data.');
           _isSubmitting = false;
         });
       }
@@ -561,7 +567,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Anak' : 'Tambah Anak'),
+        title: Text(_isEditing ? tr('Edit Anak') : tr('Tambah Anak')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -614,7 +620,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                                   const Icon(Icons.add_a_photo, color: AppColors.primary, size: 28),
                                   const SizedBox(height: 6),
                                   Text(
-                                    _isEditing ? 'Ganti Foto' : 'Unggah Foto',
+                                    _isEditing ? tr('Ganti Foto') : tr('Unggah Foto'),
                                     style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context)),
                                   ),
                                 ],
@@ -627,13 +633,13 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama Anak *'),
-                validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Nama Anak *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
               // Gender
-              Text('Jenis Kelamin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+              Text(tr('Jenis Kelamin'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -655,7 +661,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                           children: [
                             Icon(Icons.boy, color: _gender == 'male' ? AppColors.primary : ThemeHelper.textMuted(context)),
                             const SizedBox(width: 8),
-                            Text('Laki-laki', style: TextStyle(
+                            Text(tr('Laki-laki'), style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: _gender == 'male' ? AppColors.primary : ThemeHelper.textSecondary(context),
                             )),
@@ -683,7 +689,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                           children: [
                             Icon(Icons.girl, color: _gender == 'female' ? AppColors.primary : ThemeHelper.textMuted(context)),
                             const SizedBox(width: 8),
-                            Text('Perempuan', style: TextStyle(
+                            Text(tr('Perempuan'), style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: _gender == 'female' ? AppColors.primary : ThemeHelper.textSecondary(context),
                             )),
@@ -699,9 +705,9 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               TextFormField(
                 controller: _birthDateController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Tanggal Lahir',
-                  hintText: 'YYYY-MM-DD',
+                decoration: InputDecoration(
+                  labelText: tr('Tanggal Lahir'),
+                  hintText: tr('YYYY-MM-DD'),
                 ),
                 keyboardType: TextInputType.datetime,
               ),
@@ -711,24 +717,24 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               if (_parents.isNotEmpty) ...[
                 DropdownButtonFormField<int>(
                   initialValue: _selectedParentId,
-                  decoration: const InputDecoration(labelText: 'Orang Tua *'),
+                  decoration: InputDecoration(labelText: tr('Orang Tua *')),
                   items: _parents.map<DropdownMenuItem<int>>((p) {
                     final user = p['user'];
                     // Backend requires parents.id, NOT users.id
                     return DropdownMenuItem(
                       value: p['id'] is int ? p['id'] as int : int.tryParse(p['id'].toString()),
-                      child: Text(user?['name'] ?? 'Orang Tua'),
+                      child: Text(user?['name'] ?? tr('Orang Tua')),
                     );
                   }).toList(),
                   onChanged: (v) => setState(() => _selectedParentId = v),
-                  validator: (v) => v == null ? 'Pilih orang tua' : null,
+                  validator: (v) => v == null ? tr('Pilih orang tua') : null,
                 ),
                 const SizedBox(height: 16),
               ],
 
               // Package selector
               const SizedBox(height: 8),
-              Text('Paket (Opsional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+              Text(tr('Paket (Opsional)'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               if (_isLoadingPackages)
                 Container(
@@ -742,7 +748,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                     children: [
                       const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                       const SizedBox(width: 12),
-                      Text('Memuat paket...', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
+                      Text(tr('Memuat paket...'), style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                     ],
                   ),
                 )
@@ -764,7 +770,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                           setState(() { _isLoadingPackages = true; _packageError = null; });
                           _loadFormData();
                         },
-                        child: const Text('Coba Lagi', style: TextStyle(fontSize: 12)),
+                        child: Text(tr('Coba Lagi'), style: TextStyle(fontSize: 12)),
                       ),
                     ],
                   ),
@@ -777,12 +783,12 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                     borderRadius: AppRadius.mdAll,
                     border: Border.all(color: ThemeHelper.border(context)),
                   ),
-                  child: Text('Belum ada paket aktif. Tambahkan paket terlebih dahulu.', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
+                  child: Text(tr('Belum ada paket aktif. Tambahkan paket terlebih dahulu.'), style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                 )
               else
                 DropdownButtonFormField<int>(
                   initialValue: _selectedPackageId,
-                  decoration: const InputDecoration(labelText: 'Pilih Paket'),
+                  decoration: InputDecoration(labelText: tr('Pilih Paket')),
                   items: _packages.map<DropdownMenuItem<int>>((pkg) {
                     final pkgPrice = CurrencyHelper.formatRupiah(pkg['price']);
                     final pkgDuration = pkg['duration_days']?.toString() ?? '-';
@@ -795,7 +801,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                           Text(pkg['name'] ?? '-', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 2),
                           Text(
-                            '$pkgPrice · $pkgDuration hari', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
+                            tr('{{pkgPrice}} · {{pkgDuration}} hari', {'pkgPrice': pkgPrice, 'pkgDuration': pkgDuration}), style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                         ],
                       ),
                     );
@@ -810,8 +816,8 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Catatan',
+                decoration: InputDecoration(
+                  labelText: tr('Catatan'),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -821,8 +827,8 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 controller: _addressController,
                 maxLines: 2,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Alamat',
+                decoration: InputDecoration(
+                  labelText: tr('Alamat'),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -832,8 +838,8 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 controller: _healthController,
                 maxLines: 3,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Info Kesehatan',
+                decoration: InputDecoration(
+                  labelText: tr('Info Kesehatan'),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -842,7 +848,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
               TextFormField(
                 controller: _emNameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Kontak Darurat - Nama'),
+                decoration: InputDecoration(labelText: tr('Kontak Darurat - Nama')),
               ),
               const SizedBox(height: 16),
 
@@ -850,7 +856,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                 controller: _emPhoneController,
                 textInputAction: TextInputAction.done,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Kontak Darurat - Telepon'),
+                decoration: InputDecoration(labelText: tr('Kontak Darurat - Telepon')),
               ),
               const SizedBox(height: 24),
 
@@ -863,7 +869,7 @@ class _ChildFormPageState extends State<_ChildFormPage> {
                           width: 20, height: 20,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : Text(_isEditing ? 'Simpan Perubahan' : 'Tambah Anak',
+                      : Text(_isEditing ? tr('Simpan Perubahan') : tr('Tambah Anak'),
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),

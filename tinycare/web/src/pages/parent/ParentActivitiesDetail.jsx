@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { parentAPI } from '../../services/api';
 import ChildPhoto from '../../components/ChildPhoto';
+import { useTranslation } from 'react-i18next';
 
 export default function ParentActivitiesDetail() {
+  const { t } = useTranslation();
   const { childId } = useParams();
   const navigate = useNavigate();
   const [child, setChild] = useState(null);
@@ -16,11 +18,11 @@ export default function ParentActivitiesDetail() {
       parentAPI.childDetail(childId).then((r) => setChild(r.data.data)),
       parentAPI.childActivities(childId).then((r) => setActivities(r.data.data?.data || [])),
     ]).catch((_err) => {
-      setError('Gagal memuat data aktivitas.');
+      setError(t('Gagal memuat data aktivitas.'));
     }).finally(() => setLoading(false));
   }, [childId]);
 
-  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat data...</p></div>;
+  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat data...')}</p></div>;
 
   if (error) return (
     <div className="tc-error-state">
@@ -32,7 +34,7 @@ export default function ParentActivitiesDetail() {
   if (!child) return (
     <div className="tc-card">
       <div className="tc-empty-state">
-        <p className="tc-empty-state-title">Anak tidak ditemukan.</p>
+        <p className="tc-empty-state-title">{t('Anak tidak ditemukan.')}</p>
       </div>
     </div>
   );
@@ -41,7 +43,7 @@ export default function ParentActivitiesDetail() {
     <div>
       <button onClick={() => navigate('/parent/activities')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Kembali ke Aktivitas
+        {t('Kembali ke Aktivitas')}
       </button>
 
       {/* Child Profile */}
@@ -50,9 +52,9 @@ export default function ParentActivitiesDetail() {
         <div>
           <h1 style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em' }}>{child.name}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-            {child.gender === 'male' ? 'Laki-laki' : 'Perempuan'} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}
+            {child.gender === 'male' ? t('Laki-laki') : t('Perempuan')} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}
           </p>
-          <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>Aktivitas yang diikuti anak Anda.</p>
+          <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '4px' }}>{t('Aktivitas yang diikuti anak Anda.')}</p>
         </div>
       </div>
 
@@ -70,8 +72,8 @@ export default function ParentActivitiesDetail() {
         <div className="tc-card">
           <div className="tc-empty-state">
             <div className="tc-empty-state-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></div>
-            <p className="tc-empty-state-title">Belum ada aktivitas</p>
-            <p className="tc-empty-state-desc">Aktivitas akan muncul ketika ada kegiatan terbaru.</p>
+            <p className="tc-empty-state-title">{t('Belum ada aktivitas')}</p>
+            <p className="tc-empty-state-desc">{t('Aktivitas akan muncul ketika ada kegiatan terbaru.')}</p>
           </div>
         </div>
       )}

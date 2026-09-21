@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../l10n/app_strings.dart';
 
 class ParentsPage extends StatefulWidget {
   const ParentsPage({super.key});
@@ -44,7 +45,7 @@ class _ParentsPageState extends State<ParentsPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data orang tua. Silakan coba lagi.';
+        _error = tr('Gagal memuat data orang tua. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -57,7 +58,7 @@ class _ParentsPageState extends State<ParentsPage> {
       return user['name'];
     }
     // Fallback
-    return 'Orang Tua';
+    return tr('Orang Tua');
   }
 
   String _getEmail(dynamic parent) {
@@ -88,16 +89,16 @@ class _ParentsPageState extends State<ParentsPage> {
 
   String _getInitial(dynamic parent) {
     final name = _getName(parent);
-    if (name.isNotEmpty && name != 'Orang Tua') {
+    if (name.isNotEmpty && name != tr('Orang Tua')) {
       return name[0].toUpperCase();
     }
-    return 'OT';
+    return tr('OT');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Orang Tua')),
+      appBar: AppBar(title: Text(tr('Orang Tua'))),
       body: Column(
         children: [
           // Filter Tabs
@@ -105,9 +106,9 @@ class _ParentsPageState extends State<ParentsPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                _buildFilterChip('Semua', 'all'),
-                _buildFilterChip('Aktif', 'active'),
-                _buildFilterChip('Menunggu', 'pending'),
+                _buildFilterChip(tr('Semua'), 'all'),
+                _buildFilterChip(tr('Aktif'), 'active'),
+                _buildFilterChip(tr('Menunggu'), 'pending'),
               ],
             ),
           ),
@@ -121,8 +122,8 @@ class _ParentsPageState extends State<ParentsPage> {
                     : _parents.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.people_outline,
-                            title: 'Tidak ada data orang tua',
-                            subtitle: 'Data orang tua akan muncul ketika sudah terdaftar.',
+                            title: tr('Tidak ada data orang tua'),
+                            subtitle: tr('Data orang tua akan muncul ketika sudah terdaftar.'),
                           )
                         : RefreshIndicator(
                             onRefresh: _loadParents,
@@ -174,11 +175,11 @@ class _ParentsPageState extends State<ParentsPage> {
             ? AppColors.warning
             : ThemeHelper.textMuted(context);
     final statusLabel = status == 'active'
-        ? 'Aktif'
+        ? tr('Aktif')
         : status == 'pending'
-            ? 'Menunggu'
+            ? tr('Menunggu')
             : status == 'rejected'
-                ? 'Ditolak'
+                ? tr('Ditolak')
                 : status;
 
     return Container(
@@ -235,7 +236,7 @@ class _ParentsPageState extends State<ParentsPage> {
                     ],
                     const SizedBox(height: 4),
                     Text(
-                      '$childrenCount ${childrenCount == 1 ? 'anak' : 'anak'} terdaftar',
+                      tr('{{count}} anak terdaftar', {'count': childrenCount}),
                       style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context)),
                     ),
                   ],
@@ -294,7 +295,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
     if (user != null && user['name'] != null && user['name'].toString().isNotEmpty) {
       return user['name'];
     }
-    return 'Orang Tua';
+    return tr('Orang Tua');
   }
 
   String _getEmail() {
@@ -325,10 +326,10 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
 
   String _getInitial() {
     final name = _getName();
-    if (name.isNotEmpty && name != 'Orang Tua') {
+    if (name.isNotEmpty && name != tr('Orang Tua')) {
       return name[0].toUpperCase();
     }
-    return 'OT';
+    return tr('OT');
   }
 
   Future<void> _approveParent() async {
@@ -339,7 +340,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
       if (response['success'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Akun orang tua berhasil disetujui.'),
+            content: Text(tr('Akun orang tua berhasil disetujui.')),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -351,7 +352,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Gagal menyetujui akun.'),
+            content: Text(tr('Gagal menyetujui akun.')),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -365,14 +366,14 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
     final reason = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tolak Akun'),
-        content: const Text('Apakah Anda yakin ingin menolak akun ini?'),
+        title: Text(tr('Tolak Akun')),
+        content: Text(tr('Apakah Anda yakin ingin menolak akun ini?')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, 'rejected'),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Tolak'),
+            child: Text(tr('Tolak')),
           ),
         ],
       ),
@@ -386,7 +387,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
       if (response['success'] == true && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Akun orang tua ditolak.'),
+            content: Text(tr('Akun orang tua ditolak.')),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -398,7 +399,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Gagal menolak akun.'),
+            content: Text(tr('Gagal menolak akun.')),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -428,11 +429,11 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
             ? [
                 TextButton(
                   onPressed: _approveParent,
-                  child: const Text('Setujui', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.w600)),
+                  child: Text(tr('Setujui'), style: TextStyle(color: AppColors.success, fontWeight: FontWeight.w600)),
                 ),
                 TextButton(
                   onPressed: _rejectParent,
-                  child: const Text('Tolak', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600)),
+                  child: Text(tr('Tolak'), style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600)),
                 ),
               ]
             : null,
@@ -477,7 +478,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                   Text(_getEmail(), style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)), textAlign: TextAlign.center),
                   const SizedBox(height: 10),
                   AppWidgets.statusBadge(
-                    status == 'active' ? 'Aktif' : status == 'pending' ? 'Menunggu' : status,
+                    status == 'active' ? tr('Aktif') : status == 'pending' ? tr('Menunggu') : status,
                     statusColor,
                   ),
                 ],
@@ -498,13 +499,13 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Informasi Akun', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+                  Text(tr('Informasi Akun'), style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                   const SizedBox(height: 16),
-                  AppWidgets.infoRow('Nama', name),
-                  AppWidgets.infoRow('Email', _getEmail()),
-                  AppWidgets.infoRow('Nomor HP', _getPhone()),
-                  AppWidgets.infoRow('Status', status == 'active' ? 'Aktif' : status == 'pending' ? 'Menunggu' : status),
-                  AppWidgets.infoRow('Jumlah Anak', '${children.length}'),
+                  AppWidgets.infoRow(tr('Nama'), name),
+                  AppWidgets.infoRow(tr('Email'), _getEmail()),
+                  AppWidgets.infoRow(tr('Nomor HP'), _getPhone()),
+                  AppWidgets.infoRow(tr('Status'), status == 'active' ? tr('Aktif') : status == 'pending' ? tr('Menunggu') : status),
+                  AppWidgets.infoRow(tr('Jumlah Anak'), '${children.length}'),
                 ],
               ),
             ),
@@ -523,12 +524,12 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Anak Terdaftar', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+                  Text(tr('Anak Terdaftar'), style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
                   const SizedBox(height: 14),
                   if (children.isEmpty)
                     AppWidgets.emptyState(
                       icon: Icons.child_care_outlined,
-                      title: 'Belum ada anak terdaftar',
+                      title: tr('Belum ada anak terdaftar'),
                     )
                   else
                     ...children.map<Widget>((child) => Container(
@@ -552,14 +553,14 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'} · ${child['birth_date'] ?? '-'}',
+                                  '${child['gender'] == 'male' ? tr('Laki-laki') : tr('Perempuan')} · ${child['birth_date'] ?? '-'}',
                                   style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context)),
                                 ),
                               ],
                             ),
                           ),
                           AppWidgets.statusBadge(
-                            child['status'] == 'active' ? 'Aktif' : 'Nonaktif',
+                            child['status'] == 'active' ? tr('Aktif') : tr('Nonaktif'),
                             child['status'] == 'active' ? AppColors.success : ThemeHelper.textMuted(context),
                           ),
                         ],
@@ -578,7 +579,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                     child: ElevatedButton.icon(
                       onPressed: _approveParent,
                       icon: const Icon(Icons.check, size: 18),
-                      label: const Text('Setujui'),
+                      label: Text(tr('Setujui')),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: Colors.white,
@@ -591,7 +592,7 @@ class _ParentDetailPageState extends State<ParentDetailPage> {
                     child: OutlinedButton.icon(
                       onPressed: _rejectParent,
                       icon: const Icon(Icons.close, size: 18),
-                      label: const Text('Tolak'),
+                      label: Text(tr('Tolak')),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: const BorderSide(color: AppColors.error),

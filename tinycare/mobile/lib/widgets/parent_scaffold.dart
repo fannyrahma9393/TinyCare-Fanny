@@ -16,6 +16,8 @@ import '../pages/profile_page.dart';
 import '../pages/child_detail_page.dart';
 import '../pages/parent_child_form_page.dart';
 import 'child_photo.dart';
+import 'language_switcher.dart';
+import '../l10n/app_strings.dart';
 
 /// Parent scaffold with bottom navigation bar matching web ParentLayout sidebar.
 /// Bottom nav: Beranda, Anak, Aktivitas, Tagihan, Lainnya
@@ -52,31 +54,31 @@ class _ParentScaffoldState extends State<ParentScaffold> {
         unselectedItemColor: ThemeHelper.textMuted(context),
         selectedFontSize: 11,
         unselectedFontSize: 11,
-        items: const [
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
-            label: 'Beranda',
+            label: tr('Beranda'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.child_care_outlined),
             activeIcon: Icon(Icons.child_care),
-            label: 'Anak',
+            label: tr('Anak'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.emoji_events_outlined),
             activeIcon: Icon(Icons.emoji_events),
-            label: 'Aktivitas',
+            label: tr('Aktivitas'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long_outlined),
             activeIcon: Icon(Icons.receipt_long),
-            label: 'Tagihan',
+            label: tr('Tagihan'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.more_horiz),
             activeIcon: Icon(Icons.more_horiz),
-            label: 'Lainnya',
+            label: tr('Lainnya'),
           ),
         ],
       ),
@@ -110,7 +112,7 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
       final children = await _api.getChildren();
       setState(() { _children = children; _isLoading = false; });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data anak.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data anak.'); _isLoading = false; });
     }
   }
 
@@ -118,11 +120,11 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Anak Saya'),
+        title: Text(tr('Anak Saya')),
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
-            tooltip: 'Tambah Anak',
+            tooltip: tr('Tambah Anak'),
             onPressed: () async {
               final added = await Navigator.push<bool>(
                 context,
@@ -140,8 +142,8 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
               : _children.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.child_care,
-                      title: 'Belum ada data anak',
-                      subtitle: 'Data akan muncul ketika anak sudah terdaftar di daycare.',
+                      title: tr('Belum ada data anak'),
+                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadChildren,
@@ -189,7 +191,7 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
                       Text(child['name'] ?? '-', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: textColor)),
                       const SizedBox(height: 2),
                       Text(
-                        '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'} · ${child['birth_date'] ?? '-'}',
+                        '${child['gender'] == 'male' ? tr('Laki-laki') : tr('Perempuan')} · ${child['birth_date'] ?? '-'}',
                         style: TextStyle(fontSize: 12, color: mutedColor),
                       ),
                     ],
@@ -244,7 +246,7 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
                       builder: (_) => ActivitiesDetailPage(childId: child['id']),
                     )),
                     icon: const Icon(Icons.emoji_events_outlined, size: 16),
-                    label: const Text('Aktivitas', style: TextStyle(fontSize: 12)),
+                    label: Text(tr('Aktivitas'), style: TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -254,7 +256,7 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
                       builder: (_) => DevelopmentDetailPage(childId: child['id']),
                     )),
                     icon: const Icon(Icons.trending_up, size: 16),
-                    label: const Text('Perkembangan', style: TextStyle(fontSize: 12)),
+                    label: Text(tr('Perkembangan'), style: TextStyle(fontSize: 12)),
                   ),
                 ),
               ],
@@ -268,11 +270,11 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
   String _packageStatusLabel(String? status) {
     switch (status) {
       case 'active':
-        return 'Aktif';
+        return tr('Aktif');
       case 'expired':
-        return 'Expired';
+        return tr('Expired');
       case 'cancelled':
-        return 'Dibatalkan';
+        return tr('Dibatalkan');
       default:
         return status ?? '-';
     }
@@ -303,7 +305,10 @@ class _ParentMorePage extends StatelessWidget {
     final mutedColor = ThemeHelper.textMuted(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lainnya')),
+      appBar: AppBar(
+        title: Text(tr('Lainnya')),
+        actions: const [LanguageSwitcher()],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -351,27 +356,27 @@ class _ParentMorePage extends StatelessWidget {
           // Menu items
           AppWidgets.menuGroup([
             {
-              'label': 'Perkembangan',
+              'label': tr('Perkembangan'),
               'icon': Icons.trending_up,
               'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DevelopmentPage())),
             },
             {
-              'label': 'Pengumuman',
+              'label': tr('Pengumuman'),
               'icon': Icons.campaign_outlined,
               'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnnouncementsPage())),
             },
             {
-              'label': 'Informasi',
+              'label': tr('Informasi'),
               'icon': Icons.info_outline,
               'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ParentInformationPage())),
             },
             {
-              'label': 'Feedback',
+              'label': tr('Feedback'),
               'icon': Icons.rate_review_outlined,
               'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedbackPage())),
             },
             {
-              'label': 'Profil',
+              'label': tr('Profil'),
               'icon': Icons.person_outline,
               'onTap': () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
             },
@@ -387,15 +392,15 @@ class _ParentMorePage extends StatelessWidget {
           // Logout
           AppWidgets.menuGroup([
             {
-              'label': 'Keluar',
+              'label': tr('Keluar'),
               'icon': Icons.logout,
               'iconColor': AppColors.error,
               'onTap': () async {
                 final confirm = await AppWidgets.confirmDialog(
                   context,
-                  title: 'Keluar',
-                  content: 'Apakah Anda yakin ingin keluar?',
-                  confirmLabel: 'Keluar',
+                  title: tr('Keluar'),
+                  content: tr('Apakah Anda yakin ingin keluar?'),
+                  confirmLabel: tr('Keluar'),
                   confirmColor: AppColors.error,
                 );
                 if (confirm && context.mounted) {
@@ -412,7 +417,7 @@ class _ParentMorePage extends StatelessWidget {
 
           // App version
           Center(
-            child: Text('TinyCare v1.0.0', style: TextStyle(fontSize: 12, color: mutedColor)),
+            child: Text(tr('TinyCare v1.0.0'), style: TextStyle(fontSize: 12, color: mutedColor)),
           ),
         ],
       ),

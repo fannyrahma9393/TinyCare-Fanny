@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { parentAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 export default function ParentFeedback() {
+  const { t } = useTranslation();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -13,7 +15,7 @@ export default function ParentFeedback() {
     setLoading(true);
     parentAPI.feedback()
       .then((res) => setItems(res.data.data.data || []))
-      .catch(() => setError('Gagal memuat feedback.'))
+      .catch(() => setError(t('Gagal memuat feedback.')))
       .finally(() => setLoading(false));
   };
 
@@ -28,23 +30,23 @@ export default function ParentFeedback() {
       setFormData({ subject: '', message: '', rating: 5 });
       load();
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal mengirim feedback.');
+      alert(err.response?.data?.message || t('Gagal mengirim feedback.'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loading && !showForm) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat feedback...</p></div>;
+  if (loading && !showForm) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat feedback...')}</p></div>;
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div className="tc-page-header" style={{ marginBottom: 0 }}>
           <h1>Feedback</h1>
-          <p>Kirim masukan untuk daycare.</p>
+          <p>{t('Kirim masukan untuk daycare.')}</p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="tc-btn tc-btn-primary tc-btn-sm">
-          {showForm ? 'Batal' : '+ Kirim Feedback'}
+          {showForm ? t('Batal') : '+ Kirim Feedback'}
         </button>
       </div>
 
@@ -53,12 +55,12 @@ export default function ParentFeedback() {
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
-                <label className="tc-label">Subjek *</label>
+                <label className="tc-label">{t('Subjek *')}</label>
                 <input type="text" value={formData.subject} onChange={(e) => setFormData({ ...formData, subject: e.target.value })} className="tc-input" placeholder="Subjek feedback" required />
               </div>
               <div>
-                <label className="tc-label">Pesan *</label>
-                <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="tc-textarea" rows="3" placeholder="Tulis pesan Anda..." required />
+                <label className="tc-label">{t('Pesan *')}</label>
+                <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} className="tc-textarea" rows="3" placeholder={t('Tulis pesan Anda...')} required />
               </div>
               <div>
                 <label className="tc-label">Rating</label>
@@ -73,8 +75,8 @@ export default function ParentFeedback() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
-              <button type="button" onClick={() => setShowForm(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
-              <button type="submit" disabled={submitting} className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{submitting ? 'Mengirim...' : 'Kirim'}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
+              <button type="submit" disabled={submitting} className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{submitting ? t('Mengirim...') : t('Kirim')}</button>
             </div>
           </form>
         </div>
@@ -97,7 +99,7 @@ export default function ParentFeedback() {
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '8px', lineHeight: 1.5 }}>{item.message}</p>
               {item.admin_response && (
                 <div style={{ background: 'var(--color-success-bg)', borderRadius: 'var(--radius-md)', padding: '12px', marginTop: '8px' }}>
-                  <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-success)', marginBottom: '4px' }}>Balasan Admin:</p>
+                  <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-success)', marginBottom: '4px' }}>{t('Balasan Admin:')}</p>
                   <p style={{ fontSize: '13px', lineHeight: 1.5 }}>{item.admin_response}</p>
                 </div>
               )}
@@ -109,8 +111,8 @@ export default function ParentFeedback() {
         <div className="tc-card">
           <div className="tc-empty-state">
             <div className="tc-empty-state-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-            <p className="tc-empty-state-title">Belum ada feedback</p>
-            <p className="tc-empty-state-desc">Kirim feedback pertama Anda untuk daycare.</p>
+            <p className="tc-empty-state-title">{t('Belum ada feedback')}</p>
+            <p className="tc-empty-state-desc">{t('Kirim feedback pertama Anda untuk daycare.')}</p>
           </div>
         </div>
       )}

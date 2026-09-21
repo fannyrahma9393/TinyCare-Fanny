@@ -13,11 +13,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { initFcmForUser, unregisterToken, onForegroundMessage } from '../services/firebase';
 
 export default function FirebaseNotifications() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [toast, setToast] = useState(null);
   const tokenRef = useRef(null);
@@ -126,7 +128,7 @@ export default function FirebaseNotifications() {
           e.stopPropagation();
           setToast(null);
         }}
-        aria-label="Tutup"
+        aria-label={t('Tutup')}
         style={{
           border: 'none',
           background: 'transparent',

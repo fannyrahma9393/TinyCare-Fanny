@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { parentAPI } from '../../services/api';
 import { PageHeader, EmptyState } from '../../components/PageHeader';
 import ChildPhoto from '../../components/ChildPhoto';
@@ -10,6 +11,7 @@ const priorityConfig = {
 };
 
 export default function ParentInformation() {
+  const { t, i18n } = useTranslation();
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedChild, setSelectedChild] = useState(null);
@@ -23,7 +25,7 @@ export default function ParentInformation() {
       const list = res.data.data?.data || res.data.data || [];
       setChildren(Array.isArray(list) ? list : []);
     } catch (e) {
-      setError(e.response?.data?.message || 'Gagal memuat data anak.');
+      setError(e.response?.data?.message || t('Gagal memuat data anak.'));
     }
   }
 
@@ -34,7 +36,7 @@ export default function ParentInformation() {
       const res = await parentAPI.childInformation(childId);
       setInformations(res.data.data?.data || res.data.data || []);
     } catch (e) {
-      setError(e.response?.data?.message || 'Gagal memuat informasi.');
+      setError(e.response?.data?.message || t('Gagal memuat informasi.'));
       setInformations([]);
     } finally {
       setLoadingInfo(false);
@@ -55,7 +57,7 @@ export default function ParentInformation() {
 
   function formatDate(dateStr) {
     if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    return new Date(dateStr).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   if (loading) {
@@ -69,12 +71,12 @@ export default function ParentInformation() {
   return (
     <div>
       <PageHeader
-        title="Informasi Anak"
-        subtitle={selectedChild ? `Informasi untuk ${selectedChild.name}` : 'Pilih anak untuk melihat informasi'}
+        title={t('Informasi Anak')}
+        subtitle={selectedChild ? t('Informasi untuk {{name}}', { name: selectedChild.name }) : t('Pilih anak untuk melihat informasi')}
         action={
           selectedChild && (
             <button onClick={() => { setSelectedChild(null); setError(''); }} className="tc-btn tc-btn-secondary">
-              ← Kembali
+              {t('← Kembali')}
             </button>
           )
         }
@@ -88,7 +90,7 @@ export default function ParentInformation() {
 
       {!selectedChild ? (
         children.length === 0 ? (
-          <EmptyState icon="👶" title="Belum ada anak" description="Anda belum memiliki data anak yang terdaftar." />
+          <EmptyState icon="👶" title={t('Belum ada anak')} description={t('Anda belum memiliki data anak yang terdaftar.')} />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
             {children.map((child) => (
@@ -105,7 +107,7 @@ export default function ParentInformation() {
                 </div>
                 <p style={{ fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>{child.name}</p>
                 <span className="tc-badge" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success)', fontSize: '11px' }}>
-                  {child.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                  {t(child.status === 'active' ? 'Aktif' : 'Nonaktif')}
                 </span>
               </div>
             ))}
@@ -116,7 +118,7 @@ export default function ParentInformation() {
           <div className="tc-spinner"></div>
         </div>
       ) : informations.length === 0 ? (
-        <EmptyState icon="📋" title="Belum ada informasi" description={`Belum ada informasi untuk ${selectedChild.name}.`} />
+        <EmptyState icon="📋" title={t('Belum ada informasi')} description={t('Belum ada informasi untuk {{name}}.', { name: selectedChild.name })} />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {informations.map((info) => {
@@ -126,7 +128,7 @@ export default function ParentInformation() {
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '8px' }}>
                   <h3 style={{ fontSize: '14px', fontWeight: '600' }}>{info.title}</h3>
                   <span className="tc-badge" style={{ background: pc.bg, color: pc.color, whiteSpace: 'nowrap', fontSize: '11px' }}>
-                    {pc.label}
+                    {t(pc.label)}
                   </span>
                 </div>
                 <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: '1.5', marginBottom: '10px' }}>
@@ -134,7 +136,7 @@ export default function ParentInformation() {
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '11px', color: 'var(--color-text-muted)' }}>
                   <span>{formatDate(info.created_at)}</span>
-                  {info.creator && <span>oleh {info.creator.name}</span>}
+                  {info.creator && <span>{t('oleh {{name}}', { name: info.creator.name })}</span>}
                 </div>
               </div>
             );

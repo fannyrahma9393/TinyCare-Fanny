@@ -3,18 +3,19 @@ import { parentAPI } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import ChildPhoto from '../../components/ChildPhoto';
 import { PageHeader, Modal } from '../../components/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 const PHOTO_MAX_MB = 5;
 const PHOTO_MAX_DIM = 1024;
 const PHOTO_QUALITY = 0.8;
 
-function validatePhotoFile(file) {
+function validatePhotoFile(file, t) {
   if (!file) return null;
   if (file.size > PHOTO_MAX_MB * 1024 * 1024) {
-    return `Ukuran foto maksimal ${PHOTO_MAX_MB}MB.`;
+    return t('Ukuran foto maksimal {{max}}MB.', { max: PHOTO_MAX_MB });
   }
   if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
-    return 'Format foto harus JPG, PNG, atau GIF.';
+    return t('Format foto harus JPG, PNG, atau GIF.');
   }
   return null;
 }
@@ -59,6 +60,7 @@ async function compressPhoto(file) {
 }
 
 export default function ParentChildren() {
+  const { t } = useTranslation();
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -81,7 +83,7 @@ export default function ParentChildren() {
         setChildren(Array.isArray(list) ? list : []);
         setError('');
       })
-      .catch(() => setError('Gagal memuat data anak.'))
+      .catch(() => setError(t('Gagal memuat data anak.')))
       .finally(() => setLoading(false));
   };
 
@@ -98,7 +100,7 @@ export default function ParentChildren() {
       setPhotoPreview(null);
       return;
     }
-    const err = validatePhotoFile(file);
+    const err = validatePhotoFile(file, t);
     if (err) {
       setPhotoError(err);
       setPhotoFile(null);
@@ -153,16 +155,16 @@ export default function ParentChildren() {
       if (error.response?.status === 422) {
         const errors = error.response.data.errors;
         const first = errors ? Object.values(errors)[0] : error.response.data.message;
-        alert(Array.isArray(first) ? first[0] : (first || 'Data tidak valid.'));
+        alert(Array.isArray(first) ? first[0] : (first || t('Data tidak valid.')));
       } else {
-        alert(error.response?.data?.message || 'Gagal menambahkan anak.');
+        alert(error.response?.data?.message || t('Gagal menambahkan anak.'));
       }
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat data anak...</p></div>;
+  if (loading) return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat data anak...')}</p></div>;
 
   if (error && children.length === 0) return (
     <div className="tc-error-state">
@@ -174,12 +176,12 @@ export default function ParentChildren() {
   return (
     <div>
       <PageHeader
-        title="Anak Saya"
-        subtitle="Daftar anak yang terdaftar di daycare."
+        title={t('Anak Saya')}
+        subtitle={t('Daftar anak yang terdaftar di daycare.')}
         action={
           <button onClick={() => { resetForm(); setShowModal(true); }} className="tc-btn tc-btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Tambah Anak
+            {t('Tambah Anak')}
           </button>
         }
       />
@@ -198,18 +200,18 @@ export default function ParentChildren() {
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '2px' }}>{child.name}</h3>
                   <p style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
-                    {child.gender === 'male' ? 'Laki-laki' : 'Perempuan'} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' }) : '-'}
+                    {child.gender === 'male' ? t('Laki-laki') : t('Perempuan')} · {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' }) : '-'}
                   </p>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                <span className="tc-badge tc-badge-success">Aktif</span>
+                <span className="tc-badge tc-badge-success">{t('Aktif')}</span>
                 {child.child_packages?.[0]?.package && (
                   <span className="tc-badge tc-badge-info">{child.child_packages[0].package.name}</span>
                 )}
               </div>
               <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '500', color: 'var(--color-primary)' }}>
-                Lihat Detail
+                {t('Lihat Detail')}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </div>
@@ -219,14 +221,14 @@ export default function ParentChildren() {
         <div className="tc-card">
           <div className="tc-empty-state">
             <div className="tc-empty-state-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-7 7-7s7 3 7 7"/></svg></div>
-            <p className="tc-empty-state-title">Belum ada data anak</p>
-            <p className="tc-empty-state-desc">Tambahkan data anak Anda dengan menekan tombol "Tambah Anak".</p>
+            <p className="tc-empty-state-title">{t('Belum ada data anak')}</p>
+            <p className="tc-empty-state-desc">{t('Tambahkan data anak Anda dengan menekan tombol "Tambah Anak".')}</p>
           </div>
         </div>
       )}
 
       {/* Add Child Modal */}
-      <Modal open={showModal} onClose={() => { setShowModal(false); resetForm(); }} title="Tambah Anak">
+      <Modal open={showModal} onClose={() => { setShowModal(false); resetForm(); }} title={t('Tambah Anak')}>
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {/* Photo */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -238,7 +240,7 @@ export default function ParentChildren() {
               {photoPreview ? (
                 <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               ) : (
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>Foto</span>
+                <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>{t('Foto')}</span>
               )}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
@@ -252,43 +254,43 @@ export default function ParentChildren() {
               />
               {photoFile ? (
                 <button type="button" onClick={removePhoto} className="tc-btn tc-btn-secondary tc-btn-sm">
-                  Hapus Foto
+                  {t('Hapus Foto')}
                 </button>
               ) : (
                 <label htmlFor="parent-child-photo">
-                  <span className="tc-btn tc-btn-secondary tc-btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>Unggah Foto</span>
+                  <span className="tc-btn tc-btn-secondary tc-btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>{t('Unggah Foto')}</span>
                 </label>
               )}
-              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Foto dikompres otomatis agar ukurannya kecil.</p>
+              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Foto dikompres otomatis agar ukurannya kecil.')}</p>
               {photoError && <p style={{ fontSize: '12px', color: 'var(--color-error)' }}>{photoError}</p>}
             </div>
           </div>
 
-          <input type="text" required placeholder="Nama Anak *" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="tc-input" />
+          <input type="text" required placeholder={t('Nama Anak *')} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="tc-input" />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <div>
-              <label style={{ fontSize: '13px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Jenis Kelamin *</label>
+              <label style={{ fontSize: '13px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>{t('Jenis Kelamin *')}</label>
               <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="tc-input">
-                <option value="male">Laki-laki</option>
-                <option value="female">Perempuan</option>
+                <option value="male">{t('Laki-laki')}</option>
+                <option value="female">{t('Perempuan')}</option>
               </select>
             </div>
             <div>
-              <label style={{ fontSize: '13px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Tanggal Lahir *</label>
+              <label style={{ fontSize: '13px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>{t('Tanggal Lahir *')}</label>
               <input type="date" required value={formData.birth_date} max={new Date().toISOString().split('T')[0]} onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })} className="tc-input" />
             </div>
           </div>
 
-          <input type="text" placeholder="Alamat" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="tc-input" />
-          <input type="text" placeholder="Informasi Kesehatan / Alergi" value={formData.health_info} onChange={(e) => setFormData({ ...formData, health_info: e.target.value })} className="tc-input" />
-          <input type="text" placeholder="Nama Kontak Darurat" value={formData.emergency_contact_name} onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })} className="tc-input" />
-          <input type="text" placeholder="Telepon Kontak Darurat" value={formData.emergency_contact_phone} onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })} className="tc-input" />
+          <input type="text" placeholder={t('Alamat')} value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="tc-input" />
+          <input type="text" placeholder={t('Informasi Kesehatan / Alergi')} value={formData.health_info} onChange={(e) => setFormData({ ...formData, health_info: e.target.value })} className="tc-input" />
+          <input type="text" placeholder={t('Nama Kontak Darurat')} value={formData.emergency_contact_name} onChange={(e) => setFormData({ ...formData, emergency_contact_name: e.target.value })} className="tc-input" />
+          <input type="text" placeholder={t('Telepon Kontak Darurat')} value={formData.emergency_contact_phone} onChange={(e) => setFormData({ ...formData, emergency_contact_phone: e.target.value })} className="tc-input" />
 
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-            <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="tc-btn tc-btn-secondary">Batal</button>
+            <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="tc-btn tc-btn-secondary">{t('Batal')}</button>
             <button type="submit" disabled={submitting} className="tc-btn tc-btn-primary">
-              {submitting ? 'Menyimpan...' : 'Simpan Anak'}
+              {submitting ? t('Menyimpan...') : t('Simpan Anak')}
             </button>
           </div>
         </form>

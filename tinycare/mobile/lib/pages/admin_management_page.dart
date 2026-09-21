@@ -3,6 +3,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
 
 class AdminManagementPage extends StatefulWidget {
   const AdminManagementPage({super.key});
@@ -36,7 +37,7 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data admin. Silakan coba lagi.';
+        _error = tr('Gagal memuat data admin. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -47,14 +48,16 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
     try {
       if (isActive) {
         await _api.deactivateAdmin(admin['id']);
-        _showToast('${admin['user']?['name']} berhasil dinonaktifkan.');
+        _showToast(tr('{{name}} berhasil dinonaktifkan.',
+            {'name': admin['user']?['name'] ?? ''}));
       } else {
         await _api.activateAdmin(admin['id']);
-        _showToast('${admin['user']?['name']} berhasil diaktifkan.');
+        _showToast(tr('{{name}} berhasil diaktifkan.',
+            {'name': admin['user']?['name'] ?? ''}));
       }
       _loadAdmins();
     } catch (e) {
-      _showToast('Gagal mengubah status. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal mengubah status. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -84,18 +87,18 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
 
     if (!auth.isAdminMaster) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Kelola Admin')),
+        appBar: AppBar(title: Text(tr('Kelola Admin'))),
         body: AppWidgets.emptyState(
           icon: Icons.shield_outlined,
-          title: 'Akses Ditolak',
-          subtitle: 'Hanya admin_master yang dapat mengelola admin.',
+          title: tr('Akses Ditolak'),
+          subtitle: tr('Hanya admin_master yang dapat mengelola admin.'),
         ),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kelola Admin'),
+        title: Text(tr('Kelola Admin')),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -110,7 +113,7 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
               : _admins.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.admin_panel_settings_outlined,
-                      title: 'Belum ada admin',
+                      title: tr('Belum ada admin'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadAdmins,
@@ -156,7 +159,7 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
                 ),
               ),
               AppWidgets.statusBadge(
-                isActive ? 'Aktif' : 'Nonaktif',
+                isActive ? tr('Aktif') : tr('Nonaktif'),
                 isActive ? AppColors.success : ThemeHelper.textMuted(context),
               ),
             ],
@@ -165,7 +168,7 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
           Row(
             children: [
               AppWidgets.statusBadge(
-                role == 'admin_master' ? 'Admin Master' : 'Admin',
+                role == 'admin_master' ? tr('Admin Master') : tr('Admin'),
                 role == 'admin_master' ? AppColors.primary : AppColors.info,
               ),
               const Spacer(),
@@ -178,10 +181,10 @@ class _AdminManagementPageState extends State<AdminManagementPage> {
                     minimumSize: Size.zero,
                     side: BorderSide(color: isActive ? AppColors.error : AppColors.primary),
                   ),
-                  child: Text(isActive ? 'Nonaktifkan' : 'Aktifkan', style: const TextStyle(fontSize: 12)),
+                  child: Text(isActive ? tr('Nonaktifkan') : tr('Aktifkan'), style: const TextStyle(fontSize: 12)),
                 ),
               if (isSelf)
-                Text('Akun Anda', style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
+                Text(tr('Akun Anda'), style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
             ],
           ),
         ],
@@ -246,7 +249,7 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Admin berhasil ditambahkan.'),
+              content: Text(tr('Admin berhasil ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -256,13 +259,13 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menambahkan admin.';
+          _error = response['message'] ?? tr('Gagal menambahkan admin.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Gagal menambahkan admin. Silakan coba lagi.';
+        _error = tr('Gagal menambahkan admin. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -271,7 +274,7 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Admin')),
+      appBar: AppBar(title: Text(tr('Tambah Admin'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -295,8 +298,8 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama *'),
-                validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Nama *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
@@ -304,10 +307,10 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Email *'),
+                decoration: InputDecoration(labelText: tr('Email *')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Email tidak boleh kosong';
-                  if (!v.contains('@')) return 'Email tidak valid';
+                  if (v == null || v.isEmpty) return tr('Email tidak boleh kosong');
+                  if (!v.contains('@')) return tr('Email tidak valid');
                   return null;
                 },
               ),
@@ -318,16 +321,16 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                 obscureText: _obscurePassword,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Password *',
+                  labelText: tr('Password *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    tooltip: _obscurePassword ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscurePassword ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Password tidak boleh kosong';
-                  if (v.length < 8) return 'Password minimal 8 karakter';
+                  if (v == null || v.isEmpty) return tr('Password tidak boleh kosong');
+                  if (v.length < 8) return tr('Password minimal 8 karakter');
                   return null;
                 },
               ),
@@ -338,15 +341,15 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                 obscureText: _obscureConfirm,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Konfirmasi Password *',
+                  labelText: tr('Konfirmasi Password *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                    tooltip: _obscureConfirm ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscureConfirm ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v != _passwordController.text) return 'Password tidak cocok';
+                  if (v != _passwordController.text) return tr('Password tidak cocok');
                   return null;
                 },
               ),
@@ -356,23 +359,23 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Phone'),
+                decoration: InputDecoration(labelText: tr('Phone')),
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _positionController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Posisi'),
+                decoration: InputDecoration(labelText: tr('Posisi')),
               ),
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
                 initialValue: _adminRole,
-                decoration: const InputDecoration(labelText: 'Role'),
-                items: const [
-                  DropdownMenuItem(value: 'admin', child: Text('Admin')),
-                  DropdownMenuItem(value: 'admin_master', child: Text('Admin Master')),
+                decoration: InputDecoration(labelText: tr('Role')),
+                items: [
+                  DropdownMenuItem(value: 'admin', child: Text(tr('Admin'))),
+                  DropdownMenuItem(value: 'admin_master', child: Text(tr('Admin Master'))),
                 ],
                 onChanged: (v) {
                   if (v != null) setState(() => _adminRole = v);
@@ -386,7 +389,7 @@ class _CreateAdminPageState extends State<_CreateAdminPage> {
                   onPressed: _isSubmitting ? null : _handleCreate,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Simpan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(tr('Simpan'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

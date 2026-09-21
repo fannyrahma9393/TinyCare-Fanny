@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { vouchersAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState, StatusBadge } from '../components/PageHeader';
 
 export default function Vouchers() {
+  const { t } = useTranslation();
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -17,7 +19,7 @@ export default function Vouchers() {
       const res = await vouchersAPI.list();
       setVouchers(res.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data voucher.');
+      setError(error.response?.data?.message || t('Gagal memuat data voucher.'));
     } finally {
       setLoading(false);
     }
@@ -38,13 +40,13 @@ export default function Vouchers() {
       setFormData({ code: '', description: '', discount_type: 'nominal', discount_value: '', min_transaction: '0', max_usage: '', start_date: '', end_date: '', status: 'active' });
       loadVouchers();
     } catch (error) {
-      alert(error.response?.data?.message || 'Gagal menambahkan voucher.');
+      alert(error.response?.data?.message || t('Gagal menambahkan voucher.'));
     }
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus voucher ini?')) {
-      try { await vouchersAPI.delete(id); loadVouchers(); } catch { alert('Gagal menghapus voucher.'); }
+    if (confirm(t('Yakin ingin menghapus voucher ini?'))) {
+      try { await vouchersAPI.delete(id); loadVouchers(); } catch { alert(t('Gagal menghapus voucher.')); }
     }
   };
 
@@ -52,16 +54,16 @@ export default function Vouchers() {
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}><div className="tc-spinner"></div></div>;
 
-  const statusCfg = { active: { label: 'Aktif', color: 'var(--color-success)', bg: 'var(--color-success-bg)' }, inactive: { label: 'Nonaktif', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' } };
+  const statusCfg = { active: { label: t('Aktif'), color: 'var(--color-success)', bg: 'var(--color-success-bg)' }, inactive: { label: t('Nonaktif'), color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' } };
 
   return (
     <div>
-      <PageHeader title="Manajemen Voucher" subtitle="Kelola voucher diskon untuk pelanggan" action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Tambah Voucher</button>} />
+      <PageHeader title={t('Manajemen Voucher')} subtitle={t('Kelola voucher diskon untuk pelanggan')} action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">{t('+ Tambah Voucher')}</button>} />
 
       {error && (
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={() => { setError(''); loadVouchers(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={() => { setError(''); loadVouchers(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       )}
 
@@ -69,13 +71,13 @@ export default function Vouchers() {
         <table className="tc-table">
           <thead>
             <tr>
-              <th>Kode</th>
-              <th>Diskon</th>
-              <th>Min. Transaksi</th>
-              <th>Penggunaan</th>
-              <th>Berlaku</th>
-              <th>Status</th>
-              <th>Aksi</th>
+              <th>{t('Kode')}</th>
+              <th>{t('Diskon')}</th>
+              <th>{t('Min. Transaksi')}</th>
+              <th>{t('Penggunaan')}</th>
+              <th>{t('Berlaku')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Aksi')}</th>
             </tr>
           </thead>
           <tbody>
@@ -92,65 +94,65 @@ export default function Vouchers() {
                 <td style={{ fontSize: '13px' }}>{v.current_usage}/{v.max_usage}</td>
                 <td style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                   <div>{new Date(v.start_date).toLocaleDateString('id-ID')}</div>
-                  <div style={{ color: 'var(--color-text-muted)' }}>s/d {new Date(v.end_date).toLocaleDateString('id-ID')}</div>
+                  <div style={{ color: 'var(--color-text-muted)' }}>{t('s/d {{date}}', { date: new Date(v.end_date).toLocaleDateString('id-ID') })}</div>
                 </td>
                 <td><StatusBadge status={v.status} config={statusCfg} /></td>
-                <td><button onClick={() => handleDelete(v.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>Hapus</button></td>
+                <td><button onClick={() => handleDelete(v.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>{t('Hapus')}</button></td>
               </tr>
             ))}
           </tbody>
         </table>
-        {vouchers.length === 0 && <EmptyState icon="🎫" title="Belum ada voucher" description="Klik 'Tambah Voucher' untuk menambahkan." />}
+        {vouchers.length === 0 && <EmptyState icon="🎫" title={t('Belum ada voucher')} description={t("Klik 'Tambah Voucher' untuk menambahkan.")} />}
       </div>
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Tambah Voucher Baru" maxWidth="560px">
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={t('Tambah Voucher Baru')} maxWidth="560px">
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Kode Voucher *</label>
+                <label className="tc-label">{t('Kode Voucher *')}</label>
                 <input type="text" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })} className="tc-input" style={{ fontFamily: 'monospace', textTransform: 'uppercase' }} required />
               </div>
               <div>
-                <label className="tc-label">Jenis Diskon *</label>
+                <label className="tc-label">{t('Jenis Diskon *')}</label>
                 <select value={formData.discount_type} onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })} className="tc-select">
-                  <option value="nominal">Nominal (Rp)</option>
-                  <option value="percentage">Persen (%)</option>
+                  <option value="nominal">{t('Nominal (Rp)')}</option>
+                  <option value="percentage">{t('Persen (%)')}</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="tc-label">Deskripsi</label>
+              <label className="tc-label">{t('Deskripsi')}</label>
               <input type="text" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="tc-input" />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Nilai Diskon *</label>
+                <label className="tc-label">{t('Nilai Diskon *')}</label>
                 <input type="number" value={formData.discount_value} onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })} className="tc-input" required min="0" />
               </div>
               <div>
-                <label className="tc-label">Min. Transaksi</label>
+                <label className="tc-label">{t('Min. Transaksi')}</label>
                 <input type="number" value={formData.min_transaction} onChange={(e) => setFormData({ ...formData, min_transaction: e.target.value })} className="tc-input" min="0" />
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Max. Penggunaan *</label>
+                <label className="tc-label">{t('Max. Penggunaan *')}</label>
                 <input type="number" value={formData.max_usage} onChange={(e) => setFormData({ ...formData, max_usage: e.target.value })} className="tc-input" required min="1" />
               </div>
               <div>
-                <label className="tc-label">Tanggal Mulai *</label>
+                <label className="tc-label">{t('Tanggal Mulai *')}</label>
                 <input type="date" value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} className="tc-input" required />
               </div>
               <div>
-                <label className="tc-label">Tanggal Berakhir *</label>
+                <label className="tc-label">{t('Tanggal Berakhir *')}</label>
                 <input type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} className="tc-input" required />
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
-            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>Simpan</button>
+            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
+            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{t('Simpan')}</button>
           </div>
         </form>
       </Modal>

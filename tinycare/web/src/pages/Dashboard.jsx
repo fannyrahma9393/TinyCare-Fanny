@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,7 +17,7 @@ export default function Dashboard() {
       const res = await api.get('/admin/dashboard');
       setStats(res.data.data);
     } catch {
-      setError('Gagal memuat dashboard');
+      setError(t('Gagal memuat dashboard'));
     } finally {
       setLoading(false);
     }
@@ -27,9 +29,9 @@ export default function Dashboard() {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Selamat pagi';
-    if (hour < 17) return 'Selamat siang';
-    return 'Selamat malam';
+    if (hour < 12) return t('Selamat pagi');
+    if (hour < 17) return t('Selamat siang');
+    return t('Selamat malam');
   };
 
   const formatCurrency = (v) => {
@@ -38,19 +40,19 @@ export default function Dashboard() {
   };
 
   const statCards = [
-    { label: 'Total Anak', value: s.total_children || 0, icon: 'child', accent: 'var(--color-primary)', to: '/children' },
-    { label: 'Total Orang Tua', value: s.total_parents || 0, icon: 'users', accent: 'var(--color-success)', to: '/users?filter=parent' },
-    { label: 'Pengguna Menunggu', value: s.pending_parents ?? 0, icon: 'pending', accent: 'var(--color-warning)', to: '/users?filter=pending' },
-    { label: 'Informasi Anak', value: s.total_child_information || 0, icon: 'info', accent: 'var(--color-info)', to: '/child-information' },
-    { label: 'Invoice Pending', value: s.pending_invoices || 0, icon: 'invoice', accent: 'var(--color-warning)', to: '/invoices?filter=pending' },
-    { label: 'Total Pendapatan', value: formatCurrency(s.total_revenue), icon: 'revenue', accent: 'var(--color-accent)', to: '/payments' },
+    { label: t('Total Anak'), value: s.total_children || 0, icon: 'child', accent: 'var(--color-primary)', to: '/children' },
+    { label: t('Total Orang Tua'), value: s.total_parents || 0, icon: 'users', accent: 'var(--color-success)', to: '/users?filter=parent' },
+    { label: t('Pengguna Menunggu'), value: s.pending_parents ?? 0, icon: 'pending', accent: 'var(--color-warning)', to: '/users?filter=pending' },
+    { label: t('Informasi Anak'), value: s.total_child_information || 0, icon: 'info', accent: 'var(--color-info)', to: '/child-information' },
+    { label: t('Invoice Pending'), value: s.pending_invoices || 0, icon: 'invoice', accent: 'var(--color-warning)', to: '/invoices?filter=pending' },
+    { label: t('Total Pendapatan'), value: formatCurrency(s.total_revenue), icon: 'revenue', accent: 'var(--color-accent)', to: '/payments' },
   ];
 
   if (loading) {
     return (
       <div className="tc-loading-screen">
         <div className="tc-spinner tc-spinner-lg"></div>
-        <p>Memuat dashboard...</p>
+        <p>{t('Memuat dashboard...')}</p>
       </div>
     );
   }
@@ -62,7 +64,7 @@ export default function Dashboard() {
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
         <p className="tc-empty-state-title">{error}</p>
-        <button onClick={loadDashboard} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        <button onClick={loadDashboard} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
       </div>
     );
   }
@@ -108,7 +110,7 @@ export default function Dashboard() {
           {getGreeting()}, {user?.name?.split(' ')[0]}
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-          Berikut ringkasan TinyCare hari ini.
+          {t('Berikut ringkasan TinyCare hari ini.')}
         </p>
       </div>
 
@@ -120,8 +122,8 @@ export default function Dashboard() {
             onClick={() => navigate(card.to)}
             className="tc-card tc-card-hover"
             style={{ ...cardStyle(), textAlign: 'left', width: '100%', fontFamily: 'inherit' }}
-            aria-label={`Lihat ${card.label}`}
-            title={`Lihat ${card.label}`}
+            aria-label={t('Lihat {{label}}', { label: card.label })}
+            title={t('Lihat {{label}}', { label: card.label })}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
               <p style={{ fontSize: '12px', fontWeight: '500', color: 'var(--color-text-muted)' }}>{card.label}</p>
@@ -142,7 +144,7 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '20px' }}>
         {/* Recent Daily Stories */}
         <div className="tc-card" style={{ padding: '24px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>Cerita Hari Ini</h2>
+          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>{t('Cerita Hari Ini')}</h2>
           {stats?.recent_daily_stories?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {stats.recent_daily_stories.map((story) => (
@@ -170,14 +172,14 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="tc-empty-state" style={{ padding: '24px 16px' }}>
-              <p className="tc-empty-state-desc">Belum ada cerita hari ini.</p>
+              <p className="tc-empty-state-desc">{t('Belum ada cerita hari ini.')}</p>
             </div>
           )}
         </div>
 
         {/* Recent Child Information */}
         <div className="tc-card" style={{ padding: '24px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>Informasi Anak Terbaru</h2>
+          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>{t('Informasi Anak Terbaru')}</h2>
           {stats?.recent_child_information?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {stats.recent_child_information.map((info) => (
@@ -205,14 +207,14 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="tc-empty-state" style={{ padding: '24px 16px' }}>
-              <p className="tc-empty-state-desc">Belum ada informasi anak.</p>
+              <p className="tc-empty-state-desc">{t('Belum ada informasi anak.')}</p>
             </div>
           )}
         </div>
 
         {/* Recent Feedback */}
         <div className="tc-card" style={{ padding: '24px' }}>
-          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>Feedback Terbaru</h2>
+          <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '16px', letterSpacing: '-0.01em' }}>{t('Feedback Terbaru')}</h2>
           {stats?.recent_feedback?.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {stats.recent_feedback.map((fb) => (
@@ -229,7 +231,7 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="tc-empty-state" style={{ padding: '24px 16px' }}>
-              <p className="tc-empty-state-desc">Belum ada feedback.</p>
+              <p className="tc-empty-state-desc">{t('Belum ada feedback.')}</p>
             </div>
           )}
         </div>

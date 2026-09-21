@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../l10n/app_strings.dart';
 
 class PackagesPage extends StatefulWidget {
   const PackagesPage({super.key});
@@ -28,7 +29,7 @@ class _PackagesPageState extends State<PackagesPage> {
       final packages = await _api.getPackages();
       setState(() { _packages = packages; _isLoading = false; });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data paket.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data paket.'); _isLoading = false; });
     }
   }
 
@@ -46,14 +47,15 @@ class _PackagesPageState extends State<PackagesPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Paket'),
-        content: Text('Yakin ingin menghapus paket "${package['name']}"?'),
+        title: Text(tr('Hapus Paket')),
+        content: Text(tr('Yakin ingin menghapus paket "{{name}}"?',
+            {'name': package['name'] ?? ''})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -62,10 +64,10 @@ class _PackagesPageState extends State<PackagesPage> {
 
     try {
       await _api.deletePackage(package['id']);
-      _showToast('Paket berhasil dihapus.');
+      _showToast(tr('Paket berhasil dihapus.'));
       _loadPackages();
     } catch (e) {
-      _showToast('Gagal menghapus paket.', isError: true);
+      _showToast(tr('Gagal menghapus paket.'), isError: true);
     }
   }
 
@@ -85,7 +87,7 @@ class _PackagesPageState extends State<PackagesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Paket'),
+        title: Text(tr('Paket')),
         actions: [
           IconButton(icon: const Icon(Icons.add), onPressed: _showCreateForm),
         ],
@@ -97,8 +99,8 @@ class _PackagesPageState extends State<PackagesPage> {
               : _packages.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.inventory_2_outlined,
-                      title: 'Belum ada paket',
-                      subtitle: 'Ketuk tombol + untuk menambahkan paket.',
+                      title: tr('Belum ada paket'),
+                      subtitle: tr('Ketuk tombol + untuk menambahkan paket.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadPackages,
@@ -141,7 +143,7 @@ class _PackagesPageState extends State<PackagesPage> {
                   ],
                 ),
               ),
-              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : ThemeHelper.textMuted(context)),
+              AppWidgets.statusBadge(isActive ? tr('Aktif') : tr('Nonaktif'), isActive ? AppColors.success : ThemeHelper.textMuted(context)),
             ],
           ),
           if (package['description'] != null && package['description'].toString().isNotEmpty) ...[
@@ -165,7 +167,7 @@ class _PackagesPageState extends State<PackagesPage> {
                 child: OutlinedButton.icon(
                   onPressed: () => _showEditForm(package),
                   icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                  label: Text(tr('Edit'), style: TextStyle(fontSize: 12)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -173,7 +175,7 @@ class _PackagesPageState extends State<PackagesPage> {
                 child: OutlinedButton.icon(
                   onPressed: () => _deletePackage(package),
                   icon: const Icon(Icons.delete_outline, size: 16),
-                  label: const Text('Hapus', style: TextStyle(fontSize: 12)),
+                  label: Text(tr('Hapus'), style: TextStyle(fontSize: 12)),
                   style: OutlinedButton.styleFrom(foregroundColor: AppColors.error, side: const BorderSide(color: AppColors.error)),
                 ),
               ),
@@ -268,7 +270,7 @@ class _PackageFormPageState extends State<_PackageFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Paket berhasil diperbarui.' : 'Paket berhasil ditambahkan.'),
+              content: Text(_isEditing ? tr('Paket berhasil diperbarui.') : tr('Paket berhasil ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -277,17 +279,17 @@ class _PackageFormPageState extends State<_PackageFormPage> {
           Navigator.pop(context, true);
         }
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal menyimpan paket.'; _isSubmitting = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal menyimpan paket.'); _isSubmitting = false; });
       }
     } catch (e) {
-      setState(() { _error = 'Gagal menyimpan paket. Silakan coba lagi.'; _isSubmitting = false; });
+      setState(() { _error = tr('Gagal menyimpan paket. Silakan coba lagi.'); _isSubmitting = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit Paket' : 'Tambah Paket')),
+      appBar: AppBar(title: Text(_isEditing ? tr('Edit Paket') : tr('Tambah Paket'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -310,18 +312,18 @@ class _PackageFormPageState extends State<_PackageFormPage> {
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama Paket *'),
-                validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Nama Paket *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _priceController,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Harga (Rp) *'),
+                decoration: InputDecoration(labelText: tr('Harga (Rp) *')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Harga tidak boleh kosong';
-                  if (double.tryParse(v) == null) return 'Harga harus berupa angka';
+                  if (v == null || v.isEmpty) return tr('Harga tidak boleh kosong');
+                  if (double.tryParse(v) == null) return tr('Harga harus berupa angka');
                   return null;
                 },
               ),
@@ -330,10 +332,10 @@ class _PackageFormPageState extends State<_PackageFormPage> {
                 controller: _durationDaysController,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Durasi (hari) *', hintText: 'contoh: 30'),
+                decoration: InputDecoration(labelText: tr('Durasi (hari) *'), hintText: tr('contoh: 30')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Durasi tidak boleh kosong';
-                  if (int.tryParse(v) == null || int.tryParse(v)! < 1) return 'Durasi minimal 1 hari';
+                  if (v == null || v.isEmpty) return tr('Durasi tidak boleh kosong');
+                  if (int.tryParse(v) == null || int.tryParse(v)! < 1) return tr('Durasi minimal 1 hari');
                   return null;
                 },
               ),
@@ -341,21 +343,21 @@ class _PackageFormPageState extends State<_PackageFormPage> {
               TextFormField(
                 controller: _facilitiesController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Fasilitas'),
+                decoration: InputDecoration(labelText: tr('Fasilitas')),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _quotaController,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Kuota', hintText: 'Kosongkan jika tidak terbatas'),
+                decoration: InputDecoration(labelText: tr('Kuota'), hintText: tr('Kosongkan jika tidak terbatas')),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(labelText: 'Deskripsi', alignLabelWithHint: true),
+                decoration: InputDecoration(labelText: tr('Deskripsi'), alignLabelWithHint: true),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -364,7 +366,7 @@ class _PackageFormPageState extends State<_PackageFormPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(_isEditing ? 'Perbarui' : 'Simpan', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(_isEditing ? tr('Perbarui') : tr('Simpan'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

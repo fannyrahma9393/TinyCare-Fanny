@@ -7,6 +7,7 @@ import '../utils/currency.dart';
 import '../widgets/child_photo.dart';
 import 'child_detail_page.dart';
 import 'invoice_detail_page.dart';
+import '../l10n/app_strings.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -41,13 +42,13 @@ class _DashboardPageState extends State<DashboardPage> {
         });
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal memuat dashboard';
+          _error = response['message'] ?? tr('Gagal memuat dashboard');
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat terhubung ke server. Silakan coba lagi.';
+        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -57,7 +58,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(tr('Dashboard')),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_outlined),
@@ -114,14 +115,16 @@ class _DashboardPageState extends State<DashboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Halo, ${auth.user?['name']?.split(' ').first ?? 'Orang Tua'} 👋',
+                    tr('Halo, {{name}} 👋', {
+                      'name': auth.user?['name']?.split(' ').first ?? tr('Orang Tua'),
+                    }),
                     style: AppTypography.h1.copyWith(
                       color: AppColors.primaryDark,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Pantau perkembangan si kecil dengan mudah.',
+                    tr('Pantau perkembangan si kecil dengan mudah.'),
                     style: TextStyle(
                       fontSize: 14,
                       color: ThemeHelper.textSecondary(context),
@@ -136,11 +139,11 @@ class _DashboardPageState extends State<DashboardPage> {
             // Summary Cards (matching web: Anak, Tagihan, Pengumuman, Jadwal)
             Row(
               children: [
-                _buildSummaryCard('Anak', '${children.length}',
+                _buildSummaryCard(tr('Anak'), '${children.length}',
                     AppColors.primary),
                 const SizedBox(width: 10),
                 _buildSummaryCard(
-                    'Tagihan',
+                    tr('Tagihan'),
                     '${pendingInvoices.length}',
                     pendingInvoices.isNotEmpty
                         ? AppColors.warning
@@ -150,11 +153,11 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildSummaryCard('Pengumuman', '${announcements.length}',
+                _buildSummaryCard(tr('Pengumuman'), '${announcements.length}',
                     AppColors.info),
                 const SizedBox(width: 10),
                 _buildSummaryCard(
-                    'Jadwal',
+                    tr('Jadwal'),
                     '${upcomingEvents.length}',
                     upcomingEvents.isNotEmpty
                         ? AppColors.info
@@ -165,7 +168,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             // Children Section (matching web)
             if (children.isNotEmpty) ...[
-              Text('Anak Saya',
+              Text(tr('Anak Saya'),
                   style: AppTypography.h3
                       .copyWith(color: ThemeHelper.text(context))),
               const SizedBox(height: 14),
@@ -179,13 +182,13 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Informasi Anak',
+                  Text(tr('Informasi Anak'),
                       style: AppTypography.h3
                           .copyWith(color: ThemeHelper.text(context))),
                   GestureDetector(
                     onTap: () =>
                         Navigator.pushNamed(context, '/parent/information'),
-                    child: Text('Lihat Semua',
+                    child: Text(tr('Lihat Semua'),
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -204,7 +207,7 @@ class _DashboardPageState extends State<DashboardPage> {
             // Two Column: Invoices + Events (matching web)
             if (pendingInvoices.isNotEmpty || upcomingEvents.isNotEmpty) ...[
               if (pendingInvoices.isNotEmpty) ...[
-                Text('Invoice Pending',
+                Text(tr('Invoice Pending'),
                     style: AppTypography.h3
                         .copyWith(color: ThemeHelper.text(context))),
                 const SizedBox(height: 14),
@@ -213,7 +216,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 28),
               ],
               if (upcomingEvents.isNotEmpty) ...[
-                Text('Jadwal Mendatang',
+                Text(tr('Jadwal Mendatang'),
                     style: AppTypography.h3
                         .copyWith(color: ThemeHelper.text(context))),
                 const SizedBox(height: 14),
@@ -227,7 +230,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             // Recent Announcements (matching web)
             if (announcements.isNotEmpty) ...[
-              Text('Pengumuman',
+              Text(tr('Pengumuman'),
                   style: AppTypography.h3
                       .copyWith(color: ThemeHelper.text(context))),
               const SizedBox(height: 14),
@@ -243,9 +246,9 @@ class _DashboardPageState extends State<DashboardPage> {
                 announcements.isEmpty)
               AppWidgets.emptyState(
                 icon: Icons.dashboard_outlined,
-                title: 'Belum ada data',
+                title: tr('Belum ada data'),
                 subtitle:
-                    'Data akan muncul ketika sudah tersedia di sistem.',
+                    tr('Data akan muncul ketika sudah tersedia di sistem.'),
               ),
           ],
         ),
@@ -328,7 +331,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 color: ThemeHelper.text(context))),
                         const SizedBox(height: 2),
                         Text(
-                          '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'}${child['birth_date'] != null ? ' · ${child['birth_date']}' : ''}',
+                          '${child['gender'] == 'male' ? tr('Laki-laki') : tr('Perempuan')}${child['birth_date'] != null ? ' · ${child['birth_date']}' : ''}',
                           style: TextStyle(
                               fontSize: 12, color: mutedColor),
                         ),
@@ -373,11 +376,12 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    AppWidgets.statusBadge('Hadir', AppColors.success),
+                    AppWidgets.statusBadge(tr('Hadir'), AppColors.success),
                     const SizedBox(width: 8),
                     if (todayAttendance['check_in_time'] != null)
                       Text(
-                          'Masuk: ${todayAttendance['check_in_time']}',
+                          tr('Masuk: {{time}}',
+                              {'time': todayAttendance['check_in_time']}),
                           style: TextStyle(
                               fontSize: 12, color: mutedColor)),
                   ],
@@ -408,7 +412,7 @@ class _DashboardPageState extends State<DashboardPage> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Text('Lihat Detail',
+                  Text(tr('Lihat Detail'),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
@@ -566,7 +570,10 @@ class _DashboardPageState extends State<DashboardPage> {
                             color: textColor)),
                     const SizedBox(height: 2),
                     Text(
-                        '${inv['child']?['name'] ?? ''} · Jatuh tempo: ${inv['due_date'] ?? '-'}',
+                        tr('{{name}} · Jatuh tempo: {{due}}', {
+                          'name': inv['child']?['name'] ?? '',
+                          'due': inv['due_date'] ?? '-',
+                        }),
                         style: TextStyle(
                             fontSize: 12, color: mutedColor)),
                   ],

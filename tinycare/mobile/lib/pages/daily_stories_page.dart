@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
 import 'daily_story_detail_page.dart';
+import '../l10n/app_strings.dart';
 
 /// Daily Stories — first screen shows child card grid (matching web
 /// DailyStories.jsx). Clicking a child navigates to the story detail page.
@@ -40,7 +41,7 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data anak.';
+        _error = tr('Gagal memuat data anak.');
         _isLoading = false;
       });
     }
@@ -55,12 +56,12 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isAdmin ? 'Daily Stories' : 'Hari Ini di Daycare'),
+        title: Text(isAdmin ? tr('Daily Stories') : tr('Hari Ini di Daycare')),
         actions: [
           if (isAdmin && _children.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.add_outlined),
-              tooltip: 'Buat Story',
+              tooltip: tr('Buat Story'),
               onPressed: () => _showCreateStoryDialog(),
             ),
         ],
@@ -75,9 +76,9 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
               : _children.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.auto_stories,
-                      title: 'Belum ada data anak',
+                      title: tr('Belum ada data anak'),
                       subtitle:
-                          'Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.',
+                          tr('Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadChildren,
@@ -89,7 +90,7 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Text(
-                              'Pilih anak untuk melihat cerita hariannya',
+                              tr('Pilih anak untuk melihat cerita hariannya'),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: mutedColor,
@@ -173,7 +174,7 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                                                 BorderRadius.circular(99),
                                           ),
                                           child: Text(
-                                            isActive ? 'Aktif' : 'Nonaktif',
+                                            isActive ? tr('Aktif') : tr('Nonaktif'),
                                             style: TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
@@ -189,7 +190,7 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Lihat Cerita',
+                                              tr('Lihat Cerita'),
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
@@ -255,12 +256,14 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
   String? _error;
   final ApiService _api = ApiService();
 
-  static const _moodConfig = {
-    'bahagia': ('Bahagia', '😊'),
-    'biasa': ('Biasa', '😐'),
-    'sedih': ('Sedih', '😢'),
-    'sakit': ('Sakit', '🤒'),
-    'rewel': ('Rewel', '😫'),
+  // A getter (not a `static final` field) so the labels follow the active
+  // language instead of being frozen on first access.
+  static Map<String, (String, String)> get _moodConfig => {
+    'bahagia': (tr('Bahagia'), '😊'),
+    'biasa': (tr('Biasa'), '😐'),
+    'sedih': (tr('Sedih'), '😢'),
+    'sakit': (tr('Sakit'), '🤒'),
+    'rewel': (tr('Rewel'), '😫'),
   };
 
   @override
@@ -284,7 +287,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedChildId == null) {
-      setState(() => _error = 'Pilih anak terlebih dahulu.');
+      setState(() => _error = tr('Pilih anak terlebih dahulu.'));
       return;
     }
 
@@ -324,7 +327,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Cerita hari ini ditambahkan.'),
+              content: Text(tr('Cerita hari ini ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -335,13 +338,13 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan.';
+          _error = response['message'] ?? tr('Gagal menyimpan.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Gagal menyimpan. Silakan coba lagi.';
+        _error = tr('Gagal menyimpan. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -353,7 +356,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
 
     return Scaffold(
       appBar:
-          AppBar(title: const Text('Buat Daily Story')),
+          AppBar(title: Text(tr('Buat Daily Story'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -370,7 +373,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
               DropdownButtonFormField<int>(
                 initialValue: _selectedChildId,
                 decoration:
-                    const InputDecoration(labelText: 'Anak *'),
+                    InputDecoration(labelText: tr('Anak *')),
                 items: widget.children
                     .map<DropdownMenuItem<int>>((c) =>
                         DropdownMenuItem(
@@ -380,16 +383,16 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
                 onChanged: (v) =>
                     setState(() => _selectedChildId = v),
                 validator: (v) =>
-                    v == null ? 'Pilih anak' : null,
+                    v == null ? tr('Pilih anak') : null,
               ),
               const SizedBox(height: 16),
 
               // Date
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(
-                  labelText: 'Tanggal',
-                  hintText: 'YYYY-MM-DD (default: hari ini)',
+                decoration: InputDecoration(
+                  labelText: tr('Tanggal'),
+                  hintText: tr('YYYY-MM-DD (default: hari ini)'),
                 ),
                 keyboardType: TextInputType.datetime,
               ),
@@ -399,8 +402,8 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
               TextFormField(
                 controller: _summaryController,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Ringkasan Kegiatan',
+                decoration: InputDecoration(
+                  labelText: tr('Ringkasan Kegiatan'),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -408,7 +411,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
 
               // Mood selector
               Text(
-                'Mood',
+                tr('Mood'),
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -450,8 +453,8 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
                   Expanded(
                     child: TextFormField(
                       controller: _mealRatingController,
-                      decoration: const InputDecoration(
-                          labelText: 'Rating Makan (1-5)'),
+                      decoration: InputDecoration(
+                          labelText: tr('Rating Makan (1-5)')),
                       keyboardType: TextInputType.number,
                     ),
                   ),
@@ -460,7 +463,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
                     child: TextFormField(
                       controller: _sleepHoursController,
                       decoration:
-                          const InputDecoration(labelText: 'Jam Tidur'),
+                          InputDecoration(labelText: tr('Jam Tidur')),
                       keyboardType: TextInputType.number,
                     ),
                   ),
@@ -472,7 +475,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
               TextFormField(
                 controller: _mealNotesController,
                 decoration:
-                    const InputDecoration(labelText: 'Catatan Makan'),
+                    InputDecoration(labelText: tr('Catatan Makan')),
               ),
               const SizedBox(height: 16),
 
@@ -480,7 +483,7 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
               TextFormField(
                 controller: _sleepNotesController,
                 decoration:
-                    const InputDecoration(labelText: 'Catatan Tidur'),
+                    InputDecoration(labelText: tr('Catatan Tidur')),
               ),
               const SizedBox(height: 16),
 
@@ -488,8 +491,8 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
               TextFormField(
                 controller: _adminNotesController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Catatan Admin (internal)',
+                decoration: InputDecoration(
+                  labelText: tr('Catatan Admin (internal)'),
                   alignLabelWithHint: true,
                 ),
               ),
@@ -509,8 +512,8 @@ class _AdminStoryCreatePageState extends State<_AdminStoryCreatePage> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          'Simpan Cerita',
+                      : Text(
+                          tr('Simpan Cerita'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,

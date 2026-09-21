@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class PickupsPage extends StatefulWidget {
   const PickupsPage({super.key, required this.childId, required this.childName});
@@ -37,7 +38,7 @@ class _PickupsPageState extends State<PickupsPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat daftar penjemput.';
+        _error = tr('Gagal memuat daftar penjemput.');
         _isLoading = false;
       });
     }
@@ -66,21 +67,21 @@ class _PickupsPageState extends State<PickupsPage> {
       if (!mounted) return;
       AppWidgets.showSnackBar(
         context,
-        next == 'active' ? 'Penjemput diaktifkan.' : 'Penjemput dinonaktifkan.',
+        next == 'active' ? tr('Penjemput diaktifkan.') : tr('Penjemput dinonaktifkan.'),
       );
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Gagal memperbarui status.', isError: true);
+      AppWidgets.showSnackBar(context, tr('Gagal memperbarui status.'), isError: true);
     }
   }
 
   Future<void> _delete(Map<String, dynamic> pickup) async {
     final confirm = await AppWidgets.confirmDialog(
       context,
-      title: 'Hapus Penjemput',
+      title: tr('Hapus Penjemput'),
       content: 'Yakin ingin menghapus ${pickup['name'] ?? 'penjemput'} dari daftar penjemput yang diizinkan?',
-      confirmLabel: 'Hapus',
+      confirmLabel: tr('Hapus'),
       confirmColor: AppColors.error,
     );
     if (!confirm) return;
@@ -88,22 +89,22 @@ class _PickupsPageState extends State<PickupsPage> {
     try {
       await _api.deleteAuthorizedPickup(pickup['id'] as int);
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Penjemput berhasil dihapus.');
+      AppWidgets.showSnackBar(context, tr('Penjemput berhasil dihapus.'));
       _load();
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Gagal menghapus penjemput.', isError: true);
+      AppWidgets.showSnackBar(context, tr('Gagal menghapus penjemput.'), isError: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Penjemput')),
+      appBar: AppBar(title: Text(tr('Penjemput'))),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(),
         icon: const Icon(Icons.add),
-        label: const Text('Tambah'),
+        label: Text(tr('Tambah')),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -129,9 +130,10 @@ class _PickupsPageState extends State<PickupsPage> {
                           children: [
                             AppWidgets.emptyState(
                               icon: Icons.person_add_alt_outlined,
-                              title: 'Belum ada penjemput terdaftar',
+                              title: tr('Belum ada penjemput terdaftar'),
                               subtitle:
-                                  'Tambahkan orang yang diizinkan menjemput ${widget.childName}.',
+                                  tr('Tambahkan orang yang diizinkan menjemput {{name}}.',
+                          {'name': widget.childName}),
                             ),
                           ],
                         )
@@ -206,7 +208,7 @@ class _PickupsPageState extends State<PickupsPage> {
                 ),
               ),
               AppWidgets.statusBadge(
-                active ? 'Aktif' : 'Nonaktif',
+                active ? tr('Aktif') : tr('Nonaktif'),
                 active ? AppColors.success : AppColors.textMuted,
               ),
               PopupMenuButton<String>(
@@ -224,22 +226,22 @@ class _PickupsPageState extends State<PickupsPage> {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  PopupMenuItem(value: 'edit', child: Text(tr('Edit'))),
                   PopupMenuItem(
                     value: 'toggle',
-                    child: Text(active ? 'Nonaktifkan' : 'Aktifkan'),
+                    child: Text(active ? tr('Nonaktifkan') : tr('Aktifkan')),
                   ),
-                  const PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                  PopupMenuItem(value: 'delete', child: Text(tr('Hapus'))),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 12),
-          AppWidgets.infoRow('Nomor HP', phone.isEmpty ? '-' : phone),
+          AppWidgets.infoRow(tr('Nomor HP'), phone.isEmpty ? '-' : phone),
           if (idNumber != null && idNumber.isNotEmpty)
-            AppWidgets.infoRow('No. Identitas', idNumber),
+            AppWidgets.infoRow(tr('No. Identitas'), idNumber),
           if (notes != null && notes.isNotEmpty)
-            AppWidgets.infoRow('Catatan', notes),
+            AppWidgets.infoRow(tr('Catatan'), notes),
         ],
       ),
     );
@@ -332,13 +334,13 @@ class _PickupFormModalState extends State<_PickupFormModal> {
         Navigator.pop(context, true);
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan. Silakan coba lagi.';
+          _error = response['message'] ?? tr('Gagal menyimpan. Silakan coba lagi.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat terhubung ke server. Silakan coba lagi.';
+        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -366,12 +368,12 @@ class _PickupFormModalState extends State<_PickupFormModal> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _isEdit ? 'Edit Penjemput' : 'Tambah Penjemput',
+                  _isEdit ? tr('Edit Penjemput') : tr('Tambah Penjemput'),
                   style: AppTypography.h2.copyWith(color: ThemeHelper.text(context)),
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Orang yang diizinkan menjemput anak Anda.',
+                  tr('Orang yang diizinkan menjemput anak Anda.'),
                   style: AppTypography.caption.copyWith(
                     color: ThemeHelper.textMuted(context),
                   ),
@@ -386,14 +388,14 @@ class _PickupFormModalState extends State<_PickupFormModal> {
                 TextFormField(
                   controller: _nameController,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'Nama Lengkap *'),
-                  validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                  decoration: InputDecoration(labelText: tr('Nama Lengkap *')),
+                  validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
                 ),
                 const SizedBox(height: 16),
 
                 DropdownButtonFormField<String>(
                   initialValue: _relationship,
-                  decoration: const InputDecoration(labelText: 'Hubungan *'),
+                  decoration: InputDecoration(labelText: tr('Hubungan *')),
                   items: _relationships.map((r) {
                     return DropdownMenuItem(value: r, child: Text(r));
                   }).toList(),
@@ -407,15 +409,15 @@ class _PickupFormModalState extends State<_PickupFormModal> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'Nomor HP *'),
-                  validator: (v) => v == null || v.isEmpty ? 'Nomor HP tidak boleh kosong' : null,
+                  decoration: InputDecoration(labelText: tr('Nomor HP *')),
+                  validator: (v) => v == null || v.isEmpty ? tr('Nomor HP tidak boleh kosong') : null,
                 ),
                 const SizedBox(height: 16),
 
                 TextFormField(
                   controller: _idNumberController,
                   textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(labelText: 'No. Identitas'),
+                  decoration: InputDecoration(labelText: tr('No. Identitas')),
                 ),
                 const SizedBox(height: 16),
 
@@ -423,7 +425,7 @@ class _PickupFormModalState extends State<_PickupFormModal> {
                   controller: _notesController,
                   maxLines: 3,
                   textInputAction: TextInputAction.done,
-                  decoration: const InputDecoration(labelText: 'Catatan'),
+                  decoration: InputDecoration(labelText: tr('Catatan')),
                 ),
                 const SizedBox(height: 24),
 
@@ -433,7 +435,7 @@ class _PickupFormModalState extends State<_PickupFormModal> {
                     onPressed: _isSubmitting ? null : _submit,
                     child: _isSubmitting
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : const Text('Simpan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        : Text(tr('Simpan'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ),
               ],

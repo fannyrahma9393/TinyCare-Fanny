@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 /// Full-screen detail of a single announcement, opened from a push/in-app
 /// notification tap (data.type = announcement, data.announcement_id = X).
@@ -36,7 +37,7 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
       final data = await _api.getAnnouncement(widget.announcementId);
       if (data == null) {
         setState(() {
-          _error = 'Pengumuman tidak ditemukan.';
+          _error = tr('Pengumuman tidak ditemukan.');
           _isLoading = false;
         });
         return;
@@ -47,7 +48,7 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat pengumuman.';
+        _error = tr('Gagal memuat pengumuman.');
         _isLoading = false;
       });
     }
@@ -69,13 +70,13 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
   String _priorityLabel(String? priority) {
     switch (priority) {
       case 'urgent':
-        return 'Mendesak';
+        return tr('Mendesak');
       case 'high':
-        return 'Penting';
+        return tr('Penting');
       case 'normal':
-        return 'Normal';
+        return tr('Normal');
       case 'low':
-        return 'Rendah';
+        return tr('Rendah');
       default:
         return priority ?? '-';
     }
@@ -84,7 +85,7 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pengumuman')),
+      appBar: AppBar(title: Text(tr('Pengumuman'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null

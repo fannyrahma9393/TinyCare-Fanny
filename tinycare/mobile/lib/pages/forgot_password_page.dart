@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -41,13 +42,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         });
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal mengirim. Silakan coba lagi.';
+          _error = response['message'] ?? tr('Gagal mengirim. Silakan coba lagi.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat terhubung ke server. Silakan coba lagi.';
+        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -57,7 +58,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     if (_isSuccess) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Lupa Password')),
+        appBar: AppBar(title: Text(tr('Lupa Password'))),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(32),
@@ -75,13 +76,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Link Reset Terkirim',
+                  tr('Link Reset Terkirim'),
                   style: AppTypography.h1.copyWith(color: ThemeHelper.text(context)),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Link reset password telah dikirim ke email Anda. Gunakan kode di email tersebut untuk mengatur ulang password.',
+                  tr('Link reset password telah dikirim ke email Anda. Gunakan kode di email tersebut untuk mengatur ulang password.'),
                   style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
                   textAlign: TextAlign.center,
                 ),
@@ -90,7 +91,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, '/reset-password'),
-                    child: const Text('Saya Punya Kode Reset'),
+                    child: Text(tr('Saya Punya Kode Reset')),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -98,7 +99,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-                    child: const Text('Kembali ke Login'),
+                    child: Text(tr('Kembali ke Login')),
                   ),
                 ),
               ],
@@ -109,7 +110,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lupa Password')),
+      appBar: AppBar(title: Text(tr('Lupa Password'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -118,7 +119,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Masukkan email terdaftar Anda. Kami akan mengirimkan kode untuk mengatur ulang password.',
+                tr('Masukkan email terdaftar Anda. Kami akan mengirimkan kode untuk mengatur ulang password.'),
                 style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
               ),
               const SizedBox(height: 24),
@@ -141,11 +142,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleSubmit(),
-                decoration: const InputDecoration(labelText: 'Email *'),
+                decoration: InputDecoration(labelText: tr('Email *')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Email tidak boleh kosong';
+                  if (v == null || v.isEmpty) return tr('Email tidak boleh kosong');
                   final emailRegex = RegExp(r'^[\w-\.]+@[\w-]+\.[a-zA-Z]{2,}$');
-                  if (!emailRegex.hasMatch(v)) return 'Email tidak valid';
+                  if (!emailRegex.hasMatch(v)) return tr('Email tidak valid');
                   return null;
                 },
               ),
@@ -157,7 +158,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Kirim Kode Reset', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(tr('Kirim Kode Reset'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -165,10 +166,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Ingat password? ', style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
+                  Text(tr('Ingat password? '), style: TextStyle(fontSize: 13, color: ThemeHelper.textMuted(context))),
                   GestureDetector(
                     onTap: () => Navigator.pushReplacementNamed(context, '/login'),
-                    child: const Text('Masuk', style: TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),
+                    child: Text(tr('Masuk'), style: TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),
                   ),
                 ],
               ),

@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { announcementsAPI, childrenAPI, parentsAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 export default function Announcements() {
+  const { t } = useTranslation();
   const [announcements, setAnnouncements] = useState([]);
   const [children, setChildren] = useState([]);
   const [parents, setParents] = useState([]);
@@ -19,7 +21,7 @@ export default function Announcements() {
 
   async function loadAnnouncements() {
     try { const res = await announcementsAPI.list(); setAnnouncements(res.data.data.data || []); }
-    catch (error) { setError(error.response?.data?.message || 'Gagal memuat data pengumuman.'); } finally { setLoading(false); }
+    catch (error) { setError(error.response?.data?.message || t('Gagal memuat data pengumuman.')); } finally { setLoading(false); }
   }
 
   useEffect(() => { loadAnnouncements(); }, []);
@@ -72,33 +74,33 @@ export default function Announcements() {
       resetForm();
       loadAnnouncements();
     } catch (error) {
-      alert(error.response?.data?.message || 'Gagal membuat pengumuman.');
+      alert(error.response?.data?.message || t('Gagal membuat pengumuman.'));
     }
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus pengumuman ini?')) {
-      try { await announcementsAPI.delete(id); loadAnnouncements(); } catch { alert('Gagal menghapus.'); }
+    if (confirm(t('Yakin ingin menghapus pengumuman ini?'))) {
+      try { await announcementsAPI.delete(id); loadAnnouncements(); } catch { alert(t('Gagal menghapus.')); }
     }
   };
 
   const priorityConfig = {
-    low: { label: 'Rendah', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
-    normal: { label: 'Normal', color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
-    high: { label: 'Tinggi', color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
-    urgent: { label: 'Mendesak', color: 'var(--color-error)', bg: 'var(--color-error-bg)' },
+    low: { label: t('Rendah'), color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
+    normal: { label: t('Normal'), color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
+    high: { label: t('Tinggi'), color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
+    urgent: { label: t('Mendesak'), color: 'var(--color-error)', bg: 'var(--color-error-bg)' },
   };
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}><div className="tc-spinner"></div></div>;
 
   return (
     <div>
-      <PageHeader title="Manajemen Pengumuman" subtitle="Buat dan kelola pengumuman untuk orang tua" action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Buat Pengumuman</button>} />
+      <PageHeader title={t('Manajemen Pengumuman')} subtitle={t('Buat dan kelola pengumuman untuk orang tua')} action={<button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">{t('+ Buat Pengumuman')}</button>} />
 
       {error && (
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={() => { setError(''); loadAnnouncements(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={() => { setError(''); loadAnnouncements(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       )}
 
@@ -121,14 +123,14 @@ export default function Announcements() {
                   </div>
                   <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '8px', lineHeight: '1.5' }}>{item.content}</p>
                   <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                    {item.publish_date && <span>Publish: {new Date(item.publish_date).toLocaleDateString('id-ID')}</span>}
-                    {item.expire_date && <span>Berakhir: {new Date(item.expire_date).toLocaleDateString('id-ID')}</span>}
+                    {item.publish_date && <span>{t('Publish: {{date}}', { date: new Date(item.publish_date).toLocaleDateString('id-ID') })}</span>}
+                    {item.expire_date && <span>{t('Berakhir: {{date}}', { date: new Date(item.expire_date).toLocaleDateString('id-ID') })}</span>}
                   </div>
                   {!isBroadcast && (
                     <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Target:</span>
+                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t('Target:')}</span>
                       {item.parents?.map((p) => (
-                        <span key={p.id} className="tc-badge tc-badge-warning">{p.user?.name || p.user?.email || `Orang Tua #${p.id}`}</span>
+                        <span key={p.id} className="tc-badge tc-badge-warning">{p.user?.name || p.user?.email || t('Orang Tua #{{id}}', { id: p.id })}</span>
                       ))}
                       {item.children?.map((c) => (
                         <span key={c.id} className="tc-badge tc-badge-info">{c.name}</span>
@@ -136,7 +138,7 @@ export default function Announcements() {
                     </div>
                   )}
                   {isBroadcast && (
-                    <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--color-text-muted)' }}>Dikirim ke seluruh orang tua</p>
+                    <p style={{ marginTop: '8px', fontSize: '12px', color: 'var(--color-text-muted)' }}>{t('Dikirim ke seluruh orang tua')}</p>
                   )}
                 </div>
                 <button onClick={() => handleDelete(item.id)} style={{ border: 'none', background: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', padding: '4px' }}>✕</button>
@@ -146,21 +148,21 @@ export default function Announcements() {
         })}
       </div>
 
-      {announcements.length === 0 && <EmptyState icon="📢" title="Belum ada pengumuman" description="Klik 'Buat Pengumuman' untuk menambahkan." />}
+      {announcements.length === 0 && <EmptyState icon="📢" title={t('Belum ada pengumuman')} description={t("Klik 'Buat Pengumuman' untuk menambahkan.")} />}
 
-      <Modal open={showModal} onClose={() => { setShowModal(false); resetForm(); }} title="Buat Pengumuman Baru">
+      <Modal open={showModal} onClose={() => { setShowModal(false); resetForm(); }} title={t('Buat Pengumuman Baru')}>
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label className="tc-label">Judul *</label>
+              <label className="tc-label">{t('Judul *')}</label>
               <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="tc-input" required />
             </div>
             <div>
-              <label className="tc-label">Isi Pengumuman *</label>
+              <label className="tc-label">{t('Isi Pengumuman *')}</label>
               <textarea value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} className="tc-input" rows="4" required />
             </div>
             <div>
-              <label className="tc-label">Prioritas</label>
+              <label className="tc-label">{t('Prioritas')}</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                 {Object.entries(priorityConfig).map(([key, config]) => (
                   <button key={key} type="button" onClick={() => setFormData({ ...formData, priority: key })} style={{
@@ -174,48 +176,48 @@ export default function Announcements() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Tanggal Publish</label>
+                <label className="tc-label">{t('Tanggal Publish')}</label>
                 <input type="date" value={formData.publish_date} onChange={(e) => setFormData({ ...formData, publish_date: e.target.value })} className="tc-input" />
               </div>
               <div>
-                <label className="tc-label">Tanggal Berakhir</label>
+                <label className="tc-label">{t('Tanggal Berakhir')}</label>
                 <input type="date" value={formData.expire_date} onChange={(e) => setFormData({ ...formData, expire_date: e.target.value })} className="tc-input" />
               </div>
             </div>
             <div>
-              <label className="tc-label">Target Penerima</label>
+              <label className="tc-label">{t('Target Penerima')}</label>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input type="radio" name="targetType" checked={formData.targetType === 'all'} onChange={() => setFormData({ ...formData, targetType: 'all' })} style={{ accentColor: 'var(--color-primary)' }} />
-                  Semua Orang Tua
+                  {t('Semua Orang Tua')}
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input type="radio" name="targetType" checked={formData.targetType === 'parents'} onChange={() => setFormData({ ...formData, targetType: 'parents' })} style={{ accentColor: 'var(--color-primary)' }} />
-                  Orang Tua tertentu
+                  {t('Orang Tua tertentu')}
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input type="radio" name="targetType" checked={formData.targetType === 'children'} onChange={() => setFormData({ ...formData, targetType: 'children' })} style={{ accentColor: 'var(--color-primary)' }} />
-                  Anak tertentu
+                  {t('Anak tertentu')}
                 </label>
               </div>
 
               {formData.targetType === 'parents' && (
                 <div style={{ marginTop: '10px' }}>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '8px' }}>
-                    Hanya orang tua yang dipilih yang menerima pengumuman, notifikasi, dan push.
+                    {t('Hanya orang tua yang dipilih yang menerima pengumuman, notifikasi, dan push.')}
                   </p>
                   {parents.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '10px' }}>
                       {parents.map((parent) => (
                         <label key={parent.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
                           <input type="checkbox" checked={formData.parent_ids.includes(parent.id)} onChange={() => toggleId('parent_ids', parent.id)} style={{ accentColor: 'var(--color-primary)' }} />
-                          {parent.user?.name || parent.user?.email || `Orang Tua #${parent.id}`}
+                          {parent.user?.name || parent.user?.email || t('Orang Tua #{{id}}', { id: parent.id })}
                           <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>{parent.user?.email || ''}</span>
                         </label>
                       ))}
                     </div>
                   ) : (
-                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Tidak ada orang tua terdaftar.</p>
+                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t('Tidak ada orang tua terdaftar.')}</p>
                   )}
                 </div>
               )}
@@ -223,7 +225,7 @@ export default function Announcements() {
               {formData.targetType === 'children' && (
                 <div style={{ marginTop: '10px' }}>
                   <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '8px' }}>
-                    Pengumuman dikirim ke orang tua dari anak yang dipilih.
+                    {t('Pengumuman dikirim ke orang tua dari anak yang dipilih.')}
                   </p>
                   {children.length > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '10px' }}>
@@ -231,12 +233,12 @@ export default function Announcements() {
                         <label key={child.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
                           <input type="checkbox" checked={formData.child_ids.includes(child.id)} onChange={() => toggleId('child_ids', child.id)} style={{ accentColor: 'var(--color-primary)' }} />
                           {child.name}
-                          <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>{child.gender === 'male' ? 'Laki-laki' : 'Perempuan'}</span>
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>{child.gender === 'male' ? t('Laki-laki') : t('Perempuan')}</span>
                         </label>
                       ))}
                     </div>
                   ) : (
-                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Tidak ada anak — pilih 'Semua Orang Tua'.</p>
+                    <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t("Tidak ada anak — pilih 'Semua Orang Tua'.")}</p>
                   )}
                 </div>
               )}
@@ -245,19 +247,19 @@ export default function Announcements() {
               padding: '12px 14px', borderRadius: 'var(--radius-md)',
               background: 'var(--color-info-bg)', fontSize: '12px', color: 'var(--color-text-secondary)',
             }}>
-              <strong>Publish + Kirim</strong> langsung menampilkan pengumuman dan mengirim notifikasi + push ke target.
-              <strong> Simpan Draft</strong> hanya menyimpan sebagai draft tanpa mengirim apa pun.
+              <strong>{t('Publish + Kirim')}</strong> {t('langsung menampilkan pengumuman dan mengirim notifikasi + push ke target.')}
+              <strong> {t('Simpan Draft')}</strong> {t('hanya menyimpan sebagai draft tanpa mengirim apa pun.')}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
+            <button type="button" onClick={() => { setShowModal(false); resetForm(); }} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
             <button
               type="submit"
               className="tc-btn tc-btn-secondary"
               style={{ flex: 1 }}
               onClick={() => { submitAction.current = false; }}
             >
-              Simpan Draft
+              {t('Simpan Draft')}
             </button>
             <button
               type="submit"
@@ -265,7 +267,7 @@ export default function Announcements() {
               style={{ flex: 1 }}
               onClick={() => { submitAction.current = true; }}
             >
-              Publish + Kirim
+              {t('Publish + Kirim')}
             </button>
           </div>
         </form>

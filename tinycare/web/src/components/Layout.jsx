@@ -1,53 +1,59 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import LanguageSwitcher from './LanguageSwitcher';
 
-const menuSections = [
-  {
-    label: 'Overview',
-    items: [
-      { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
-    ],
-  },
-  {
-    label: 'Anak',
-    items: [
-      { name: 'Anak', path: '/children', icon: 'child' },
-      { name: 'Orang Tua', path: '/parents', icon: 'parent' },
-      { name: 'Daily Story', path: '/daily-stories', icon: 'story' },
-      { name: 'Aktivitas', path: '/activities', icon: 'activity' },
-      { name: 'Perkembangan', path: '/development', icon: 'development' },
-      { name: 'Informasi Anak', path: '/child-information', icon: 'info' },
-    ],
-  },
-  {
-    label: 'Keuangan',
-    items: [
-      { name: 'Paket', path: '/packages', icon: 'package' },
-      { name: 'Voucher', path: '/vouchers', icon: 'voucher' },
-      { name: 'Invoice', path: '/invoices', icon: 'invoice' },
-      { name: 'Pembayaran', path: '/payments', icon: 'payment' },
-    ],
-  },
-  {
-    label: 'Komunikasi',
-    items: [
-      { name: 'Pengumuman', path: '/announcements', icon: 'announcement' },
-      { name: 'Feedback', path: '/feedback', icon: 'feedback' },
-    ],
-  },
-  {
-    label: 'Manajemen',
-    items: [
-      { name: 'Pengguna', path: '/users', icon: 'users' },
-    ],
-  },
-];
+function getMenuSections(t) {
+  return [
+    {
+      label: 'Overview',
+      items: [
+        { name: 'Dashboard', path: '/dashboard', icon: 'dashboard' },
+      ],
+    },
+    {
+      label: t('Anak'),
+      items: [
+        { name: t('Anak'), path: '/children', icon: 'child' },
+        { name: t('Orang Tua'), path: '/parents', icon: 'parent' },
+        { name: 'Daily Story', path: '/daily-stories', icon: 'story' },
+        { name: t('Aktivitas'), path: '/activities', icon: 'activity' },
+        { name: t('Perkembangan'), path: '/development', icon: 'development' },
+        { name: t('Informasi Anak'), path: '/child-information', icon: 'info' },
+      ],
+    },
+    {
+      label: t('Keuangan'),
+      items: [
+        { name: t('Paket'), path: '/packages', icon: 'package' },
+        { name: t('Voucher'), path: '/vouchers', icon: 'voucher' },
+        { name: 'Invoice', path: '/invoices', icon: 'invoice' },
+        { name: t('Pembayaran'), path: '/payments', icon: 'payment' },
+      ],
+    },
+    {
+      label: t('Komunikasi'),
+      items: [
+        { name: t('Pengumuman'), path: '/announcements', icon: 'announcement' },
+        { name: 'Feedback', path: '/feedback', icon: 'feedback' },
+      ],
+    },
+    {
+      label: t('Manajemen'),
+      items: [
+        { name: t('Pengguna'), path: '/users', icon: 'users' },
+      ],
+    },
+  ];
+}
 
-const adminMasterExtraItems = [
-  { name: 'Kelola Admin', path: '/admin-management', icon: 'admin' },
-];
+function getAdminMasterExtraItems(t) {
+  return [
+    { name: t('Kelola Admin'), path: '/admin-management', icon: 'admin' },
+  ];
+}
 
 function SidebarIcon({ name, size = 18 }) {
   const icons = {
@@ -76,7 +82,10 @@ function SidebarIcon({ name, size = 18 }) {
 
 function SidebarContent({ sidebarOpen, onNav }) {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
+  const menuSections = getMenuSections(t);
+  const adminMasterExtraItems = getAdminMasterExtraItems(t);
 
   return (
     <>
@@ -98,12 +107,12 @@ function SidebarContent({ sidebarOpen, onNav }) {
             <path d="M16 28s-11-7.2-11-15.2C5 9.2 7.2 7 10 7c1.8 0 3.4 1 4 2.5C14.6 8 16.2 7 18 7c2.8 0 5 2.2 5 5.8C23 20.8 16 28 16 28z" fill="white"/>
           </svg>
         </div>
-        {sidebarOpen && (
-          <div>
-            <h1 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-text)', lineHeight: 1.2 }}>TinyCare</h1>
-            <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.2 }}>Admin Dashboard</p>
-          </div>
-        )}
+{sidebarOpen && (
+            <div>
+              <h1 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-text)', lineHeight: 1.2 }}>TinyCare</h1>
+              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.2 }}>{t('Admin Dashboard')}</p>
+            </div>
+          )}
       </div>
 
       {/* Navigation */}
@@ -176,7 +185,7 @@ function SidebarContent({ sidebarOpen, onNav }) {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          {sidebarOpen && 'Keluar'}
+          {sidebarOpen && t('Keluar')}
         </button>
       </div>
     </>
@@ -189,6 +198,7 @@ export default function Layout({ children }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -270,6 +280,8 @@ export default function Layout({ children }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <LanguageSwitcher />
+
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               style={{
@@ -279,7 +291,7 @@ export default function Layout({ children }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: '34px', height: '34px',
               }}
-              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              title={theme === 'dark' ? t('Mode Terang') : t('Mode Gelap')}
             >
               {theme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -293,7 +305,7 @@ export default function Layout({ children }) {
             </button>
 
             <span
-              title="Versi aplikasi"
+              title={t('Versi aplikasi')}
               style={{
                 fontSize: '11px', fontWeight: '700', padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-lighter)',
@@ -350,7 +362,7 @@ export default function Layout({ children }) {
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      Profil
+                      {t('Profil')}
                     </button>
                     <button
                       onClick={() => { setProfileOpen(false); logout(); }}
@@ -364,7 +376,7 @@ export default function Layout({ children }) {
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                      Keluar
+                      {t('Keluar')}
                     </button>
                   </div>
                 </>

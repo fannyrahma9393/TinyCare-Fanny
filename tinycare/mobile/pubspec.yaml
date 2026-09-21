@@ -24,7 +24,11 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # Models
-  intl: ^0.19.0
+  intl: 0.20.2
+
+  # Localization
+  flutter_localizations:
+    sdk: flutter
 
   # Utilities
   flutter_local_notifications: ^17.0.0

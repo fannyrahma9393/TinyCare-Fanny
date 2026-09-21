@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import FirebaseNotifications from './FirebaseNotifications';
+import LanguageSwitcher from './LanguageSwitcher';
 
-const parentMenu = [
-  { name: 'Beranda', path: '/parent', icon: 'home' },
-  { name: 'Anak Saya', path: '/parent/children', icon: 'child' },
-  { name: 'Aktivitas', path: '/parent/activities', icon: 'activity' },
-  { name: 'Perkembangan', path: '/parent/development', icon: 'development' },
-  { name: 'Pengumuman', path: '/parent/announcements', icon: 'announcement' },
-  { name: 'Informasi', path: '/parent/information', icon: 'info' },
-  { name: 'Feedback', path: '/parent/feedback', icon: 'feedback' },
-  { name: 'Tagihan', path: '/parent/invoices', icon: 'invoice' },
-  { name: 'Profil', path: '/parent/profile', icon: 'profile' },
-];
+function getParentMenu(t) {
+  return [
+    { name: t('Beranda'), path: '/parent', icon: 'home' },
+    { name: t('Anak Saya'), path: '/parent/children', icon: 'child' },
+    { name: t('Aktivitas'), path: '/parent/activities', icon: 'activity' },
+    { name: t('Perkembangan'), path: '/parent/development', icon: 'development' },
+    { name: t('Pengumuman'), path: '/parent/announcements', icon: 'announcement' },
+    { name: t('Informasi'), path: '/parent/information', icon: 'info' },
+    { name: 'Feedback', path: '/parent/feedback', icon: 'feedback' },
+    { name: t('Tagihan'), path: '/parent/invoices', icon: 'invoice' },
+    { name: t('Profil'), path: '/parent/profile', icon: 'profile' },
+  ];
+}
 
 function SidebarIcon({ name, size = 18 }) {
   const icons = {
@@ -35,7 +39,9 @@ function SidebarIcon({ name, size = 18 }) {
 
 function SidebarContent({ sidebarOpen, onNav }) {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
+  const parentMenu = getParentMenu(t);
 
   return (
     <>
@@ -60,7 +66,7 @@ function SidebarContent({ sidebarOpen, onNav }) {
         {sidebarOpen && (
           <div>
             <h1 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-text)', lineHeight: 1.2 }}>TinyCare</h1>
-            <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.2 }}>Parent Area</p>
+            <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', lineHeight: 1.2 }}>{t('Parent Area')}</p>
           </div>
         )}
       </div>
@@ -116,7 +122,7 @@ function SidebarContent({ sidebarOpen, onNav }) {
           {sidebarOpen && (
             <div style={{ minWidth: 0, flex: 1 }}>
               <p className="tc-truncate" style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{user?.name}</p>
-              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Orang Tua</p>
+              <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Orang Tua')}</p>
             </div>
           )}
         </div>
@@ -128,7 +134,7 @@ function SidebarContent({ sidebarOpen, onNav }) {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          {sidebarOpen && 'Keluar'}
+          {sidebarOpen && t('Keluar')}
         </button>
       </div>
     </>
@@ -141,6 +147,7 @@ export default function ParentLayout({ children }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -221,6 +228,8 @@ export default function ParentLayout({ children }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <LanguageSwitcher />
+
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               style={{
@@ -230,7 +239,7 @@ export default function ParentLayout({ children }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 width: '34px', height: '34px',
               }}
-              title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+              title={theme === 'dark' ? t('Mode Terang') : t('Mode Gelap')}
             >
               {theme === 'dark' ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -244,7 +253,7 @@ export default function ParentLayout({ children }) {
             </button>
 
             <span
-              title="Versi aplikasi"
+              title={t('Versi aplikasi')}
               style={{
                 fontSize: '11px', fontWeight: '700', padding: '4px 8px',
                 borderRadius: 'var(--radius-sm)', background: 'var(--color-primary-lighter)',
@@ -301,7 +310,7 @@ export default function ParentLayout({ children }) {
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      Profil
+                      {t('Profil')}
                     </button>
                     <button
                       onClick={() => { setProfileOpen(false); logout(); }}
@@ -315,7 +324,7 @@ export default function ParentLayout({ children }) {
                       onMouseLeave={(e) => e.target.style.background = 'transparent'}
                     >
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                      Keluar
+                      {t('Keluar')}
                     </button>
                   </div>
                 </>

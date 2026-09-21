@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../l10n/app_strings.dart';
 
 class PaymentsPage extends StatefulWidget {
   const PaymentsPage({super.key});
@@ -19,11 +20,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
   String? _error;
   String _filter = '';
 
-  static const _filters = [
-    ('', 'Semua'),
-    ('pending', 'Menunggu'),
-    ('verified', 'Terverifikasi'),
-    ('rejected', 'Ditolak'),
+  static final _filters = [
+    ('', tr('Semua')),
+    ('pending', tr('Menunggu')),
+    ('verified', tr('Terverifikasi')),
+    ('rejected', tr('Ditolak')),
   ];
 
   @override
@@ -47,7 +48,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data pembayaran. Silakan coba lagi.';
+        _error = tr('Gagal memuat data pembayaran. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -63,13 +64,13 @@ class _PaymentsPageState extends State<PaymentsPage> {
     try {
       final response = await _api.verifyPayment(paymentId);
       if (response['success'] == true) {
-        _showToast('Pembayaran berhasil diverifikasi.');
+        _showToast(tr('Pembayaran berhasil diverifikasi.'));
         _loadPayments();
       } else {
-        _showToast(response['message'] ?? 'Gagal memverifikasi.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal memverifikasi.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal memverifikasi pembayaran. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal memverifikasi pembayaran. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -80,13 +81,13 @@ class _PaymentsPageState extends State<PaymentsPage> {
     try {
       final response = await _api.rejectPayment(paymentId, reason: reason);
       if (response['success'] == true) {
-        _showToast('Pembayaran ditolak.');
+        _showToast(tr('Pembayaran ditolak.'));
         _loadPayments();
       } else {
-        _showToast(response['message'] ?? 'Gagal menolak pembayaran.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menolak pembayaran.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menolak pembayaran. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal menolak pembayaran. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -133,12 +134,12 @@ class _PaymentsPageState extends State<PaymentsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Detail Pembayaran',
+                Text(tr('Detail Pembayaran'),
                     style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close),
-                  tooltip: 'Tutup',
+                  tooltip: tr('Tutup'),
                 ),
               ],
             ),
@@ -147,34 +148,34 @@ class _PaymentsPageState extends State<PaymentsPage> {
               children: [
                 Expanded(
                   child:
-                      _detailTile('No. Invoice', payment['invoice']?['invoice_number']?.toString() ?? '-'),
+                      _detailTile(tr('No. Invoice'), payment['invoice']?['invoice_number']?.toString() ?? '-'),
                 ),
               ],
             ),
             Row(
               children: [
-                Expanded(child: _detailTile('Anak', payment['invoice']?['child']?['name']?.toString() ?? '-')),
+                Expanded(child: _detailTile(tr('Anak'), payment['invoice']?['child']?['name']?.toString() ?? '-')),
                 const SizedBox(width: 8),
-                Expanded(child: _detailTile('Orang Tua', payment['invoice']?['parent']?['user']?['name']?.toString() ?? '-')),
+                Expanded(child: _detailTile(tr('Orang Tua'), payment['invoice']?['parent']?['user']?['name']?.toString() ?? '-')),
               ],
             ),
             Row(
               children: [
-                Expanded(child: _detailTile('Metode', (payment['payment_method'] ?? '-').toString())),
+                Expanded(child: _detailTile(tr('Metode'), (payment['payment_method'] ?? '-').toString())),
                 const SizedBox(width: 8),
-                Expanded(child: _detailTile('Jumlah', CurrencyHelper.formatRupiah(payment['amount']))),
+                Expanded(child: _detailTile(tr('Jumlah'), CurrencyHelper.formatRupiah(payment['amount']))),
               ],
             ),
             Row(
               children: [
-                Expanded(child: _detailTile('Tanggal', created)),
+                Expanded(child: _detailTile(tr('Tanggal'), created)),
                 const SizedBox(width: 8),
-                Expanded(child: _detailTile('Status', _statusLabel(status))),
+                Expanded(child: _detailTile(tr('Status'), _statusLabel(status))),
               ],
             ),
             if (notes != null) ...[
               const SizedBox(height: 8),
-              _detailTile('Catatan', notes),
+              _detailTile(tr('Catatan'), notes),
             ],
             if (status == 'rejected' && notes != null) ...[
               const SizedBox(height: 8),
@@ -189,7 +190,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('ALASAN PENOLAKAN',
+                    Text(tr('ALASAN PENOLAKAN'),
                         style: AppTypography.label.copyWith(color: AppColors.error)),
                     const SizedBox(height: 4),
                     Text(notes, style: const TextStyle(fontSize: 13, color: AppColors.error)),
@@ -199,7 +200,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
             ],
             const SizedBox(height: 16),
             if (hasProof && proofUrl != null) ...[
-              Text('BUKTI PEMBAYARAN',
+              Text(tr('BUKTI PEMBAYARAN'),
                   style: AppTypography.label.copyWith(color: ThemeHelper.textMuted(context))),
               const SizedBox(height: 8),
               if (_isImageFile(proofFile))
@@ -229,7 +230,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                         height: 240,
                         alignment: Alignment.center,
                         color: ThemeHelper.bgAlt(context),
-                        child: Text('Gagal memuat bukti',
+                        child: Text(tr('Gagal memuat bukti'),
                             style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
                       ),
                     ),
@@ -239,14 +240,14 @@ class _PaymentsPageState extends State<PaymentsPage> {
                 OutlinedButton.icon(
                   onPressed: () => _openUrl(proofUrl),
                   icon: const Icon(Icons.picture_as_pdf, size: 18),
-                  label: const Text('Buka Bukti (PDF)'),
+                  label: Text(tr('Buka Bukti (PDF)')),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: const BorderSide(color: AppColors.primary),
                   ),
                 ),
             ] else if (hasProof) ...[
-              Text('Bukti sedang dimuat...',
+              Text(tr('Bukti sedang dimuat...'),
                   style: AppTypography.caption.copyWith(color: ThemeHelper.textMuted(context))),
             ],
             const SizedBox(height: 20),
@@ -254,7 +255,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Tutup'),
+                child: Text(tr('Tutup')),
               ),
             ),
           ],
@@ -293,7 +294,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
   Future<void> _openUrl(String url) async {
     final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      AppWidgets.showSnackBar(context, 'Tidak dapat membuka dokumen.', isError: true);
+      AppWidgets.showSnackBar(context, tr('Tidak dapat membuka dokumen.'), isError: true);
     }
   }
 
@@ -335,28 +336,28 @@ class _PaymentsPageState extends State<PaymentsPage> {
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tolak Pembayaran'),
+        title: Text(tr('Tolak Pembayaran')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Apakah Anda yakin ingin menolak pembayaran ini?'),
+            Text(tr('Apakah Anda yakin ingin menolak pembayaran ini?')),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
               maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Alasan penolakan (opsional)',
+              decoration: InputDecoration(
+                hintText: tr('Alasan penolakan (opsional)'),
                 border: OutlineInputBorder(),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Tolak'),
+            child: Text(tr('Tolak')),
           ),
         ],
       ),
@@ -379,11 +380,11 @@ class _PaymentsPageState extends State<PaymentsPage> {
   String _statusLabel(String? status) {
     switch (status) {
       case 'verified':
-        return 'Terverifikasi';
+        return tr('Terverifikasi');
       case 'pending':
-        return 'Menunggu';
+        return tr('Menunggu');
       case 'rejected':
-        return 'Ditolak';
+        return tr('Ditolak');
       default:
         return status ?? '-';
     }
@@ -393,7 +394,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pembayaran'),
+        title: Text(tr('Pembayaran')),
       ),
       body: Column(
         children: [
@@ -409,8 +410,8 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     : _payments.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.payment_outlined,
-                            title: 'Belum ada pembayaran',
-                            subtitle: 'Pembayaran akan muncul ketika ada transaksi.',
+                            title: tr('Belum ada pembayaran'),
+                            subtitle: tr('Pembayaran akan muncul ketika ada transaksi.'),
                           )
                         : RefreshIndicator(
                             onRefresh: _loadPayments,
@@ -499,7 +500,10 @@ class _PaymentsPageState extends State<PaymentsPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Invoice: ${payment['invoice']?['invoice_number'] ?? '-'} · ${payment['invoice']?['child']?['name'] ?? ''}',
+                      tr('Invoice: {{number}} · {{child}}', {
+                          'number': payment['invoice']?['invoice_number'] ?? '-',
+                          'child': payment['invoice']?['child']?['name'] ?? '',
+                        }),
                       style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context)),
                     ),
                   ],
@@ -545,7 +549,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
               icon: const Icon(Icons.visibility_outlined, size: 16),
-              label: Text('Detail', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+              label: Text(tr('Detail'), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             ),
           ),
           if (isPending) ...[
@@ -558,7 +562,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                   child: ElevatedButton.icon(
                     onPressed: () => _verifyPayment(payment['id']),
                     icon: const Icon(Icons.check, size: 16),
-                    label: const Text('Verifikasi', style: TextStyle(fontSize: 12)),
+                    label: Text(tr('Verifikasi'), style: TextStyle(fontSize: 12)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.success,
                       foregroundColor: Colors.white,
@@ -571,7 +575,7 @@ class _PaymentsPageState extends State<PaymentsPage> {
                   child: OutlinedButton.icon(
                     onPressed: () => _rejectPayment(payment['id']),
                     icon: const Icon(Icons.close, size: 16),
-                    label: const Text('Tolak', style: TextStyle(fontSize: 12)),
+                    label: Text(tr('Tolak'), style: TextStyle(fontSize: 12)),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.error,
                       side: const BorderSide(color: AppColors.error),

@@ -4,6 +4,8 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../l10n/app_strings.dart';
+import '../widgets/language_switcher.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -32,10 +34,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       if (response['success'] == true) {
         setState(() { _dashboardData = response['data']; _isLoading = false; });
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal memuat dashboard admin'; _isLoading = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal memuat dashboard admin'); _isLoading = false; });
       }
     } catch (e) {
-      setState(() { _error = 'Tidak dapat memuat dashboard admin.'; _isLoading = false; });
+      setState(() { _error = tr('Tidak dapat memuat dashboard admin.'); _isLoading = false; });
     }
   }
 
@@ -71,20 +73,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     return AppBar(
       title: Text(_getAppBarTitle()),
       actions: [
+        const LanguageSwitcher(),
         IconButton(
           icon: const Icon(Icons.logout_outlined),
           onPressed: () async {
             final confirm = await showDialog<bool>(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Keluar'),
-                content: const Text('Apakah Anda yakin ingin keluar?'),
+                title: Text(tr('Keluar')),
+                content: Text(tr('Apakah Anda yakin ingin keluar?')),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+                  TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
                   TextButton(
                     onPressed: () => Navigator.pop(context, true),
                     style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                    child: const Text('Keluar'),
+                    child: Text(tr('Keluar')),
                   ),
                 ],
               ),
@@ -101,11 +104,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   String _getAppBarTitle() {
     switch (_selectedIndex) {
-      case 0: return 'Dashboard';
-      case 1: return 'Manajemen Data';
-      case 2: return 'Keuangan';
-      case 3: return 'Menu';
-      default: return 'Admin Dashboard';
+      case 0: return tr('Dashboard');
+      case 1: return tr('Manajemen Data');
+      case 2: return tr('Keuangan');
+      case 3: return tr('Menu');
+      default: return tr('Admin Dashboard');
     }
   }
 
@@ -129,11 +132,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           unselectedItemColor: mutedColor,
           selectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
           unselectedLabelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Beranda'),
-            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), activeIcon: Icon(Icons.folder), label: 'Data'),
-            BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: 'Keuangan'),
-            BottomNavigationBarItem(icon: Icon(Icons.grid_view_outlined), activeIcon: Icon(Icons.grid_view), label: 'Menu'),
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: tr('Beranda')),
+            BottomNavigationBarItem(icon: Icon(Icons.folder_outlined), activeIcon: Icon(Icons.folder), label: tr('Data')),
+            BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), activeIcon: Icon(Icons.account_balance_wallet), label: tr('Keuangan')),
+            BottomNavigationBarItem(icon: Icon(Icons.grid_view_outlined), activeIcon: Icon(Icons.grid_view), label: tr('Menu')),
           ],
         ),
       ),
@@ -194,12 +197,13 @@ class _DashboardHomeTab extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Halo, Admin ${auth.user?['name']?.split(' ').first ?? ''} 👋',
+                    tr('Halo, Admin {{name}} 👋',
+                        {'name': auth.user?['name']?.split(' ').first ?? ''}),
                     style: AppTypography.h1.copyWith(color: AppColors.primaryDark),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Kelola TinyCare dengan mudah.',
+                    tr('Kelola TinyCare dengan mudah.'),
                     style: TextStyle(fontSize: 14, color: ThemeHelper.textSecondary(context), height: 1.5),
                   ),
                 ],
@@ -210,25 +214,25 @@ class _DashboardHomeTab extends StatelessWidget {
             // Quick Summary Row
             Row(
               children: [
-                _buildQuickStat(context, 'Anak', '$totalChildren', AppColors.primary, Icons.child_care, '/children'),
+                _buildQuickStat(context, tr('Anak'), '$totalChildren', AppColors.primary, Icons.child_care, '/children'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Orang Tua', '$totalParents', AppColors.info, Icons.people, '/users'),
+                _buildQuickStat(context, tr('Orang Tua'), '$totalParents', AppColors.info, Icons.people, '/users'),
               ],
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildQuickStat(context, 'Pengguna Menunggu', '$pendingParents', AppColors.warning, Icons.pending_actions, '/users'),
+                _buildQuickStat(context, tr('Pengguna Menunggu'), '$pendingParents', AppColors.warning, Icons.pending_actions, '/users'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Informasi Anak', '$totalChildInformation', AppColors.info, Icons.fact_check_outlined, '/information'),
+                _buildQuickStat(context, tr('Informasi Anak'), '$totalChildInformation', AppColors.info, Icons.fact_check_outlined, '/information'),
               ],
             ),
             const SizedBox(height: 10),
             Row(
               children: [
-                _buildQuickStat(context, 'Invoice Pending', '$pendingInvoices', AppColors.warning, Icons.receipt_long, '/invoices'),
+                _buildQuickStat(context, tr('Invoice Pending'), '$pendingInvoices', AppColors.warning, Icons.receipt_long, '/invoices'),
                 const SizedBox(width: 10),
-                _buildQuickStat(context, 'Lunas', '$paidInvoices', AppColors.success, Icons.check_circle, '/payments'),
+                _buildQuickStat(context, tr('Lunas'), '$paidInvoices', AppColors.success, Icons.check_circle, '/payments'),
               ],
             ),
             if (totalRevenue > 0) ...[
@@ -238,7 +242,7 @@ class _DashboardHomeTab extends StatelessWidget {
             const SizedBox(height: 28),
 
             // Quick Actions (Compact)
-            Text('Akses Cepat', style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
+            Text(tr('Akses Cepat'), style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
             const SizedBox(height: 14),
             _buildQuickActions(context),
           ],
@@ -304,7 +308,7 @@ class _DashboardHomeTab extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Total Pendapatan', style: TextStyle(fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
+              Text(tr('Total Pendapatan'), style: TextStyle(fontSize: 12, color: Colors.white70, fontWeight: FontWeight.w500)),
               const SizedBox(height: 4),
               Text(amount, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
             ],
@@ -316,9 +320,9 @@ class _DashboardHomeTab extends StatelessWidget {
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
-      _QuickAction('Pengguna', Icons.people_outline, '/users'),
-      _QuickAction('Anak', Icons.child_care_outlined, '/children'),
-      _QuickAction('Invoice', Icons.receipt_long_outlined, '/invoices'),
+      _QuickAction(tr('Pengguna'), Icons.people_outline, '/users'),
+      _QuickAction(tr('Anak'), Icons.child_care_outlined, '/children'),
+      _QuickAction(tr('Invoice'), Icons.receipt_long_outlined, '/invoices'),
     ];
     final surfaceColor = ThemeHelper.surface(context);
     final borderColor = ThemeHelper.border(context);
@@ -370,30 +374,30 @@ class _DataManagementTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppWidgets.sectionHeader('Pengguna & Keluarga', context: context),
+          AppWidgets.sectionHeader(tr('Pengguna & Keluarga'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Pengguna', 'icon': Icons.people_outline, 'route': '/users', 'subtitle': 'Kelola semua pengguna'},
-            {'label': 'Orang Tua', 'icon': Icons.family_restroom_outlined, 'route': '/parents', 'subtitle': 'Data orang tua'},
-            {'label': 'Anak', 'icon': Icons.child_care_outlined, 'route': '/children', 'subtitle': 'Data anak terdaftar'},
-            {'label': 'Informasi Anak', 'icon': Icons.fact_check_outlined, 'route': '/information', 'subtitle': 'Catatan/informasi khusus'},
+            {'label': tr('Pengguna'), 'icon': Icons.people_outline, 'route': '/users', 'subtitle': tr('Kelola semua pengguna')},
+            {'label': tr('Orang Tua'), 'icon': Icons.family_restroom_outlined, 'route': '/parents', 'subtitle': tr('Data orang tua')},
+            {'label': tr('Anak'), 'icon': Icons.child_care_outlined, 'route': '/children', 'subtitle': tr('Data anak terdaftar')},
+            {'label': tr('Informasi Anak'), 'icon': Icons.fact_check_outlined, 'route': '/information', 'subtitle': 'Catatan/informasi khusus'},
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Operasional', context: context),
+          AppWidgets.sectionHeader(tr('Operasional'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Hari Ini', 'icon': Icons.auto_stories_outlined, 'route': '/daily-stories', 'subtitle': 'Cerita harian'},
-            {'label': 'Perkembangan', 'icon': Icons.trending_up_outlined, 'route': '/development', 'subtitle': 'Data perkembangan'},
-            {'label': 'Aktivitas', 'icon': Icons.emoji_events_outlined, 'route': '/activities', 'subtitle': 'Jadwal aktivitas'},
+            {'label': tr('Hari Ini'), 'icon': Icons.auto_stories_outlined, 'route': '/daily-stories', 'subtitle': tr('Cerita harian')},
+            {'label': tr('Perkembangan'), 'icon': Icons.trending_up_outlined, 'route': '/development', 'subtitle': tr('Data perkembangan')},
+            {'label': tr('Aktivitas'), 'icon': Icons.emoji_events_outlined, 'route': '/activities', 'subtitle': tr('Jadwal aktivitas')},
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Komunikasi', context: context),
+          AppWidgets.sectionHeader(tr('Komunikasi'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Pengumuman', 'icon': Icons.campaign_outlined, 'route': '/announcements', 'subtitle': 'Kelola pengumuman'},
-            {'label': 'Feedback', 'icon': Icons.rate_review_outlined, 'route': '/feedback', 'subtitle': 'Respons feedback'},
+            {'label': tr('Pengumuman'), 'icon': Icons.campaign_outlined, 'route': '/announcements', 'subtitle': tr('Kelola pengumuman')},
+            {'label': tr('Feedback'), 'icon': Icons.rate_review_outlined, 'route': '/feedback', 'subtitle': tr('Respons feedback')},
           ]),
         ],
       ),
@@ -412,19 +416,19 @@ class _FinanceTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppWidgets.sectionHeader('Keuangan', context: context),
+          AppWidgets.sectionHeader(tr('Keuangan'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Invoice', 'icon': Icons.receipt_long_outlined, 'route': '/invoices', 'subtitle': 'Kelola tagihan'},
-            {'label': 'Pembayaran', 'icon': Icons.payment_outlined, 'route': '/payments', 'subtitle': 'Verifikasi pembayaran'},
+            {'label': tr('Invoice'), 'icon': Icons.receipt_long_outlined, 'route': '/invoices', 'subtitle': tr('Kelola tagihan')},
+            {'label': tr('Pembayaran'), 'icon': Icons.payment_outlined, 'route': '/payments', 'subtitle': tr('Verifikasi pembayaran')},
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Produk & Promosi', context: context),
+          AppWidgets.sectionHeader(tr('Produk & Promosi'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Paket', 'icon': Icons.inventory_2_outlined, 'route': '/packages', 'subtitle': 'Paket langganan'},
-            {'label': 'Voucher', 'icon': Icons.card_giftcard_outlined, 'route': '/vouchers', 'subtitle': 'Kode diskon'},
+            {'label': tr('Paket'), 'icon': Icons.inventory_2_outlined, 'route': '/packages', 'subtitle': tr('Paket langganan')},
+            {'label': tr('Voucher'), 'icon': Icons.card_giftcard_outlined, 'route': '/vouchers', 'subtitle': tr('Kode diskon')},
           ]),
         ],
       ),
@@ -445,22 +449,22 @@ class _MenuTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (auth.isAdminMaster) ...[
-            AppWidgets.sectionHeader('Pengaturan Admin', context: context),
+            AppWidgets.sectionHeader(tr('Pengaturan Admin'), context: context),
             const SizedBox(height: 12),
             _buildMenuGroup(context, [
-              {'label': 'Kelola Admin', 'icon': Icons.shield_outlined, 'route': '/admin-management', 'subtitle': 'Aktifkan/nonaktifkan admin'},
+              {'label': tr('Kelola Admin'), 'icon': Icons.shield_outlined, 'route': '/admin-management', 'subtitle': 'Aktifkan/nonaktifkan admin'},
             ]),
             const SizedBox(height: 24),
           ],
 
-          AppWidgets.sectionHeader('Aplikasi', context: context),
+          AppWidgets.sectionHeader(tr('Aplikasi'), context: context),
           const SizedBox(height: 12),
           _buildMenuGroup(context, [
-            {'label': 'Profil', 'icon': Icons.person_outline, 'route': '/profile', 'subtitle': 'Lihat profil admin'},
+            {'label': tr('Profil'), 'icon': Icons.person_outline, 'route': '/profile', 'subtitle': tr('Lihat profil admin')},
           ]),
           const SizedBox(height: 24),
 
-          AppWidgets.sectionHeader('Tampilan', context: context),
+          AppWidgets.sectionHeader(tr('Tampilan'), context: context),
           const SizedBox(height: 12),
           const ThemeSwitcher(),
           const SizedBox(height: 32),
@@ -474,13 +478,13 @@ class _MenuTab extends StatelessWidget {
                     color: AppColors.primaryLighter,
                     borderRadius: AppRadius.lgAll,
                   ),
-                  child: const Center(
-                    child: Text('TC', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  child: Center(
+                    child: Text(tr('TC'), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary)),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Builder(
-                  builder: (context) => Text('TinyCare Admin', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+                  builder: (context) => Text(tr('TinyCare Admin'), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                 ),
                 const SizedBox(height: 4),
                 Builder(

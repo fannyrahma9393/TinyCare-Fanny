@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { publicStatsAPI } from '../services/api';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 /* ─── Premium Utility Hooks ─────────────────────── */
 
@@ -71,6 +73,7 @@ function Reveal({ children, delay = 0, style, direction = 'up' }) {
 /* ─── Animated Counter ──────────────────────────── */
 
 function AnimatedStat({ value, suffix = '', label, icon }) {
+  const { t } = useTranslation();
   const ref = useRef(null);
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -129,7 +132,7 @@ function AnimatedStat({ value, suffix = '', label, icon }) {
         marginTop: 14, fontSize: 13, fontWeight: 500,
         color: 'var(--color-text-secondary)', letterSpacing: '0.06em',
         textTransform: 'uppercase',
-      }}>{label}</div>
+      }}>{t(label)}</div>
     </div>
   );
 }
@@ -228,10 +231,11 @@ function Icon({ name, size = 24, color = 'currentColor' }) {
 /* ─── Ticker ────────────────────────────────────── */
 
 function Ticker() {
+  const { t } = useTranslation();
   const items = [
-    'Manajemen Absensi', 'Laporan Anak Harian', 'Tagihan Otomatis', 'Kegiatan Edukatif',
-    'Galeri Dokumentasi', 'Pantauan Pertumbuhan', 'Notifikasi Real-time', 'Keamanan Berlapis',
-    'Voucher & Promo', 'Jadwal Kegiatan', 'Portofolio Anak', 'Pembayaran Digital',
+    t('Manajemen Absensi'), t('Laporan Anak Harian'), t('Tagihan Otomatis'), t('Kegiatan Edukatif'),
+    t('Galeri Dokumentasi'), t('Pantauan Pertumbuhan'), t('Notifikasi Real-time'), t('Keamanan Berlapis'),
+    t('Voucher & Promo'), t('Jadwal Kegiatan'), t('Portofolio Anak'), t('Pembayaran Digital'),
   ];
   const row = [...items, ...items];
   return (
@@ -245,7 +249,7 @@ function Ticker() {
       whiteSpace: 'nowrap',
     }}>
       <div style={{ display: 'inline-block', animation: 'lpTicker 40s linear infinite' }}>
-        {row.map((t, i) => (
+        {row.map((item, i) => (
           <span key={i} style={{
             display: 'inline-block', margin: '0 28px', fontSize: 13, fontWeight: 600,
             letterSpacing: '0.06em', color: 'var(--color-text-secondary)',
@@ -257,7 +261,7 @@ function Ticker() {
               marginRight: 12, verticalAlign: 'middle',
               boxShadow: '0 0 8px rgba(201,164,92,0.4)',
             }} />
-            {t}
+            {item}
           </span>
         ))}
       </div>
@@ -392,6 +396,7 @@ function TestimonialCarousel({ items }) {
   const [containerWidth, setContainerWidth] = useState(360);
   const touchStart = useRef({ x: 0, y: 0, time: 0 });
   const autoPlayRef = useRef(null);
+  const { t } = useTranslation();
 
   // Detect mobile
   useEffect(() => {
@@ -509,9 +514,9 @@ function TestimonialCarousel({ items }) {
   if (!isMobile) {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-        {items.map((t, i) => (
-          <Reveal key={t.name} delay={i * 0.1} direction="scale">
-            <TestimonialCard name={t.name} role={t.role} text={t.text} />
+        {items.map((item, i) => (
+          <Reveal key={item.name} delay={i * 0.1} direction="scale">
+            <TestimonialCard name={item.name} role={item.role} text={item.text} />
           </Reveal>
         ))}
       </div>
@@ -548,13 +553,13 @@ function TestimonialCarousel({ items }) {
         transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(.22,1,.36,1)',
         willChange: 'transform',
       }}>
-        {items.map((t) => (
-          <div key={t.name} style={{
+        {items.map((item) => (
+          <div key={item.name} style={{
             minWidth: `${slideWidth}%`,
             padding: '0 4px',
             flexShrink: 0,
           }}>
-            <TestimonialCard name={t.name} role={t.role} text={t.text} />
+            <TestimonialCard name={item.name} role={item.role} text={item.text} />
           </div>
         ))}
       </div>
@@ -568,7 +573,7 @@ function TestimonialCarousel({ items }) {
           <button
             key={i}
             onClick={() => goTo(i)}
-            aria-label={`Testimoni ${i + 1}`}
+            aria-label={t('Testimoni {{nomor}}', { nomor: i + 1 })}
             style={{
               width: i === current ? 28 : 10,
               height: 10,
@@ -594,7 +599,7 @@ function TestimonialCarousel({ items }) {
           <button
             key={label}
             onClick={dir}
-            aria-label={label}
+            aria-label={t(label)}
             style={{
               width: 48, height: 48, borderRadius: 14,
               border: '1px solid var(--lp-card-border)',
@@ -629,6 +634,7 @@ const activityIcons = {
 /* ─── Scroll-to-Top Button ────────────────────── */
 
 function ScrollToTopButton() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [hovered, setHovered] = useState(false);
 
@@ -666,7 +672,7 @@ function ScrollToTopButton() {
         onClick={scrollTop}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        aria-label="Kembali ke atas"
+        aria-label={t('Kembali ke atas')}
         style={{
           width: 52, height: 52, borderRadius: 18, border: 'none', cursor: 'pointer',
           background: hovered
@@ -708,6 +714,7 @@ function ScrollToTopButton() {
 
 export default function Landing() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [publicStats, setPublicStats] = useState(null);
@@ -731,7 +738,7 @@ export default function Landing() {
 
   const isAdmin = user?.role === 'admin' || user?.role === 'admin_master';
   const appLink = user ? (isAdmin ? '/dashboard' : '/parent') : '/login';
-  const appLabel = user ? 'Buka Aplikasi' : 'Masuk Aplikasi';
+  const appLabel = user ? t('Buka Aplikasi') : t('Masuk Aplikasi');
 
   const formatCurrency = (n) =>
     n ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n) : 'Rp 0';
@@ -786,7 +793,7 @@ export default function Landing() {
               }}
               onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-primary-dark)'; e.currentTarget.style.background = 'rgba(44,90,71,0.06)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.background = 'transparent'; }}>
-                {label}
+                {t(label)}
               </button>
             ))}
             <Link to={appLink} style={{
@@ -801,10 +808,11 @@ export default function Landing() {
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(44,90,71,0.3)'; }}>
               {appLabel}
             </Link>
+            <LanguageSwitcher />
           </div>
           <button
             className="lp-menu-btn"
-            aria-label="Menu"
+            aria-label={t('Menu')}
             onClick={() => setMenuOpen(!menuOpen)}
             style={{
               display: 'flex', flexDirection: 'column', gap: 5,
@@ -843,7 +851,7 @@ export default function Landing() {
                 fontSize: 15, fontWeight: 500, color: 'var(--color-text-secondary)',
                 padding: '12px 16px', borderRadius: 12, textDecoration: 'none',
                 background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left',
-              }}>{label}</button>
+              }}>{t(label)}</button>
             ))}
             <Link to={appLink} style={{
               marginTop: 8, padding: '13px', borderRadius: 14,
@@ -904,7 +912,7 @@ export default function Landing() {
                 boxShadow: '0 0 0 4px rgba(201,164,92,0.15)',
                 animation: 'lpGlow 2.5s ease-in-out infinite',
               }} />
-              Platform Manajemen Daycare Premium
+              {t('Platform Manajemen Daycare Premium')}
             </div>
           </Reveal>
 
@@ -918,10 +926,10 @@ export default function Landing() {
               letterSpacing: '-0.025em',
               margin: '0 auto', maxWidth: 980,
             }}>
-              Tempat Tumbuh Kembang
+              {t('Tempat Tumbuh Kembang')}
               <br />
-              Anak Anda,{' '}
-              <span className="lp-gold-text">Dikelola Cerdas</span>
+              {t('Anak Anda,')}{' '}
+              <span className="lp-gold-text">{t('Dikelola Cerdas')}</span>
             </h1>
           </Reveal>
 
@@ -933,8 +941,7 @@ export default function Landing() {
               lineHeight: 1.8, color: 'var(--color-text-secondary)',
               fontWeight: 400,
             }}>
-              TinyCare menghubungkan daycare & orang tua dalam satu ekosistem premium:
-              kehadiran real-time, laporan harian, tagihan, hingga dokumentasi tumbuh kembang.
+              {t('TinyCare menghubungkan daycare & orang tua dalam satu ekosistem premium: kehadiran real-time, laporan harian, tagihan, hingga dokumentasi tumbuh kembang.')}
             </p>
           </Reveal>
 
@@ -962,7 +969,7 @@ export default function Landing() {
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--lp-cta-secondary-hover)'; e.currentTarget.style.borderColor = 'rgba(201,164,92,0.4)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--lp-cta-secondary-bg)'; e.currentTarget.style.borderColor = 'var(--lp-cta-secondary-border)'; }}>
-                Kenali Fiturnya
+                {t('Kenali Fiturnya')}
               </button>
             </div>
           </Reveal>
@@ -1043,7 +1050,7 @@ export default function Landing() {
                       }} />
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative' }}>
                         <Icon name={s.icon} size={18} color="rgba(255,255,255,0.8)" />
-                        <span style={{ fontSize: 12, opacity: 0.85, letterSpacing: '0.04em', fontWeight: 600 }}>{s.k}</span>
+                        <span style={{ fontSize: 12, opacity: 0.85, letterSpacing: '0.04em', fontWeight: 600 }}>{t(s.k)}</span>
                       </div>
                       <span style={{
                         fontSize: 26, fontWeight: 700, position: 'relative',
@@ -1067,28 +1074,28 @@ export default function Landing() {
           <span style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
             color: '#c9a45c', textTransform: 'uppercase',
-          }}>Dipercaya Ribuan Keluarga</span>
+          }}>{t('Dipercaya Ribuan Keluarga')}</span>
           <h2 style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 'clamp(30px, 4.6vw, 48px)', fontWeight: 700,
             color: 'var(--color-primary-dark)', margin: '14px 0 0',
-          }}>Angka yang Bicara</h2>
+          }}>{t('Angka yang Bicara')}</h2>
         </Reveal>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 48 }}>
           <AnimatedStat
-            value={publicStats?.total_children || 0} suffix="+" label="Anak Terlayani"
+            value={publicStats?.total_children || 0} suffix="+" label={t('Anak Terlayani')}
             icon={<Icon name="users" size={26} />}
           />
           <AnimatedStat
-            value={publicStats?.total_reports || 0} suffix="+" label="Laporan Terkirim"
+            value={publicStats?.total_reports || 0} suffix="+" label={t('Laporan Terkirim')}
             icon={<Icon name="spark" size={26} />}
           />
           <AnimatedStat
-            value={publicStats?.avg_satisfaction || 0} suffix="%" label="Kepuasan Orang Tua"
+            value={publicStats?.avg_satisfaction || 0} suffix="%" label={t('Kepuasan Orang Tua')}
             icon={<Icon name="star" size={26} />}
           />
           <AnimatedStat
-            value={publicStats?.total_media || 0} suffix="+" label="Dokumentasi Foto"
+            value={publicStats?.total_media || 0} suffix="+" label={t('Dokumentasi Foto')}
             icon={<Icon name="camera" size={26} />}
           />
         </div>
@@ -1101,18 +1108,18 @@ export default function Landing() {
             <span style={{
               fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
               color: '#c9a45c', textTransform: 'uppercase',
-            }}>Kegiatan Tersedia</span>
+            }}>{t('Kegiatan Tersedia')}</span>
             <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: 'clamp(30px, 4.6vw, 48px)', fontWeight: 700,
               color: 'var(--color-primary-dark)', margin: '14px 0 18px',
-            }}>Aktivitas di Daycare Kami</h2>
+            }}>{t('Aktivitas di Daycare Kami')}</h2>
             <div className="lp-shimmer-line" style={{ height: 2, width: 140, margin: '0 auto', borderRadius: 99 }} />
             <p style={{
               maxWidth: 560, margin: '20px auto 0', fontSize: 16,
               color: 'var(--color-text-secondary)', lineHeight: 1.8,
             }}>
-              {publicStats?.total_activities || 0} kegiatan aktif tersedia untuk tumbuh kembang anak Anda.
+              {t('{{count}} kegiatan aktif tersedia untuk tumbuh kembang anak Anda.', { count: publicStats?.total_activities || 0 })}
             </p>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
@@ -1121,7 +1128,7 @@ export default function Landing() {
                 key={f.id}
                 icon={activityIcons[f.category] || 'spark'}
                 title={f.name}
-                desc={f.description || `Kategori: ${f.category || '-'}`}
+                desc={f.description || t('Kategori: {{kategori}}', { kategori: f.category || '-' })}
                 index={i}
               />
             ))}
@@ -1131,7 +1138,7 @@ export default function Landing() {
                   gridColumn: '1 / -1', textAlign: 'center', padding: '48px 24px',
                   color: 'var(--color-text-muted)', fontSize: 15,
                 }}>
-                  Belum ada kegiatan yang terdaftar.
+                  {t('Belum ada kegiatan yang terdaftar.')}
                 </div>
               </Reveal>
             )}
@@ -1156,12 +1163,12 @@ export default function Landing() {
             <span style={{
               fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
               color: '#c9a45c', textTransform: 'uppercase',
-            }}>Cara Kerja</span>
+            }}>{t('Cara Kerja')}</span>
             <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: 'clamp(30px, 4.6vw, 48px)', fontWeight: 700,
               color: 'var(--color-primary-dark)', margin: '14px 0 0',
-            }}>Satu Platform, Dua Dunia</h2>
+            }}>{t('Satu Platform, Dua Dunia')}</h2>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 28 }}>
             {/* Admin Panel */}
@@ -1178,25 +1185,25 @@ export default function Landing() {
                   background: 'linear-gradient(135deg, #2c5a47, #3a7059)',
                   color: '#fff', fontSize: 11, fontWeight: 700,
                   letterSpacing: '0.08em', textTransform: 'uppercase',
-                }}>Untuk Pengelola</span>
+                }}>{t('Untuk Pengelola')}</span>
                 <h3 style={{
                   fontSize: 24, fontWeight: 700, color: 'var(--color-text)',
                   margin: '24px 0 16px',
                   fontFamily: "'Playfair Display', Georgia, serif",
-                }}>Operasional menjadi ringan</h3>
+                }}>{t('Operasional menjadi ringan')}</h3>
                 <p style={{
                   fontSize: 14.5, lineHeight: 1.8, color: 'var(--color-text-secondary)',
                   margin: '0 0 28px',
                 }}>
-                  Kelola data anak, kehadiran, paket, voucher, tagihan, hingga pembayaran dalam satu panel elegan.
+                  {t('Kelola data anak, kehadiran, paket, voucher, tagihan, hingga pembayaran dalam satu panel elegan.')}
                 </p>
                 {[
                   'Kelola murid & orang tua secara terpusat',
                   'Pembuatan tagihan & verifikasi pembayaran otomatis',
                   'Laporan harian, mingguan, dan bulanan satu klik',
                   'Riwayat kehadiran & aktivitas tiap anak terlacak',
-                ].map((t, i) => (
-                  <Reveal key={t} delay={0.1 + i * 0.06}>
+                ].map((item, i) => (
+                  <Reveal key={item} delay={0.1 + i * 0.06}>
                     <div style={{
                       display: 'flex', alignItems: 'center', gap: 14,
                       padding: '11px 0', fontSize: 14, color: 'var(--color-text-secondary)',
@@ -1208,7 +1215,7 @@ export default function Landing() {
                         alignItems: 'center', justifyContent: 'center',
                         fontSize: 11, fontWeight: 800,
                       }}><Icon name="check" size={12} /></span>
-                      {t}
+                      {t(item)}
                     </div>
                   </Reveal>
                 ))}
@@ -1242,24 +1249,24 @@ export default function Landing() {
                     color: '#fff', fontSize: 11, fontWeight: 700,
                     letterSpacing: '0.08em', textTransform: 'uppercase',
                     boxShadow: '0 8px 20px rgba(201,164,92,0.3)',
-                  }}>Untuk Orang Tua</span>
+                  }}>{t('Untuk Orang Tua')}</span>
                   <h3 style={{
                     fontSize: 24, fontWeight: 700, margin: '24px 0 16px',
                     fontFamily: "'Playfair Display', Georgia, serif",
-                  }}>Tenang dari mana saja</h3>
+                  }}>{t('Tenang dari mana saja')}</h3>
                   <p style={{
                     fontSize: 14.5, lineHeight: 1.8, opacity: 0.9,
                     margin: '0 0 28px',
                   }}>
-                    Pantau buah hati Anda secara real-time melalui ponsel — kapan pun dan di mana pun.
+                    {t('Pantau buah hati Anda secara real-time melalui ponsel — kapan pun dan di mana pun.')}
                   </p>
                   {[
                     'Kehadiran & kegiatan anak hari ini real-time',
                     'Cerita harian + dokumentasi foto kegiatan',
                     'Tagihan jelas, bayar langsung dari aplikasi',
                     'Perkembangan & portofolio tumbuh kembang',
-                  ].map((t, i) => (
-                    <Reveal key={t} delay={0.2 + i * 0.06}>
+                  ].map((item, i) => (
+                    <Reveal key={item} delay={0.2 + i * 0.06}>
                       <div style={{
                         display: 'flex', alignItems: 'center', gap: 14,
                         padding: '11px 0', fontSize: 14,
@@ -1270,7 +1277,7 @@ export default function Landing() {
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 11, fontWeight: 800,
                         }}><Icon name="check" size={12} color="#e8cf94" /></span>
-                        {t}
+                        {t(item)}
                       </div>
                     </Reveal>
                   ))}
@@ -1288,12 +1295,12 @@ export default function Landing() {
             <span style={{
               fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
               color: '#c9a45c', textTransform: 'uppercase',
-            }}>Paket Kami</span>
+            }}>{t('Paket Kami')}</span>
             <h2 style={{
               fontFamily: "'Playfair Display', Georgia, serif",
               fontSize: 'clamp(30px, 4.6vw, 42px)', fontWeight: 700,
               color: 'var(--color-primary-dark)', margin: '14px 0 0',
-            }}>{publicStats?.active_packages || 0} Paket Aktif</h2>
+            }}>{t('{{count}} Paket Aktif', { count: publicStats?.active_packages || 0 })}</h2>
           </Reveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 22 }}>
             {(publicStats?.packages || []).map((p, i) => (
@@ -1317,13 +1324,13 @@ export default function Landing() {
                   <p style={{
                     fontSize: 13.5, lineHeight: 1.7, color: 'var(--color-text-secondary)',
                     margin: '0 0 18px', minHeight: 46,
-                  }}>{p.description || 'Paket premium untuk tumbuh kembang optimal.'}</p>
+                  }}>{p.description || t('Paket premium untuk tumbuh kembang optimal.')}</p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
                     <span style={{
                       fontSize: 24, fontWeight: 700, color: 'var(--color-primary-dark)',
                       fontFamily: "'Playfair Display', Georgia, serif",
                     }}>{formatCurrency(p.price)}</span>
-                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>/ {p.duration_days} hari</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{' / '}{t('{{hari}} hari', { hari: p.duration_days })}</span>
                   </div>
                 </div>
               </Reveal>
@@ -1334,7 +1341,7 @@ export default function Landing() {
                   gridColumn: '1 / -1', textAlign: 'center', padding: '48px 24px',
                   color: 'var(--color-text-muted)', fontSize: 15,
                 }}>
-                  Belum ada paket yang tersedia.
+                  {t('Belum ada paket yang tersedia.')}
                 </div>
               </Reveal>
             )}
@@ -1348,12 +1355,12 @@ export default function Landing() {
           <span style={{
             fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
             color: '#c9a45c', textTransform: 'uppercase',
-          }}>Testimoni</span>
+          }}>{t('Testimoni')}</span>
           <h2 style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 'clamp(30px, 4.6vw, 46px)', fontWeight: 700,
             color: 'var(--color-primary-dark)', margin: '14px 0 0',
-          }}>{publicStats?.total_feedback || 0} Ulasan dari Orang Tua</h2>
+          }}>{t('{{count}} Ulasan dari Orang Tua', { count: publicStats?.total_feedback || 0 })}</h2>
         </Reveal>
         {(publicStats?.testimonials || []).length > 0 ? (
           <TestimonialCarousel items={publicStats.testimonials} />
@@ -1363,7 +1370,7 @@ export default function Landing() {
               textAlign: 'center', padding: '48px 24px',
               color: 'var(--color-text-muted)', fontSize: 15,
             }}>
-              Belum ada testimoni dari orang tua.
+              {t('Belum ada testimoni dari orang tua.')}
             </div>
           </Reveal>
         )}
@@ -1377,12 +1384,12 @@ export default function Landing() {
               <span style={{
                 fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
                 color: '#c9a45c', textTransform: 'uppercase',
-              }}>Pengumuman Terbaru</span>
+              }}>{t('Pengumuman Terbaru')}</span>
               <h2 style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700,
                 color: 'var(--color-primary-dark)', margin: '14px 0 0',
-              }}>{publicStats.total_announcements} Pengumuman Aktif</h2>
+              }}>{t('{{count}} Pengumuman Aktif', { count: publicStats.total_announcements })}</h2>
             </Reveal>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
               {publicStats.announcements.map((a, i) => (
@@ -1428,12 +1435,12 @@ export default function Landing() {
               <span style={{
                 fontSize: 12, fontWeight: 700, letterSpacing: '0.14em',
                 color: '#c9a45c', textTransform: 'uppercase',
-              }}>Event Mendatang</span>
+              }}>{t('Event Mendatang')}</span>
               <h2 style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700,
                 color: 'var(--color-primary-dark)', margin: '14px 0 0',
-              }}>{publicStats.total_events} Event Terjadwal</h2>
+              }}>{t('{{count}} Event Terjadwal', { count: publicStats.total_events })}</h2>
             </Reveal>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
               {publicStats.events.map((e, i) => (
@@ -1512,21 +1519,20 @@ export default function Landing() {
                 fontSize: 'clamp(34px, 5.5vw, 58px)', fontWeight: 700,
                 color: '#fff', margin: 0, lineHeight: 1.12,
               }}>
-                Siap Menata Daycare dengan{' '}
+                {t('Siap Menata Daycare dengan')}{' '}
                 <span style={{
                   background: 'linear-gradient(100deg, #e8cf94, #c9a45c, #e8cf94)',
                   backgroundSize: '200% auto',
                   WebkitBackgroundClip: 'text', backgroundClip: 'text',
                   color: 'transparent',
                   animation: 'lpShimmerText 4s ease-in-out infinite',
-                }}>Kelas Premium?</span>
+                }}>{t('Kelas Premium?')}</span>
               </h2>
               <p style={{
                 maxWidth: 560, margin: '24px auto 0',
                 color: 'rgba(255,255,255,0.85)', fontSize: 17, lineHeight: 1.8,
               }}>
-                Bergabunglah hari ini dan rasakan kemudahan mengelola daycare
-                serta ketenangan sebagai orang tua.
+                {t('Bergabunglah hari ini dan rasakan kemudahan mengelola daycare serta ketenangan sebagai orang tua.')}
               </p>
               <div style={{ marginTop: 40 }}>
                 <Link to={appLink} style={{
@@ -1581,13 +1587,12 @@ export default function Landing() {
               margin: 0, fontSize: 13.5, color: 'var(--color-text-muted)',
               maxWidth: 480, lineHeight: 1.8,
             }}>
-              Platform manajemen daycare premium — menghubungkan pengelola dan orang tua
-              dalam satu ekosistem yang aman, transparan, dan mudah.
+              {t('Platform manajemen daycare premium — menghubungkan pengelola dan orang tua dalam satu ekosistem yang aman, transparan, dan mudah.')}
             </p>
             <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-              <button onClick={() => scrollTo('fitur')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>Fitur</button>
-              <button onClick={() => scrollTo('cara')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>Cara Kerja</button>
-              <button onClick={() => scrollTo('testimoni')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>Testimoni</button>
+              <button onClick={() => scrollTo('fitur')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>{t('Fitur')}</button>
+              <button onClick={() => scrollTo('cara')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>{t('Cara Kerja')}</button>
+              <button onClick={() => scrollTo('testimoni')} style={{ textDecoration: 'none', color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', fontSize: 'inherit', fontWeight: 'inherit' }}>{t('Testimoni')}</button>
             </div>
           </div>
           <div style={{
@@ -1595,10 +1600,10 @@ export default function Landing() {
             display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12,
           }}>
             <span style={{ fontSize: 12.5, color: 'var(--color-text-muted)' }}>
-              © {new Date().getFullYear()} TinyCare — Semua hak dilindungi.
+              {t('© {{tahun}} TinyCare — Semua hak dilindungi.', { tahun: new Date().getFullYear() })}
             </span>
             <span style={{ fontSize: 12.5, color: 'var(--color-text-muted)' }}>
-              Dibuat dengan <span style={{ color: '#c9a45c' }}>♥</span> untuk anak-anak Indonesia
+              {t('Dibuat dengan')} <span style={{ color: '#c9a45c' }}>♥</span> {t('untuk anak-anak Indonesia')}
             </span>
           </div>
         </div>

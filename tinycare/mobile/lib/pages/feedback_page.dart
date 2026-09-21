@@ -3,6 +3,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -41,7 +42,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       final data = await _api.getFeedback();
       setState(() { _feedbacks = data; _isLoading = false; });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat feedback.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat feedback.'); _isLoading = false; });
     }
   }
 
@@ -58,7 +59,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Feedback berhasil dikirim!'),
+            content: Text(tr('Feedback berhasil dikirim!')),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -70,7 +71,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Gagal mengirim feedback.'),
+            content: Text(tr('Gagal mengirim feedback.')),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -99,7 +100,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Balas Feedback'),
+        title: Text(tr('Balas Feedback')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,18 +110,18 @@ class _FeedbackPageState extends State<FeedbackPage> {
             TextField(
               controller: controller,
               maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: 'Tulis balasan...',
+              decoration: InputDecoration(
+                hintText: tr('Tulis balasan...'),
                 border: OutlineInputBorder(),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Kirim'),
+            child: Text(tr('Kirim')),
           ),
         ],
       ),
@@ -131,13 +132,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
     try {
       final response = await _api.respondFeedback(feedback['id'], adminResponse: result);
       if (response['success'] == true) {
-        _showToast('Balasan berhasil dikirim.');
+        _showToast(tr('Balasan berhasil dikirim.'));
         _loadFeedbacks();
       } else {
-        _showToast(response['message'] ?? 'Gagal mengirim balasan.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal mengirim balasan.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal mengirim balasan.', isError: true);
+      _showToast(tr('Gagal mengirim balasan.'), isError: true);
     }
   }
 
@@ -145,13 +146,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
     try {
       final response = await _api.updateFeedbackStatus(feedback['id'], status: status);
       if (response['success'] == true) {
-        _showToast('Status berhasil diperbarui.');
+        _showToast(tr('Status berhasil diperbarui.'));
         _loadFeedbacks();
       } else {
-        _showToast(response['message'] ?? 'Gagal memperbarui status.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal memperbarui status.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal memperbarui status.', isError: true);
+      _showToast(tr('Gagal memperbarui status.'), isError: true);
     }
   }
 
@@ -161,7 +162,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final isAdmin = auth.isAdmin;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Feedback')),
+      appBar: AppBar(title: Text(tr('Feedback'))),
       floatingActionButton: !isAdmin ? FloatingActionButton(
         onPressed: _showFeedbackForm,
         backgroundColor: AppColors.primary,
@@ -176,8 +177,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
               : _feedbacks.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.rate_review_outlined,
-                      title: 'Belum ada feedback',
-                      subtitle: !isAdmin ? 'Ketuk tombol + untuk mengirim feedback.' : null,
+                      title: tr('Belum ada feedback'),
+                      subtitle: !isAdmin ? tr('Ketuk tombol + untuk mengirim feedback.') : null,
                     )
                   : RefreshIndicator(
                       onRefresh: _loadFeedbacks,
@@ -252,7 +253,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       children: [
                         const Icon(Icons.reply, size: 14, color: AppColors.primary),
                         const SizedBox(width: 6),
-                        const Text('Balasan Admin',
+                        Text(tr('Balasan Admin'),
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary)),
                       ],
                     ),
@@ -286,7 +287,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     child: OutlinedButton.icon(
                       onPressed: () => _respondToFeedback(feedback),
                       icon: const Icon(Icons.reply, size: 16),
-                      label: const Text('Balas', style: TextStyle(fontSize: 12)),
+                      label: Text(tr('Balas'), style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -300,7 +301,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Status', style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context))),
+                          Text(tr('Status'), style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context))),
                           const SizedBox(width: 4),
                           const Icon(Icons.arrow_drop_down, size: 16),
                         ],
@@ -308,9 +309,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     ),
                     onSelected: (value) => _updateStatus(feedback, value),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(value: 'pending', child: Text('Menunggu')),
-                      const PopupMenuItem(value: 'reviewed', child: Text('Ditinjau')),
-                      const PopupMenuItem(value: 'responded', child: Text('Dibalas')),
+                      PopupMenuItem(value: 'pending', child: Text(tr('Menunggu'))),
+                      PopupMenuItem(value: 'reviewed', child: Text(tr('Ditinjau'))),
+                      PopupMenuItem(value: 'responded', child: Text(tr('Dibalas'))),
                     ],
                   ),
                 ],
@@ -358,15 +359,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       Center(child: Container(width: 40, height: 4,
                           decoration: BoxDecoration(color: ThemeHelper.border(context), borderRadius: BorderRadius.circular(2)))),
                       const SizedBox(height: 20),
-                      Text('Kirim Feedback', style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
+                      Text(tr('Kirim Feedback'), style: AppTypography.h2.copyWith(color: ThemeHelper.text(context))),
                       const SizedBox(height: 20),
                       TextFormField(
                         controller: _subjectController,
-                        decoration: const InputDecoration(labelText: 'Subjek'),
-                        validator: (v) => v == null || v.isEmpty ? 'Subjek harus diisi' : null,
+                        decoration: InputDecoration(labelText: tr('Subjek')),
+                        validator: (v) => v == null || v.isEmpty ? tr('Subjek harus diisi') : null,
                       ),
                       const SizedBox(height: 16),
-                      Text('Rating', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+                      Text(tr('Rating'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
                       const SizedBox(height: 8),
                       Row(
                         children: List.generate(5, (index) {
@@ -380,8 +381,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       TextFormField(
                         controller: _messageController,
                         maxLines: 4,
-                        decoration: const InputDecoration(labelText: 'Pesan', alignLabelWithHint: true),
-                        validator: (v) => v == null || v.isEmpty ? 'Pesan harus diisi' : null,
+                        decoration: InputDecoration(labelText: tr('Pesan'), alignLabelWithHint: true),
+                        validator: (v) => v == null || v.isEmpty ? tr('Pesan harus diisi') : null,
                       ),
                       const SizedBox(height: 20),
                       SizedBox(
@@ -391,7 +392,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           child: _isSubmitting
                               ? const SizedBox(height: 20, width: 20,
                                   child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Kirim'),
+                              : Text(tr('Kirim')),
                         ),
                       ),
                     ],
@@ -416,9 +417,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   String _getStatusLabel(String? status) {
     switch (status) {
-      case 'responded': return 'Dibalas';
-      case 'reviewed': return 'Ditinjau';
-      case 'pending': return 'Menunggu';
+      case 'responded': return tr('Dibalas');
+      case 'reviewed': return tr('Ditinjau');
+      case 'pending': return tr('Menunggu');
       default: return status ?? '-';
     }
   }

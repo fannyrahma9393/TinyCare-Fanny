@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
 import 'package_page.dart';
 import 'pickups_page.dart';
+import '../l10n/app_strings.dart';
 
 /// Tabbed child detail (mirrors web ParentChildDetail / admin ChildDetail).
 /// Tabs: Ringkasan (progress overview), Perkembangan (assessments),
@@ -64,14 +65,14 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data anak.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data anak.'); _isLoading = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Anak')),
+      appBar: AppBar(title: Text(tr('Detail Anak'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -80,7 +81,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                   _loadData();
                 })
               : _child == null
-                  ? AppWidgets.emptyState(icon: Icons.child_care, title: 'Anak tidak ditemukan.')
+                  ? AppWidgets.emptyState(icon: Icons.child_care, title: tr('Anak tidak ditemukan.'))
                   : RefreshIndicator(
                       onRefresh: _loadData,
                       color: AppColors.primary,
@@ -103,8 +104,8 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                                     ),
                                   ),
                                   icon: const Icon(Icons.inventory_2_outlined, size: 18),
-                                  label: const Text(
-                                    'Paket',
+                                  label: Text(
+                                    tr('Paket'),
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ),
@@ -122,8 +123,8 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                                     ),
                                   ),
                                   icon: const Icon(Icons.person_add_alt_outlined, size: 18),
-                                  label: const Text(
-                                    'Penjemput',
+                                  label: Text(
+                                    tr('Penjemput'),
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ),
@@ -142,10 +143,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
 
   Widget _buildTabBar() {
     final tabs = [
-      ('overview', 'Ringkasan'),
-      ('development', 'Perkembangan'),
-      ('attendance', 'Kehadiran'),
-      ('activities', 'Aktivitas'),
+      ('overview', tr('Ringkasan')),
+      ('development', tr('Perkembangan')),
+      ('attendance', tr('Kehadiran')),
+      ('activities', tr('Aktivitas')),
     ];
     return Wrap(
       spacing: 6,
@@ -183,7 +184,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     if (categories is! List || categories.isEmpty) {
       return AppWidgets.emptyState(
         icon: Icons.trending_up,
-        title: 'Belum ada data perkembangan',
+        title: tr('Belum ada data perkembangan'),
       );
     }
     return Column(
@@ -216,7 +217,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Text('Progress', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
+                  Text(tr('Progress'), style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                   const Spacer(),
                   Text('${avgProgress.toStringAsFixed(0)}%',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: ThemeHelper.text(context))),
@@ -233,7 +234,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                 ),
               ),
               const SizedBox(height: 6),
-              Text('$total penilaian', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
+              Text(tr('{{total}} penilaian', {'total': total}), style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
             ],
           ),
         );
@@ -244,7 +245,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   Widget _buildDevelopmentsTab() {
     final categories = _development?['categories'];
     if (categories is! List) {
-      return AppWidgets.emptyState(icon: Icons.trending_up, title: 'Belum ada penilaian');
+      return AppWidgets.emptyState(icon: Icons.trending_up, title: tr('Belum ada penilaian'));
     }
     final items = categories.expand<dynamic>((cat) {
       final recent = cat['recent_assessments'];
@@ -255,7 +256,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     }).toList();
 
     if (items.isEmpty) {
-      return AppWidgets.emptyState(icon: Icons.trending_up, title: 'Belum ada penilaian');
+      return AppWidgets.emptyState(icon: Icons.trending_up, title: tr('Belum ada penilaian'));
     }
     return Column(
       children: items.map<Widget>((entry) {
@@ -296,7 +297,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
 
   Widget _buildAttendanceTab() {
     if (_attendance.isEmpty) {
-      return AppWidgets.emptyState(icon: Icons.calendar_today, title: 'Belum ada catatan kehadiran');
+      return AppWidgets.emptyState(icon: Icons.calendar_today, title: tr('Belum ada catatan kehadiran'));
     }
     return Column(
       children: _attendance.map<Widget>((r) {
@@ -319,7 +320,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                     Text(r['date'] ?? '-',
                         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: ThemeHelper.text(context))),
                     const SizedBox(height: 2),
-                    Text('Masuk: ${r['check_in_time'] ?? '-'} · Keluar: ${r['check_out_time'] ?? '-'}',
+                    Text(tr('Masuk: {{checkIn}} · Keluar: {{checkOut}}', {
+                      'checkIn': r['check_in_time'] ?? '-',
+                      'checkOut': r['check_out_time'] ?? '-',
+                    }),
                         style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                   ],
                 ),
@@ -334,7 +338,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
 
   Widget _buildActivitiesTab() {
     if (_activities.isEmpty) {
-      return AppWidgets.emptyState(icon: Icons.emoji_events_outlined, title: 'Belum ada aktivitas');
+      return AppWidgets.emptyState(icon: Icons.emoji_events_outlined, title: tr('Belum ada aktivitas'));
     }
     return Column(
       children: _activities.map<Widget>((a) {

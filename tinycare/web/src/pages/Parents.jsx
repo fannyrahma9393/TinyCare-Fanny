@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { parentsAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 
 export default function Parents() {
+  const { t } = useTranslation();
   const [parents, setParents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -22,7 +24,7 @@ export default function Parents() {
       const res = await parentsAPI.list({ search });
       setParents(res.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data orang tua.');
+      setError(error.response?.data?.message || t('Gagal memuat data orang tua.'));
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,7 @@ export default function Parents() {
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors || {});
       } else {
-        alert(error.response?.data?.message || 'Gagal menambahkan orang tua.');
+        alert(error.response?.data?.message || t('Gagal menambahkan orang tua.'));
       }
     } finally {
       setSubmitting(false);
@@ -57,12 +59,12 @@ export default function Parents() {
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus orang tua ini?')) {
+    if (confirm(t('Yakin ingin menghapus orang tua ini?'))) {
       try {
         await parentsAPI.delete(id);
         loadParents();
       } catch (error) {
-        alert(error.response?.data?.message || 'Gagal menghapus orang tua.');
+        alert(error.response?.data?.message || t('Gagal menghapus orang tua.'));
       }
     }
   };
@@ -76,24 +78,24 @@ export default function Parents() {
   return (
     <div>
       <PageHeader
-        title="Manajemen Orang Tua"
-        subtitle="Kelola akun orang tua yang terdaftar"
+        title={t('Manajemen Orang Tua')}
+        subtitle={t('Kelola akun orang tua yang terdaftar')}
         action={
           <button onClick={() => { resetForm(); setShowModal(true); }} className="tc-btn tc-btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Tambah Orang Tua
+            {t('Tambah Orang Tua')}
           </button>
         }
       />
 
       <div style={{ marginBottom: '16px' }}>
-        <input type="text" placeholder="Cari nama atau email..." value={search} onChange={(e) => setSearch(e.target.value)} className="tc-input" style={{ maxWidth: '360px' }} />
+        <input type="text" placeholder={t('Cari nama atau email...')} value={search} onChange={(e) => setSearch(e.target.value)} className="tc-input" style={{ maxWidth: '360px' }} />
       </div>
 
       {error && (
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={() => { setError(''); loadParents(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={() => { setError(''); loadParents(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       )}
 
@@ -101,12 +103,12 @@ export default function Parents() {
         <table className="tc-table">
           <thead>
             <tr>
-              <th>Nama</th>
-              <th>Email</th>
-              <th>Telepon</th>
-              <th>Anak</th>
-              <th>Status</th>
-              <th>Aksi</th>
+              <th>{t('Nama')}</th>
+              <th>{t('Email')}</th>
+              <th>{t('Telepon')}</th>
+              <th>{t('Anak')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Aksi')}</th>
             </tr>
           </thead>
           <tbody>
@@ -134,19 +136,19 @@ export default function Parents() {
                       ))}
                     </div>
                   ) : (
-                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Belum ada anak</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>{t('Belum ada anak')}</span>
                   )}
                 </td>
                 <td>
                   <span className={`tc-badge ${parent.effective_status === 'active' ? 'tc-badge-success' : 'tc-badge-error'}`}>
-                    {parent.effective_status === 'active' ? 'Aktif' : 'Nonaktif'}
+                    {parent.effective_status === 'active' ? t('Aktif') : t('Nonaktif')}
                   </span>
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <Link to={`/parents/${parent.id}`} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-info)', padding: '4px 8px', fontSize: '13px' }}>Detail</Link>
                     <button onClick={() => handleDelete(parent.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>
-                      Hapus
+                      {t('Hapus')}
                     </button>
                   </div>
                 </td>
@@ -154,44 +156,44 @@ export default function Parents() {
             ))}
           </tbody>
         </table>
-        {parents.length === 0 && <EmptyState icon="👨‍👩‍👧" title="Belum ada orang tua terdaftar" description="Klik 'Tambah Orang Tua' untuk menambahkan." />}
+        {parents.length === 0 && <EmptyState icon="👨‍👩‍👧" title={t('Belum ada orang tua terdaftar')} description={t("Klik 'Tambah Orang Tua' untuk menambahkan.")} />}
       </div>
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Tambah Orang Tua Baru" maxWidth="560px">
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={t('Tambah Orang Tua Baru')} maxWidth="560px">
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label className="tc-label">Nama Lengkap *</label>
+              <label className="tc-label">{t('Nama Lengkap *')}</label>
               <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="tc-input" style={getFieldError('name') ? { borderColor: 'var(--color-error)' } : {}} required />
               {getFieldError('name') && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: '4px' }}>{getFieldError('name')}</p>}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Email *</label>
+                <label className="tc-label">{t('Email *')}</label>
                 <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="tc-input" style={getFieldError('email') ? { borderColor: 'var(--color-error)' } : {}} required />
                 {getFieldError('email') && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: '4px' }}>{getFieldError('email')}</p>}
               </div>
               <div>
-                <label className="tc-label">Password *</label>
+                <label className="tc-label">{t('Password *')}</label>
                 <input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="tc-input" style={getFieldError('password') ? { borderColor: 'var(--color-error)' } : {}} required minLength={8} />
                 {getFieldError('password') && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: '4px' }}>{getFieldError('password')}</p>}
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Telepon</label>
+                <label className="tc-label">{t('Telepon')}</label>
                 <input type="text" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className="tc-input" />
               </div>
               <div>
-                <label className="tc-label">Alamat</label>
+                <label className="tc-label">{t('Alamat')}</label>
                 <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="tc-input" />
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
+            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
             <button type="submit" disabled={submitting} className="tc-btn tc-btn-primary" style={{ flex: 1 }}>
-              {submitting ? 'Menyimpan...' : 'Simpan'}
+              {submitting ? t('Menyimpan...') : t('Simpan')}
             </button>
           </div>
         </form>

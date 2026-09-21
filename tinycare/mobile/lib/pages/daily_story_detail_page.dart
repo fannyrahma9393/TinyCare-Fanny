@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../l10n/app_strings.dart';
 
 /// Daily Story detail for a child — matches web DailyStoryDetail.jsx.
 /// Shows child header, date picker, story cards with mood/stats,
@@ -31,12 +32,14 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
   String? _error;
   late String _selectedDate;
 
-  static const _moodConfig = {
-    'bahagia': ('Bahagia', '😊', Color(0xFF16A34A), Color(0xFFF0FDF4)),
-    'biasa': ('Biasa', '😐', Color(0xFF6B7280), Color(0xFFF9FAFB)),
-    'sedih': ('Sedih', '😢', Color(0xFF3B82F6), Color(0xFFEFF6FF)),
-    'sakit': ('Sakit', '🤒', Color(0xFFDC2626), Color(0xFFFEF2F2)),
-    'rewel': ('Rewel', '😫', Color(0xFFF59E0B), Color(0xFFFFFBEB)),
+  // A getter (not a `static final` field) so the labels follow the active
+  // language instead of being frozen on first access.
+  static Map<String, (String, String, Color, Color)> get _moodConfig => {
+    'bahagia': (tr('Bahagia'), '😊', Color(0xFF16A34A), Color(0xFFF0FDF4)),
+    'biasa': (tr('Biasa'), '😐', Color(0xFF6B7280), Color(0xFFF9FAFB)),
+    'sedih': (tr('Sedih'), '😢', Color(0xFF3B82F6), Color(0xFFEFF6FF)),
+    'sakit': (tr('Sakit'), '🤒', Color(0xFFDC2626), Color(0xFFFEF2F2)),
+    'rewel': (tr('Rewel'), '😫', Color(0xFFF59E0B), Color(0xFFFFFBEB)),
   };
 
   @override
@@ -69,7 +72,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat Daily Stories.';
+        _error = tr('Gagal memuat Daily Stories.');
         _isLoading = false;
       });
     }
@@ -87,7 +90,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final childName = _child?['name'] ?? 'Memuat...';
+    final childName = _child?['name'] ?? tr('Memuat...');
     final textColor = ThemeHelper.text(context);
 
     return Scaffold(
@@ -110,7 +113,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
           if (_child != null)
             IconButton(
               icon: const Icon(Icons.add_outlined),
-              tooltip: 'Buat Story',
+              tooltip: tr('Buat Story'),
               onPressed: _showCreateStoryModal,
             ),
         ],
@@ -132,7 +135,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
                     size: 16, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 8),
                 Text(
-                  'Tanggal: ',
+                  tr('Tanggal: '),
                   style: TextStyle(
                       fontSize: 13, color: ThemeHelper.textMuted(context)),
                 ),
@@ -178,9 +181,9 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
                     : _stories.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.auto_stories,
-                            title: 'Belum ada Daily Story',
-                            subtitle:
-                                'Tidak ada cerita untuk tanggal ${_formatDateDisplay(_selectedDate)}.',
+                            title: tr('Belum ada Daily Story'),
+                            subtitle: tr('Tidak ada cerita untuk tanggal {{date}}.',
+                                {'date': _formatDateDisplay(_selectedDate)}),
                             action: _child != null
                                 ? GestureDetector(
                                     onTap: _showCreateStoryModal,
@@ -191,8 +194,8 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
                                         color: AppColors.primary,
                                         borderRadius: AppRadius.smAll,
                                       ),
-                                      child: const Text(
-                                        'Buat Sekarang',
+                                      child: Text(
+                                        tr('Buat Sekarang'),
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
@@ -329,13 +332,13 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
                 Row(
                   children: [
                     _buildStatCell(
-                      'Rating Makan',
+                      tr('Rating Makan'),
                       '${story['meal_rating'] ?? '-'}',
                       AppColors.warning,
                     ),
                     const SizedBox(width: 8),
                     _buildStatCell(
-                      'Jam Tidur',
+                      tr('Jam Tidur'),
                       story['sleep_hours'] != null
                           ? '${story['sleep_hours']}j'
                           : '-',
@@ -343,7 +346,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
                     ),
                     const SizedBox(width: 8),
                     _buildStatCell(
-                      'Mood',
+                      tr('Mood'),
                       moodIcon,
                       moodColor,
                     ),
@@ -466,8 +469,8 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
       final parts = date.split('-');
       if (parts.length == 3) {
         final months = [
-          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+          tr('Januari'), tr('Februari'), tr('Maret'), tr('April'), tr('Mei'), tr('Juni'),
+          tr('Juli'), tr('Agustus'), tr('September'), tr('Oktober'), tr('November'), tr('Desember'),
         ];
         final d = int.tryParse(parts[2]);
         final m = int.tryParse(parts[1]);
@@ -485,8 +488,8 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
       final parts = date.split('-');
       if (parts.length == 3) {
         final months = [
-          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+          tr('Januari'), tr('Februari'), tr('Maret'), tr('April'), tr('Mei'), tr('Juni'),
+          tr('Juli'), tr('Agustus'), tr('September'), tr('Oktober'), tr('November'), tr('Desember'),
         ];
         final d = int.tryParse(parts[2]);
         final m = int.tryParse(parts[1]);
@@ -500,8 +503,8 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
   }
 
   String _weekday({required DateTime picked}) {
-    const days = [
-      'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'
+    final days = [
+      tr('Senin'), tr('Selasa'), tr('Rabu'), tr('Kamis'), tr('Jumat'), tr('Sabtu'), tr('Minggu')
     ];
     return days[(picked.weekday - 1) % 7];
   }
@@ -539,12 +542,14 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
   String? _error;
   final ApiService _api = ApiService();
 
-  static const _moodConfig = {
-    'bahagia': ('Bahagia', '😊'),
-    'biasa': ('Biasa', '😐'),
-    'sedih': ('Sedih', '😢'),
-    'sakit': ('Sakit', '🤒'),
-    'rewel': ('Rewel', '😫'),
+  // A getter (not a `static final` field) so the labels follow the active
+  // language instead of being frozen on first access.
+  static Map<String, (String, String)> get _moodConfig => {
+    'bahagia': (tr('Bahagia'), '😊'),
+    'biasa': (tr('Biasa'), '😐'),
+    'sedih': (tr('Sedih'), '😢'),
+    'sakit': (tr('Sakit'), '🤒'),
+    'rewel': (tr('Rewel'), '😫'),
   };
 
   @override
@@ -603,7 +608,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Cerita berhasil dibuat.'),
+              content: Text(tr('Cerita berhasil dibuat.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -614,13 +619,13 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan.';
+          _error = response['message'] ?? tr('Gagal menyimpan.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Gagal menyimpan. Silakan coba lagi.';
+        _error = tr('Gagal menyimpan. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -654,7 +659,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
             child: Row(
               children: [
                 Text(
-                  'Buat Daily Story',
+                  tr('Buat Daily Story'),
                   style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600, color: textColor),
                 ),
@@ -710,8 +715,8 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                     // Date
                     TextFormField(
                       controller: _dateController,
-                      decoration: const InputDecoration(
-                          labelText: 'Tanggal (YYYY-MM-DD)'),
+                      decoration: InputDecoration(
+                          labelText: tr('Tanggal (YYYY-MM-DD)')),
                       keyboardType: TextInputType.datetime,
                     ),
                     const SizedBox(height: 16),
@@ -720,16 +725,16 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                     TextFormField(
                       controller: _summaryController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Ringkasan Hari Ini',
-                        hintText: 'Ceritakan aktivitas anak hari ini...',
+                      decoration: InputDecoration(
+                        labelText: tr('Ringkasan Hari Ini'),
+                        hintText: tr('Ceritakan aktivitas anak hari ini...'),
                         alignLabelWithHint: true,
                       ),
                     ),
                     const SizedBox(height: 16),
 
                     // Mood selector
-                    Text('Mood Anak',
+                    Text(tr('Mood Anak'),
                         style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -767,8 +772,8 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                         Expanded(
                           child: TextFormField(
                             controller: _mealRatingController,
-                            decoration: const InputDecoration(
-                                labelText: 'Rating Makan (1-5)'),
+                            decoration: InputDecoration(
+                                labelText: tr('Rating Makan (1-5)')),
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -777,7 +782,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                           child: TextFormField(
                             controller: _sleepHoursController,
                             decoration:
-                                const InputDecoration(labelText: 'Jam Tidur Siang'),
+                                InputDecoration(labelText: tr('Jam Tidur Siang')),
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -789,7 +794,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                     TextFormField(
                       controller: _mealNotesController,
                       decoration:
-                          const InputDecoration(labelText: 'Catatan Makan'),
+                          InputDecoration(labelText: tr('Catatan Makan')),
                     ),
                     const SizedBox(height: 16),
 
@@ -797,7 +802,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                     TextFormField(
                       controller: _sleepNotesController,
                       decoration:
-                          const InputDecoration(labelText: 'Catatan Tidur'),
+                          InputDecoration(labelText: tr('Catatan Tidur')),
                     ),
                     const SizedBox(height: 16),
 
@@ -805,8 +810,8 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                     TextFormField(
                       controller: _adminNotesController,
                       maxLines: 2,
-                      decoration: const InputDecoration(
-                        labelText: 'Catatan Admin (internal)',
+                      decoration: InputDecoration(
+                        labelText: tr('Catatan Admin (internal)'),
                         alignLabelWithHint: true,
                       ),
                     ),
@@ -818,7 +823,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                         Expanded(
                           child: OutlinedButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('Batal'),
+                            child: Text(tr('Batal')),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -832,7 +837,7 @@ class _StoryCreateSheetState extends State<_StoryCreateSheet> {
                                     child: CircularProgressIndicator(
                                         color: Colors.white, strokeWidth: 2),
                                   )
-                                : const Text('Simpan'),
+                                : Text(tr('Simpan')),
                           ),
                         ),
                       ],

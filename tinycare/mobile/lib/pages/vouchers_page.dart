@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class VouchersPage extends StatefulWidget {
   const VouchersPage({super.key});
@@ -27,7 +28,7 @@ class _VouchersPageState extends State<VouchersPage> {
       final vouchers = await _api.getVouchers();
       setState(() { _vouchers = vouchers; _isLoading = false; });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data voucher.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data voucher.'); _isLoading = false; });
     }
   }
 
@@ -45,14 +46,15 @@ class _VouchersPageState extends State<VouchersPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Voucher'),
-        content: Text('Yakin ingin menghapus voucher "${voucher['code']}"?'),
+        title: Text(tr('Hapus Voucher')),
+        content: Text(tr('Yakin ingin menghapus voucher "{{code}}"?',
+            {'code': voucher['code'] ?? ''})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -61,10 +63,10 @@ class _VouchersPageState extends State<VouchersPage> {
 
     try {
       await _api.deleteVoucher(voucher['id']);
-      _showToast('Voucher berhasil dihapus.');
+      _showToast(tr('Voucher berhasil dihapus.'));
       _loadVouchers();
     } catch (e) {
-      _showToast('Gagal menghapus voucher.', isError: true);
+      _showToast(tr('Gagal menghapus voucher.'), isError: true);
     }
   }
 
@@ -84,7 +86,7 @@ class _VouchersPageState extends State<VouchersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Voucher'),
+        title: Text(tr('Voucher')),
         actions: [
           IconButton(icon: const Icon(Icons.add), onPressed: _showCreateForm),
         ],
@@ -96,8 +98,8 @@ class _VouchersPageState extends State<VouchersPage> {
               : _vouchers.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.card_giftcard_outlined,
-                      title: 'Belum ada voucher',
-                      subtitle: 'Ketuk tombol + untuk menambahkan voucher.',
+                      title: tr('Belum ada voucher'),
+                      subtitle: tr('Ketuk tombol + untuk menambahkan voucher.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadVouchers,
@@ -142,14 +144,15 @@ class _VouchersPageState extends State<VouchersPage> {
                     const SizedBox(height: 4),
                     Text(
                       voucher['type'] == 'percentage'
-                          ? '${voucher['value']}% diskon'
-                          : 'Rp ${voucher['value'] ?? 0} diskon',
+                          ? tr('{{value}}% diskon', {'value': voucher['value']})
+                          : tr('Rp {{value}} diskon',
+                              {'value': voucher['value'] ?? 0}),
                       style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: ThemeHelper.text(context)),
                     ),
                   ],
                 ),
               ),
-              AppWidgets.statusBadge(isActive ? 'Aktif' : 'Nonaktif', isActive ? AppColors.success : ThemeHelper.textMuted(context)),
+              AppWidgets.statusBadge(isActive ? tr('Aktif') : tr('Nonaktif'), isActive ? AppColors.success : ThemeHelper.textMuted(context)),
             ],
           ),
           if (voucher['description'] != null && voucher['description'].toString().isNotEmpty) ...[
@@ -169,7 +172,8 @@ class _VouchersPageState extends State<VouchersPage> {
               if (voucher['expires_at'] != null) ...[
                 Icon(Icons.calendar_today, size: 12, color: ThemeHelper.textMuted(context)),
                 const SizedBox(width: 6),
-                Text('Berlaku hingga ${voucher['expires_at']}', style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
+                Text(tr('Berlaku hingga {{date}}',
+                    {'date': voucher['expires_at'] ?? ''}), style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
               ],
             ],
           ),
@@ -180,7 +184,7 @@ class _VouchersPageState extends State<VouchersPage> {
                 child: OutlinedButton.icon(
                   onPressed: () => _showEditForm(voucher),
                   icon: const Icon(Icons.edit_outlined, size: 16),
-                  label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                  label: Text(tr('Edit'), style: TextStyle(fontSize: 12)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -188,7 +192,7 @@ class _VouchersPageState extends State<VouchersPage> {
                 child: OutlinedButton.icon(
                   onPressed: () => _deleteVoucher(voucher),
                   icon: const Icon(Icons.delete_outline, size: 16),
-                  label: const Text('Hapus', style: TextStyle(fontSize: 12)),
+                  label: Text(tr('Hapus'), style: TextStyle(fontSize: 12)),
                   style: OutlinedButton.styleFrom(foregroundColor: AppColors.error, side: const BorderSide(color: AppColors.error)),
                 ),
               ),
@@ -297,7 +301,7 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Voucher berhasil diperbarui.' : 'Voucher berhasil ditambahkan.'),
+              content: Text(_isEditing ? tr('Voucher berhasil diperbarui.') : tr('Voucher berhasil ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -306,17 +310,17 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
           Navigator.pop(context, true);
         }
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal menyimpan voucher.'; _isSubmitting = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal menyimpan voucher.'); _isSubmitting = false; });
       }
     } catch (e) {
-      setState(() { _error = 'Gagal menyimpan voucher. Silakan coba lagi.'; _isSubmitting = false; });
+      setState(() { _error = tr('Gagal menyimpan voucher. Silakan coba lagi.'); _isSubmitting = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit Voucher' : 'Tambah Voucher')),
+      appBar: AppBar(title: Text(_isEditing ? tr('Edit Voucher') : tr('Tambah Voucher'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -339,17 +343,17 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
               TextFormField(
                 controller: _codeController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Kode Voucher *'),
+                decoration: InputDecoration(labelText: tr('Kode Voucher *')),
                 textCapitalization: TextCapitalization.characters,
-                validator: (v) => v == null || v.isEmpty ? 'Kode tidak boleh kosong' : null,
+                validator: (v) => v == null || v.isEmpty ? tr('Kode tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _discountType,
-                decoration: const InputDecoration(labelText: 'Tipe Diskon *'),
-                items: const [
-                  DropdownMenuItem(value: 'percentage', child: Text('Persen (%)')),
-                  DropdownMenuItem(value: 'nominal', child: Text('Nominal (Rp)')),
+                decoration: InputDecoration(labelText: tr('Tipe Diskon *')),
+                items: [
+                  DropdownMenuItem(value: 'percentage', child: Text(tr('Persen (%)'))),
+                  DropdownMenuItem(value: 'nominal', child: Text(tr('Nominal (Rp)'))),
                 ],
                 onChanged: (v) { if (v != null) setState(() => _discountType = v); },
               ),
@@ -359,14 +363,14 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Nilai Diskon *',
-                  suffixText: _discountType == 'percentage' ? '%' : 'Rp',
+                  labelText: tr('Nilai Diskon *'),
+                  suffixText: _discountType == 'percentage' ? '%' : tr('Rp'),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Nilai tidak boleh kosong';
+                  if (v == null || v.isEmpty) return tr('Nilai tidak boleh kosong');
                   final num = double.tryParse(v);
-                  if (num == null || num <= 0) return 'Nilai harus lebih dari 0';
-                  if (_discountType == 'percentage' && num > 100) return 'Persen maksimal 100';
+                  if (num == null || num <= 0) return tr('Nilai harus lebih dari 0');
+                  if (_discountType == 'percentage' && num > 100) return tr('Persen maksimal 100');
                   return null;
                 },
               ),
@@ -375,10 +379,10 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
                 controller: _maxUsageController,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Maksimum Penggunaan *'),
+                decoration: InputDecoration(labelText: tr('Maksimum Penggunaan *')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Maksimum penggunaan tidak boleh kosong';
-                  if (int.tryParse(v) == null || int.tryParse(v)! < 1) return 'Minimal 1';
+                  if (v == null || v.isEmpty) return tr('Maksimum penggunaan tidak boleh kosong');
+                  if (int.tryParse(v) == null || int.tryParse(v)! < 1) return tr('Minimal 1');
                   return null;
                 },
               ),
@@ -388,18 +392,18 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
                   Expanded(
                     child: TextFormField(
                       controller: _startDateController,
-                      decoration: const InputDecoration(labelText: 'Tanggal Mulai *', hintText: 'YYYY-MM-DD'),
+                      decoration: InputDecoration(labelText: tr('Tanggal Mulai *'), hintText: tr('YYYY-MM-DD')),
                       keyboardType: TextInputType.datetime,
-                      validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
+                      validator: (v) => v == null || v.isEmpty ? tr('Wajib diisi') : null,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _endDateController,
-                      decoration: const InputDecoration(labelText: 'Tanggal Berakhir *', hintText: 'YYYY-MM-DD'),
+                      decoration: InputDecoration(labelText: tr('Tanggal Berakhir *'), hintText: tr('YYYY-MM-DD')),
                       keyboardType: TextInputType.datetime,
-                      validator: (v) => v == null || v.isEmpty ? 'Wajib diisi' : null,
+                      validator: (v) => v == null || v.isEmpty ? tr('Wajib diisi') : null,
                     ),
                   ),
                 ],
@@ -408,14 +412,14 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
               TextFormField(
                 controller: _minTransactionController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Minimum Transaksi', hintText: 'Opsional'),
+                decoration: InputDecoration(labelText: tr('Minimum Transaksi'), hintText: tr('Opsional')),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(labelText: 'Deskripsi', alignLabelWithHint: true),
+                decoration: InputDecoration(labelText: tr('Deskripsi'), alignLabelWithHint: true),
               ),
               const SizedBox(height: 24),
               SizedBox(
@@ -424,7 +428,7 @@ class _VoucherFormPageState extends State<_VoucherFormPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(_isEditing ? 'Perbarui' : 'Simpan', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(_isEditing ? tr('Perbarui') : tr('Simpan'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

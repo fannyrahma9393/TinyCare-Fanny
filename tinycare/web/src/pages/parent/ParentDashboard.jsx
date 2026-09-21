@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { parentAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import ChildPhoto from '../../components/ChildPhoto';
+import { useTranslation } from 'react-i18next';
 
 export default function ParentDashboard() {
+  const { t } = useTranslation();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,7 +17,7 @@ export default function ParentDashboard() {
     parentAPI.dashboard()
       .then((res) => setData(res.data.data))
       .catch((err) => {
-        setError(err.response?.data?.message || 'Gagal memuat dashboard.');
+        setError(err.response?.data?.message || t('Gagal memuat dashboard.'));
       })
       .finally(() => setLoading(false));
   }, []);
@@ -24,7 +26,7 @@ export default function ParentDashboard() {
     return (
       <div className="tc-loading-screen">
         <div className="tc-spinner tc-spinner-lg"></div>
-        <p>Memuat dashboard...</p>
+        <p>{t('Memuat dashboard...')}</p>
       </div>
     );
   }
@@ -36,7 +38,7 @@ export default function ParentDashboard() {
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
         <p className="tc-empty-state-title">{error}</p>
-        <button onClick={() => window.location.reload()} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+        <button onClick={() => window.location.reload()} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
       </div>
     );
   }
@@ -44,7 +46,7 @@ export default function ParentDashboard() {
   if (!data) {
     return (
       <div className="tc-empty-state">
-        <p className="tc-empty-state-desc">Data tidak tersedia.</p>
+        <p className="tc-empty-state-desc">{t('Data tidak tersedia.')}</p>
       </div>
     );
   }
@@ -68,29 +70,29 @@ export default function ParentDashboard() {
         marginBottom: '28px',
       }}>
         <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '4px', letterSpacing: '-0.02em' }}>
-          Halo, {user?.name?.split(' ')[0]}
+          {t('Halo, {{name}}', { name: user?.name?.split(' ')[0] })}
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-          Pantau perkembangan si kecil dengan mudah.
+          {t('Pantau perkembangan si kecil dengan mudah.')}
         </p>
       </div>
 
       {/* Summary Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px', marginBottom: '28px' }}>
         <div className="tc-card tc-card-hover" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Anak</p>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>{t('Anak')}</p>
           <p style={{ fontSize: '28px', fontWeight: '700', lineHeight: 1 }}>{children.length}</p>
         </div>
         <div className="tc-card tc-card-hover" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Tagihan Pending</p>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>{t('Tagihan Pending')}</p>
           <p style={{ fontSize: '28px', fontWeight: '700', lineHeight: 1, color: pendingInvoices.length > 0 ? 'var(--color-warning)' : 'inherit' }}>{pendingInvoices.length}</p>
         </div>
         <div className="tc-card tc-card-hover" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Pengumuman</p>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>{t('Pengumuman')}</p>
           <p style={{ fontSize: '28px', fontWeight: '700', lineHeight: 1 }}>{announcements.length}</p>
         </div>
         <div className="tc-card tc-card-hover" style={{ padding: '18px' }}>
-          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Jadwal</p>
+          <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>{t('Jadwal')}</p>
           <p style={{ fontSize: '28px', fontWeight: '700', lineHeight: 1 }}>{upcomingEvents.length}</p>
         </div>
       </div>
@@ -98,7 +100,7 @@ export default function ParentDashboard() {
       {/* Children Cards */}
       {children.length > 0 && (
         <div style={{ marginBottom: '28px' }}>
-          <h2 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>Anak Saya</h2>
+          <h2 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>{t('Anak Saya')}</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '14px' }}>
             {children.map((child) => (
               <div
@@ -112,7 +114,7 @@ export default function ParentDashboard() {
                   <div>
                     <h3 style={{ fontSize: '15px', fontWeight: '600' }}>{child.name}</h3>
                     <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                      {child.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                      {child.gender === 'male' ? t('Laki-laki') : t('Perempuan')}
                       {child.birth_date ? ` · ${new Date(child.birth_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'short' })}` : ''}
                     </p>
                   </div>
@@ -124,15 +126,15 @@ export default function ParentDashboard() {
                     background: 'var(--color-success-bg)', marginBottom: '8px',
                   }}>
                     <p style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-success)' }}>{child.active_package.name}</p>
-                    <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Berlaku s/d {new Date(child.active_package.end_date).toLocaleDateString('id-ID')}</p>
+                    <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Berlaku s/d {{date}}', { date: new Date(child.active_package.end_date).toLocaleDateString('id-ID') })}</p>
                   </div>
                 )}
 
                 {child.today_attendance && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <span className="tc-badge tc-badge-success">Hadir</span>
+                    <span className="tc-badge tc-badge-success">{t('Hadir')}</span>
                     {child.today_attendance.check_in_time && (
-                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Masuk: {child.today_attendance.check_in_time}</span>
+                      <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{t('Masuk: {{time}}', { time: child.today_attendance.check_in_time })}</span>
                     )}
                   </div>
                 )}
@@ -152,7 +154,7 @@ export default function ParentDashboard() {
                   marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px',
                   fontSize: '12px', fontWeight: '500', color: 'var(--color-primary)',
                 }}>
-                  Lihat Detail
+                  {t('Lihat Detail')}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="9 18 15 12 9 6"/>
                   </svg>
@@ -169,8 +171,8 @@ export default function ParentDashboard() {
             <div className="tc-empty-state-icon">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-4 3.5-7 7-7s7 3 7 7"/></svg>
             </div>
-            <p className="tc-empty-state-title">Belum ada data anak</p>
-            <p className="tc-empty-state-desc">Data akan muncul ketika anak sudah terdaftar di daycare.</p>
+            <p className="tc-empty-state-title">{t('Belum ada data anak')}</p>
+            <p className="tc-empty-state-desc">{t('Data akan muncul ketika anak sudah terdaftar di daycare.')}</p>
           </div>
         </div>
       )}
@@ -179,13 +181,13 @@ export default function ParentDashboard() {
       {childInformation.length > 0 && (
         <div style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <h2 style={{ fontSize: '15px', fontWeight: '700', letterSpacing: '-0.01em' }}>Informasi Anak</h2>
+            <h2 style={{ fontSize: '15px', fontWeight: '700', letterSpacing: '-0.01em' }}>{t('Informasi Anak')}</h2>
             <button
               onClick={() => navigate('/parent/information')}
               className="tc-btn tc-btn-ghost tc-btn-sm"
               style={{ fontSize: '12px' }}
             >
-              Lihat Semua
+              {t('Lihat Semua')}
             </button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '14px' }}>
@@ -223,7 +225,7 @@ export default function ParentDashboard() {
         {/* Pending Invoices */}
         {pendingInvoices.length > 0 && (
           <div className="tc-card" style={{ padding: '20px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>Invoice Pending</h2>
+            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>{t('Invoice Pending')}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {pendingInvoices.map((inv) => (
                 <div key={inv.id} style={{
@@ -238,7 +240,7 @@ export default function ParentDashboard() {
                   <div>
                     <p style={{ fontSize: '13px', fontWeight: '600' }}>{inv.invoice_number}</p>
                     <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                      {inv.child?.name} · Jatuh tempo: {new Date(inv.due_date).toLocaleDateString('id-ID')}
+                      {inv.child?.name} · {t('Jatuh tempo: {{date}}', { date: new Date(inv.due_date).toLocaleDateString('id-ID') })}
                     </p>
                   </div>
                   <span style={{ fontSize: '14px', fontWeight: '700', color: 'var(--color-warning)' }}>
@@ -253,7 +255,7 @@ export default function ParentDashboard() {
         {/* Upcoming Events */}
         {upcomingEvents.length > 0 && (
           <div className="tc-card" style={{ padding: '20px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>Jadwal Mendatang</h2>
+            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>{t('Jadwal Mendatang')}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {upcomingEvents.map((event) => (
                 <div key={event.id} style={{
@@ -287,7 +289,7 @@ export default function ParentDashboard() {
         {/* Recent Announcements */}
         {announcements.length > 0 && (
           <div className="tc-card" style={{ padding: '20px' }}>
-            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>Pengumuman</h2>
+            <h2 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', letterSpacing: '-0.01em' }}>{t('Pengumuman')}</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {announcements.slice(0, 3).map((ann) => (
                 <div key={ann.id} style={{

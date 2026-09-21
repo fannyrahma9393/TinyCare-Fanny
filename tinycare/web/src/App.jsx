@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Layout from './components/Layout';
@@ -47,11 +48,12 @@ import ParentProfile from './pages/parent/ParentProfile';
 import ParentInformation from './pages/parent/ParentInformation';
 
 function LoadingScreen() {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center h-screen" style={{ background: 'var(--color-bg)' }}>
       <div className="text-center">
         <div className="tc-spinner" style={{ margin: '0 auto' }}></div>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '16px' }}>Memuat...</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '16px' }}>{t('Memuat')}...</p>
       </div>
     </div>
   );

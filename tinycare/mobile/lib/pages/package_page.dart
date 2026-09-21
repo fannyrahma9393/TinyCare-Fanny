@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../l10n/app_strings.dart';
 
 class PackagePage extends StatefulWidget {
   const PackagePage({super.key, required this.childId, required this.childName});
@@ -44,7 +45,7 @@ class _PackagePageState extends State<PackagePage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat paket.';
+        _error = tr('Gagal memuat paket.');
         _isLoading = false;
       });
     }
@@ -53,9 +54,9 @@ class _PackagePageState extends State<PackagePage> {
   String _statusLabel(String? status) {
     switch (status) {
       case 'active':
-        return 'Aktif';
+        return tr('Aktif');
       case 'expired':
-        return 'Berakhir';
+        return tr('Berakhir');
       default:
         return status ?? '-';
     }
@@ -75,7 +76,7 @@ class _PackagePageState extends State<PackagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Paket')),
+      appBar: AppBar(title: Text(tr('Paket'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -98,14 +99,14 @@ class _PackagePageState extends State<PackagePage> {
                       _buildActivePackageCard(),
                       const SizedBox(height: 24),
                       AppWidgets.sectionHeader(
-                        'Riwayat Paket',
+                        tr('Riwayat Paket'),
                         context: context,
                       ),
                       const SizedBox(height: 12),
                       if (_history.isEmpty)
                         AppWidgets.emptyState(
                           icon: Icons.history,
-                          title: 'Belum ada riwayat paket',
+                          title: tr('Belum ada riwayat paket'),
                         )
                       else
                         ..._history.map((item) => _buildHistoryItem(item)),
@@ -134,16 +135,15 @@ class _PackagePageState extends State<PackagePage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Belum ada paket aktif',
+              tr('Belum ada paket aktif'),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: ThemeHelper.text(context),
               ),
             ),
-            const SizedBox(height: 4),
-            Text(
-              '${widget.childName} belum memiliki paket aktif saat ini.',
+            const SizedBox(height: 4),                    Text(tr('{{name}} belum memiliki paket aktif saat ini.',
+                        {'name': widget.childName}),
               style: TextStyle(
                 fontSize: 12,
                 color: ThemeHelper.textMuted(context),
@@ -201,18 +201,18 @@ class _PackagePageState extends State<PackagePage> {
           ),
           const SizedBox(height: 16),
           AppWidgets.infoRow(
-            'Mulai',
+            tr('Mulai'),
             active['start_date'] ?? '-',
             context: context,
           ),
           AppWidgets.infoRow(
-            'Berakhir',
+            tr('Berakhir'),
             active['end_date'] ?? '-',
             context: context,
           ),
           if (pkg?['duration_days'] != null)
             AppWidgets.infoRow(
-              'Durasi',
+              tr('Durasi'),
               '${pkg!['duration_days']} hari',
               context: context,
             ),
@@ -278,17 +278,17 @@ class _PackagePageState extends State<PackagePage> {
           ),
           const SizedBox(height: 10),
           AppWidgets.infoRow(
-            'Mulai',
+            tr('Mulai'),
             item['start_date'] ?? '-',
             context: context,
           ),
           AppWidgets.infoRow(
-            'Berakhir',
+            tr('Berakhir'),
             item['end_date'] ?? '-',
             context: context,
           ),
           AppWidgets.infoRow(
-            'Harga',
+            tr('Harga'),
             CurrencyHelper.formatRupiah(pkg?['price']),
             isTotal: true,
             context: context,

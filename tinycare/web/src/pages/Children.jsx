@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { childrenAPI, parentsAPI, packagesAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 import ChildPhoto from '../components/ChildPhoto';
@@ -7,18 +8,19 @@ import ChildPhoto from '../components/ChildPhoto';
 const PHOTO_ACCEPT = 'image/jpeg,image/png,image/gif';
 const PHOTO_MAX_MB = 5;
 
-function validatePhotoFile(file) {
+function validatePhotoFile(file, t) {
   if (!file) return null;
   if (file.size > PHOTO_MAX_MB * 1024 * 1024) {
-    return `Ukuran foto maksimal ${PHOTO_MAX_MB}MB.`;
+    return t('Ukuran foto maksimal {{max}}MB.', { max: PHOTO_MAX_MB });
   }
   if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
-    return 'Format foto harus JPG, PNG, atau GIF.';
+    return t('Format foto harus JPG, PNG, atau GIF.');
   }
   return null;
 }
 
 export default function Children() {
+  const { t } = useTranslation();
   const [children, setChildren] = useState([]);
   const [parents, setParents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,7 +45,7 @@ export default function Children() {
       setChildren(res.data.data.data || []);
       setError('');
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data anak.');
+      setError(error.response?.data?.message || t('Gagal memuat data anak.'));
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ export default function Children() {
       const res = await parentsAPI.list({ per_page: 100 });
       setParents(res.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data orang tua.');
+      setError(error.response?.data?.message || t('Gagal memuat data orang tua.'));
     }
   }
 
@@ -63,7 +65,7 @@ export default function Children() {
       const res = await packagesAPI.list({ per_page: 100, status: 'active' });
       setPackages(res.data.data.data || []);
     } catch (error) {
-      setError(error.response?.data?.message || 'Gagal memuat data paket.');
+      setError(error.response?.data?.message || t('Gagal memuat data paket.'));
     }
   }
 
@@ -81,7 +83,7 @@ export default function Children() {
       setPhotoPreview(null);
       return;
     }
-    const err = validatePhotoFile(file);
+    const err = validatePhotoFile(file, t);
     if (err) {
       setPhotoError(err);
       setPhotoFile(null);
@@ -133,7 +135,7 @@ export default function Children() {
             start_date: packageStartDate || new Date().toISOString().split('T')[0],
           });
         } catch (pkgErr) {
-          alert('Anak berhasil ditambahkan, namun gagal menetapkan paket: ' + (pkgErr.response?.data?.message || 'Error'));
+          alert(t('Anak berhasil ditambahkan, namun gagal menetapkan paket: {{message}}', { message: pkgErr.response?.data?.message || 'Error' }));
         }
       }
 
@@ -147,21 +149,21 @@ export default function Children() {
           const first = Object.values(errors)[0];
           alert(Array.isArray(first) ? first[0] : first);
         } else {
-          alert(error.response.data.message || 'Data tidak valid.');
+          alert(error.response.data.message || t('Data tidak valid.'));
         }
       } else {
-        alert(error.response?.data?.message || 'Gagal menambahkan anak.');
+        alert(error.response?.data?.message || t('Gagal menambahkan anak.'));
       }
     }
   };
 
   const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus anak ini?')) {
+    if (confirm(t('Yakin ingin menghapus anak ini?'))) {
       try {
         await childrenAPI.delete(id);
         loadChildren();
       } catch (e) {
-        alert(e.response?.data?.message || 'Gagal menghapus anak.');
+        alert(e.response?.data?.message || t('Gagal menghapus anak.'));
       }
     }
   };
@@ -169,15 +171,15 @@ export default function Children() {
   const handleToggleStatus = async (child) => {
     const targetStatus = child.status === 'active' ? 'inactive' : 'active';
     if (targetStatus === 'inactive') {
-      if (!confirm(`Nonaktifkan ${child.name}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.`)) return;
+      if (!confirm(t('Nonaktifkan {{name}}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.', { name: child.name }))) return;
     } else {
-      if (!confirm(`Aktifkan ${child.name} kembali?`)) return;
+      if (!confirm(t('Aktifkan {{name}} kembali?', { name: child.name }))) return;
     }
     try {
       await childrenAPI.update(child.id, { status: targetStatus });
       loadChildren();
     } catch (e) {
-      alert(e.response?.data?.message || 'Gagal mengubah status anak.');
+      alert(e.response?.data?.message || t('Gagal mengubah status anak.'));
     }
   };
 
@@ -188,12 +190,12 @@ export default function Children() {
   return (
     <div>
       <PageHeader
-        title="Manajemen Anak"
-        subtitle="Kelola data anak yang terdaftar di daycare"
+        title={t('Manajemen Anak')}
+        subtitle={t('Kelola data anak yang terdaftar di daycare')}
         action={
           <button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Tambah Anak
+            {t('Tambah Anak')}
           </button>
         }
       />
@@ -202,18 +204,18 @@ export default function Children() {
         {error && (
           <div className="tc-error-state" style={{ margin: '16px' }}>
             <p className="tc-empty-state-title">{error}</p>
-            <button onClick={loadChildren} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+            <button onClick={loadChildren} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
           </div>
         )}
         <table className="tc-table">
           <thead>
             <tr>
-              <th>Anak</th>
-              <th>Paket</th>
-              <th>Tanggal Lahir</th>
-              <th>Gender</th>
-              <th>Status</th>
-              <th>Aksi</th>
+              <th>{t('Anak')}</th>
+              <th>{t('Paket')}</th>
+              <th>{t('Tanggal Lahir')}</th>
+              <th>{t('Gender')}</th>
+              <th>{t('Status')}</th>
+              <th>{t('Aksi')}</th>
             </tr>
           </thead>
           <tbody>
@@ -232,11 +234,11 @@ export default function Children() {
                   {child.birth_date ? new Date(child.birth_date).toLocaleDateString('id-ID') : '-'}
                 </td>
                 <td style={{ color: 'var(--color-text-secondary)' }}>
-                  {child.gender === 'male' ? 'Laki-laki' : 'Perempuan'}
+                  {child.gender === 'male' ? t('Laki-laki') : t('Perempuan')}
                 </td>
                 <td>
                   <span className={`tc-badge ${child.status === 'active' ? 'tc-badge-success' : 'tc-badge-info'}`}>
-                    {child.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                    {child.status === 'active' ? t('Aktif') : t('Nonaktif')}
                   </span>
                 </td>
                 <td>
@@ -247,10 +249,10 @@ export default function Children() {
                       className="tc-btn tc-btn-ghost"
                       style={{ padding: '4px 8px', fontSize: '13px', color: child.status === 'active' ? 'var(--color-warning)' : 'var(--color-success)' }}
                     >
-                      {child.status === 'active' ? 'Nonaktifkan' : 'Aktifkan'}
+                      {child.status === 'active' ? t('Nonaktifkan') : t('Aktifkan')}
                     </button>
                     <button onClick={() => handleDelete(child.id)} className="tc-btn tc-btn-ghost" style={{ color: 'var(--color-error)', padding: '4px 8px', fontSize: '13px' }}>
-                      Hapus
+                      {t('Hapus')}
                     </button>
                   </div>
                 </td>
@@ -258,15 +260,15 @@ export default function Children() {
             ))}
           </tbody>
         </table>
-        {children.length === 0 && <EmptyState icon="👶" title="Belum ada data anak" description="Klik 'Tambah Anak' untuk menambahkan data." />}
+        {children.length === 0 && <EmptyState icon="👶" title={t('Belum ada data anak')} description={t("Klik 'Tambah Anak' untuk menambahkan data.")} />}
       </div>
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Tambah Anak Baru" maxWidth="560px">
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={t('Tambah Anak Baru')} maxWidth="560px">
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
             {/* Photo Upload */}
             <div style={{ gridColumn: 'span 2' }}>
-              <label className="tc-label">Foto Profil Anak</label>
+              <label className="tc-label">{t('Foto Profil Anak')}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{
                   width: '60px', height: '90px', borderRadius: 'var(--radius-lg)',
@@ -289,32 +291,32 @@ export default function Children() {
                   />
                   {photoPreview && (
                     <button type="button" onClick={removePhoto} className="tc-btn tc-btn-ghost tc-btn-sm" style={{ fontSize: '12px', color: 'var(--color-error)', alignSelf: 'flex-start' }}>
-                      Hapus Foto
+                      {t('Hapus Foto')}
                     </button>
                   )}
                   {photoError && <p style={{ fontSize: '12px', color: 'var(--color-error)' }}>{photoError}</p>}
-                  <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Opsional. Format: JPG, PNG, GIF. Maks {PHOTO_MAX_MB}MB.</p>
+                  <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Opsional. Format: JPG, PNG, GIF. Maks {{max}}MB.', { max: PHOTO_MAX_MB })}</p>
                 </div>
               </div>
             </div>
 
             <div style={{ gridColumn: 'span 2' }}>
-              <label className="tc-label">Nama Anak *</label>
+              <label className="tc-label">{t('Nama Anak *')}</label>
               <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="tc-input" required />
             </div>
             <div>
-              <label className="tc-label">Tanggal Lahir *</label>
+              <label className="tc-label">{t('Tanggal Lahir *')}</label>
               <input type="date" value={formData.birth_date} onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })} className="tc-input" required />
             </div>
             <div>
-              <label className="tc-label">Gender *</label>
+              <label className="tc-label">{t('Gender *')}</label>
               <select value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })} className="tc-select">
-                <option value="male">Laki-laki</option>
-                <option value="female">Perempuan</option>
+                <option value="male">{t('Laki-laki')}</option>
+                <option value="female">{t('Perempuan')}</option>
               </select>
             </div>
             <div style={{ gridColumn: 'span 2' }}>
-              <label className="tc-label">Orang Tua *</label>
+              <label className="tc-label">{t('Orang Tua *')}</label>
               <select multiple value={formData.parent_ids} onChange={(e) => setFormData({ ...formData, parent_ids: Array.from(e.target.selectedOptions, (o) => parseInt(o.value)) })} className="tc-select" required>
                 {parents.map((parent) => (
                   <option key={parent.id} value={parent.id}>{parent.user?.name} ({parent.user?.email})</option>
@@ -322,16 +324,16 @@ export default function Children() {
               </select>
             </div>
             <div>
-              <label className="tc-label">Status</label>
+              <label className="tc-label">{t('Status')}</label>
               <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="tc-select">
-                <option value="active">Aktif</option>
-                <option value="inactive">Nonaktif</option>
+                <option value="active">{t('Aktif')}</option>
+                <option value="inactive">{t('Nonaktif')}</option>
               </select>
             </div>
             <div>
-              <label className="tc-label">Paket</label>
+              <label className="tc-label">{t('Paket')}</label>
               <select value={selectedPackage} onChange={(e) => setSelectedPackage(e.target.value)} className="tc-select">
-                <option value="">-- Tidak ada paket --</option>
+                <option value="">{t('-- Tidak ada paket --')}</option>
                 {packages.map((pkg) => (
                   <option key={pkg.id} value={pkg.id}>{pkg.name} — Rp {new Intl.NumberFormat('id-ID').format(pkg.price)}</option>
                 ))}
@@ -339,18 +341,18 @@ export default function Children() {
             </div>
             {selectedPackage && (
               <div style={{ gridColumn: 'span 2' }}>
-                <label className="tc-label">Tanggal Mulai Paket</label>
+                <label className="tc-label">{t('Tanggal Mulai Paket')}</label>
                 <input type="date" value={packageStartDate} onChange={(e) => setPackageStartDate(e.target.value)} className="tc-input" required={!!selectedPackage} />
               </div>
             )}
             <div style={{ gridColumn: 'span 2' }}>
-              <label className="tc-label">Alamat</label>
+              <label className="tc-label">{t('Alamat')}</label>
               <textarea value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="tc-input" rows="2" />
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
-            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>Simpan</button>
+            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
+            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{t('Simpan')}</button>
           </div>
         </form>
       </Modal>

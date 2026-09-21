@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../l10n/app_strings.dart';
 
 /// Parent view: activities for one child (mirrors web ParentActivitiesDetail).
 class ActivitiesDetailPage extends StatefulWidget {
@@ -37,14 +38,14 @@ class _ActivitiesDetailPageState extends State<ActivitiesDetailPage> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data aktivitas.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data aktivitas.'); _isLoading = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Aktivitas Anak')),
+      appBar: AppBar(title: Text(tr('Aktivitas Anak'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -53,7 +54,7 @@ class _ActivitiesDetailPageState extends State<ActivitiesDetailPage> {
                   _loadData();
                 })
               : _child == null
-                  ? AppWidgets.emptyState(icon: Icons.child_care, title: 'Anak tidak ditemukan.')
+                  ? AppWidgets.emptyState(icon: Icons.child_care, title: tr('Anak tidak ditemukan.'))
                   : RefreshIndicator(
                       onRefresh: _loadData,
                       color: AppColors.primary,
@@ -62,14 +63,14 @@ class _ActivitiesDetailPageState extends State<ActivitiesDetailPage> {
                         children: [
                           ChildHeader(
                             child: _child,
-                            subtitle: 'Aktivitas yang diikuti anak Anda.',
+                            subtitle: tr('Aktivitas yang diikuti anak Anda.'),
                           ),
                           const SizedBox(height: 20),
                           if (_activities.isEmpty)
                             AppWidgets.emptyState(
                               icon: Icons.emoji_events_outlined,
-                              title: 'Belum ada aktivitas',
-                              subtitle: 'Aktivitas akan muncul ketika ada kegiatan terbaru.',
+                              title: tr('Belum ada aktivitas'),
+                              subtitle: tr('Aktivitas akan muncul ketika ada kegiatan terbaru.'),
                             )
                           else
                             ..._activities.map((a) => _ActivityCard(item: a)),

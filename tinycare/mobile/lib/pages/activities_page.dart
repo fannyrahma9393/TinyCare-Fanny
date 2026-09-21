@@ -5,6 +5,7 @@ import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
 import 'activities_detail_page.dart';
 import 'package:provider/provider.dart';
+import '../l10n/app_strings.dart';
 
 class ActivitiesPage extends StatefulWidget {
   const ActivitiesPage({super.key});
@@ -43,7 +44,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data aktivitas. Silakan coba lagi.';
+        _error = tr('Gagal memuat data aktivitas. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -59,7 +60,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
   Widget _buildParentPicker() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aktivitas'),
+        title: Text(tr('Aktivitas')),
         actions: [
           if (_children.isNotEmpty)
             IconButton(
@@ -81,15 +82,15 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
               : _children.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.emoji_events_outlined,
-                      title: 'Belum ada data anak',
-                      subtitle: 'Data akan muncul ketika anak sudah terdaftar di daycare.',
+                      title: tr('Belum ada data anak'),
+                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadData,
                       color: AppColors.primary,
                       child: ChildPickerGrid(
                         children: _children,
-                        actionLabel: 'Lihat Aktivitas',
+                        actionLabel: tr('Lihat Aktivitas'),
                         onTap: (child) {
                           Navigator.push(context, MaterialPageRoute(
                             builder: (_) => ActivitiesDetailPage(childId: child['id']),
@@ -116,14 +117,15 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Aktivitas'),
-        content: Text('Hapus aktivitas "${activity['name'] ?? ''}"?'),
+        title: Text(tr('Hapus Aktivitas')),
+        content: Text(tr('Hapus aktivitas "{{name}}"?',
+            {'name': activity['name'] ?? ''})),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -133,13 +135,13 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
     try {
       final response = await _api.deleteActivity(activity['id']);
       if (response['success'] == true) {
-        _showToast('Aktivitas berhasil dihapus.');
+        _showToast(tr('Aktivitas berhasil dihapus.'));
         _loadData();
       } else {
-        _showToast(response['message'] ?? 'Gagal menghapus aktivitas.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menghapus aktivitas.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menghapus aktivitas.', isError: true);
+      _showToast(tr('Gagal menghapus aktivitas.'), isError: true);
     }
   }
 
@@ -158,12 +160,12 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
   String _getCategoryLabel(String? category) {
     switch (category) {
-      case 'edukasi': return 'Edukasi';
-      case 'bermain': return 'Bermain';
-      case 'olahraga': return 'Olahraga';
-      case 'seni': return 'Seni';
-      case 'makan': return 'Makan';
-      case 'istirahat': return 'Istirahat';
+      case 'edukasi': return tr('Edukasi');
+      case 'bermain': return tr('Bermain');
+      case 'olahraga': return tr('Olahraga');
+      case 'seni': return tr('Seni');
+      case 'makan': return tr('Makan');
+      case 'istirahat': return tr('Istirahat');
       default: return category ?? '-';
     }
   }
@@ -179,7 +181,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Aktivitas'),
+        title: Text(tr('Aktivitas')),
         actions: [
           if (isAdmin && _children.isNotEmpty)
             IconButton(
@@ -189,7 +191,7 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
                   MaterialPageRoute(builder: (_) => _ActivityFormPage(children: _children)));
                 if (result == true) _loadData();
               },
-              tooltip: 'Tambah Aktivitas',
+              tooltip: tr('Tambah Aktivitas'),
             ),
         ],
       ),
@@ -201,7 +203,7 @@ if (_activities.isNotEmpty)
               child: TextField(
                 onChanged: (v) => setState(() => _searchQuery = v),
                 decoration: InputDecoration(
-                  hintText: 'Cari aktivitas...',
+                  hintText: tr('Cari aktivitas...'),
                   prefixIcon: const Icon(Icons.search, size: 20),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -231,8 +233,8 @@ if (_activities.isNotEmpty)
                     : _filteredActivities.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.emoji_events_outlined,
-                            title: 'Belum ada aktivitas',
-                            subtitle: isAdmin ? 'Tekan tombol + untuk menambah aktivitas.' : null,
+                            title: tr('Belum ada aktivitas'),
+                            subtitle: isAdmin ? tr('Tekan tombol + untuk menambah aktivitas.') : null,
                           )
                         : RefreshIndicator(
                             onRefresh: _loadData,
@@ -327,8 +329,8 @@ if (_activities.isNotEmpty)
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                        const PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                        PopupMenuItem(value: 'edit', child: Text(tr('Edit'))),
+                        PopupMenuItem(value: 'delete', child: Text(tr('Hapus'))),
                       ],
                     ),
                 ],
@@ -404,7 +406,7 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(_isEditing ? 'Aktivitas diperbarui.' : 'Aktivitas ditambahkan.'),
+              content: Text(_isEditing ? tr('Aktivitas diperbarui.') : tr('Aktivitas ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -413,17 +415,17 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
           Navigator.pop(context, true);
         }
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal menyimpan.'; _isSubmitting = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal menyimpan.'); _isSubmitting = false; });
       }
     } catch (e) {
-      setState(() { _error = 'Gagal menyimpan. Silakan coba lagi.'; _isSubmitting = false; });
+      setState(() { _error = tr('Gagal menyimpan. Silakan coba lagi.'); _isSubmitting = false; });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? 'Edit Aktivitas' : 'Tambah Aktivitas')),
+      appBar: AppBar(title: Text(_isEditing ? tr('Edit Aktivitas') : tr('Tambah Aktivitas'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -439,8 +441,8 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama Aktivitas *'),
-                validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Nama Aktivitas *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
@@ -448,23 +450,23 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
                 controller: _descriptionController,
                 maxLines: 3,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Deskripsi', alignLabelWithHint: true),
+                decoration: InputDecoration(labelText: tr('Deskripsi'), alignLabelWithHint: true),
               ),
               const SizedBox(height: 16),
 
               // Category selector (backend field: category) - must match DB seeder
-              Text('Kategori', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+              Text(tr('Kategori'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildCategoryChip('edukasi', 'Edukasi'),
-                  _buildCategoryChip('bermain', 'Bermain'),
-                  _buildCategoryChip('olahraga', 'Olahraga'),
-                  _buildCategoryChip('seni', 'Seni'),
-                  _buildCategoryChip('makan', 'Makan'),
-                  _buildCategoryChip('istirahat', 'Istirahat'),
+                  _buildCategoryChip('edukasi', tr('Edukasi')),
+                  _buildCategoryChip('bermain', tr('Bermain')),
+                  _buildCategoryChip('olahraga', tr('Olahraga')),
+                  _buildCategoryChip('seni', tr('Seni')),
+                  _buildCategoryChip('makan', tr('Makan')),
+                  _buildCategoryChip('istirahat', tr('Istirahat')),
                 ],
               ),
               const SizedBox(height: 24),
@@ -475,7 +477,7 @@ class _ActivityFormPageState extends State<_ActivityFormPage> {
                   onPressed: _isSubmitting ? null : _handleSave,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(_isEditing ? 'Simpan Perubahan' : 'Tambah Aktivitas',
+                      : Text(_isEditing ? tr('Simpan Perubahan') : tr('Tambah Aktivitas'),
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),

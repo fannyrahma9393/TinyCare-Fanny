@@ -3,6 +3,7 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'announcement_detail_page.dart';
 import 'invoice_detail_page.dart';
+import '../l10n/app_strings.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -36,7 +37,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat notifikasi.';
+        _error = tr('Gagal memuat notifikasi.');
         _isLoading = false;
       });
     }
@@ -47,10 +48,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
       await _api.markAllNotificationsRead();
       await _load();
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Semua notifikasi ditandai sudah dibaca.');
+      AppWidgets.showSnackBar(context, tr('Semua notifikasi ditandai sudah dibaca.'));
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Gagal menandai notifikasi.', isError: true);
+      AppWidgets.showSnackBar(context, tr('Gagal menandai notifikasi.'), isError: true);
     }
   }
 
@@ -134,7 +135,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, 'Gagal memperbarui notifikasi.', isError: true);
+      AppWidgets.showSnackBar(context, tr('Gagal memperbarui notifikasi.'), isError: true);
     }
   }
 
@@ -177,12 +178,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
       final date = DateTime.parse(iso).toLocal();
       final now = DateTime.now();
       final diff = now.difference(date);
-      if (diff.inMinutes < 1) return 'Baru saja';
-      if (diff.inHours < 1) return '${diff.inMinutes} mnt lalu';
-      if (diff.inDays < 1) return '${diff.inHours} jam lalu';
+      if (diff.inMinutes < 1) return tr('Baru saja');
+      if (diff.inHours < 1) {
+        return tr('{{minutes}} mnt lalu', {'minutes': diff.inMinutes});
+      }
+      if (diff.inDays < 1) {
+        return tr('{{hours}} jam lalu', {'hours': diff.inHours});
+      }
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+        tr('Jan'), tr('Feb'), tr('Mar'), tr('Apr'), tr('Mei'), tr('Jun'),
+        tr('Jul'), tr('Agu'), tr('Sep'), tr('Okt'), tr('Nov'), tr('Des'),
       ];
       return '${date.day} ${months[date.month - 1]} ${date.year}';
     } catch (_) {
@@ -194,14 +199,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifikasi'),
+        title: Text(tr('Notifikasi')),
         actions: [
           if (_items.any((n) => n['is_read'] == false))
             TextButton.icon(
               onPressed: _markAllRead,
               icon: const Icon(Icons.done_all, size: 18, color: Colors.white),
-              label: const Text(
-                'Baca Semua',
+              label: Text(
+                tr('Baca Semua'),
                 style: TextStyle(fontSize: 12, color: Colors.white),
               ),
             ),
@@ -214,7 +219,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               : _items.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.notifications_outlined,
-                      title: 'Belum ada notifikasi',
+                      title: tr('Belum ada notifikasi'),
                     )
                   : RefreshIndicator(
                       onRefresh: _load,
@@ -232,7 +237,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   Widget _buildNotificationCard(dynamic n) {
     final isRead = n['is_read'] == true;
-    final title = n['title'] as String? ?? 'Notifikasi';
+    final title = n['title'] as String? ?? tr('Notifikasi');
     final message = n['message'] as String?;
     final type = n['type'] as String?;
     final time = _timeLabel(n['created_at'] as String?);

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { parentsAPI } from '../services/api';
 import ChildPhoto from '../components/ChildPhoto';
 
 export default function ParentDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [parent, setParent] = useState(null);
@@ -17,9 +19,9 @@ export default function ParentDetail() {
       setError('');
     } catch (err) {
       if (err.response?.status === 404) {
-        setError('Orang tua tidak ditemukan.');
+        setError(t('Orang tua tidak ditemukan.'));
       } else {
-        setError(err.response?.data?.message || 'Gagal memuat data orang tua.');
+        setError(err.response?.data?.message || t('Gagal memuat data orang tua.'));
       }
     } finally {
       setLoading(false);
@@ -31,7 +33,7 @@ export default function ParentDetail() {
   }, [id]);
 
   if (loading) {
-    return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>Memuat data orang tua...</p></div>;
+    return <div className="tc-loading-screen"><div className="tc-spinner tc-spinner-lg"></div><p>{t('Memuat data orang tua...')}</p></div>;
   }
 
   if (error) {
@@ -39,12 +41,12 @@ export default function ParentDetail() {
       <div>
         <button onClick={() => navigate('/parents')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Kembali
+          {t('Kembali')}
         </button>
         <div className="tc-error-state">
           <div className="tc-error-state-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={loadParent} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={loadParent} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       </div>
     );
@@ -55,9 +57,9 @@ export default function ParentDetail() {
       <div>
         <button onClick={() => navigate('/parents')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Kembali
+          {t('Kembali')}
         </button>
-        <div className="tc-card"><div className="tc-empty-state"><p className="tc-empty-state-title">Orang tua tidak ditemukan.</p></div></div>
+        <div className="tc-card"><div className="tc-empty-state"><p className="tc-empty-state-title">{t('Orang tua tidak ditemukan.')}</p></div></div>
       </div>
     );
   }
@@ -76,7 +78,7 @@ export default function ParentDetail() {
     <div>
       <button onClick={() => navigate('/parents')} style={{ background: 'none', border: 'none', color: 'var(--color-primary)', cursor: 'pointer', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 500 }}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        Kembali ke Daftar Orang Tua
+        {t('Kembali ke Daftar Orang Tua')}
       </button>
 
       {/* Header Section */}
@@ -97,7 +99,7 @@ export default function ParentDetail() {
           <h1 style={{ fontSize: '22px', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '4px' }}>{userName}</h1>
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: '6px' }}>{userEmail}</p>
           <span className={`tc-badge ${parent.effective_status === 'active' ? 'tc-badge-success' : 'tc-badge-error'}`}>
-            {parent.effective_status === 'active' ? 'Aktif' : 'Nonaktif'}
+            {parent.effective_status === 'active' ? t('Aktif') : t('Nonaktif')}
           </span>
         </div>
       </div>
@@ -106,28 +108,28 @@ export default function ParentDetail() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '24px' }}>
         {/* Data Pribadi */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Data Pribadi</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Data Pribadi')}</h3>
           <div>
-            <InfoRow label="Nama Lengkap" value={userName} />
-            <InfoRow label="Email" value={userEmail} />
-            <InfoRow label="Telepon" value={parent.phone} />
-            <InfoRow label="Alamat" value={parent.address} />
+            <InfoRow label={t('Nama Lengkap')} value={userName} />
+            <InfoRow label={t('Email')} value={userEmail} />
+            <InfoRow label={t('Telepon')} value={parent.phone} />
+            <InfoRow label={t('Alamat')} value={parent.address} />
           </div>
         </div>
 
         {/* Kontak Darurat */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Kontak Darurat</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Kontak Darurat')}</h3>
           <div>
-            <InfoRow label="Nama" value={parent.emergency_contact_name} />
-            <InfoRow label="Telepon" value={parent.emergency_contact_phone} />
-            <InfoRow label="Hubungan" value={parent.emergency_contact_relationship} />
+            <InfoRow label={t('Nama')} value={parent.emergency_contact_name} />
+            <InfoRow label={t('Telepon')} value={parent.emergency_contact_phone} />
+            <InfoRow label={t('Hubungan')} value={parent.emergency_contact_relationship} />
           </div>
         </div>
 
         {/* Anak-anak */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Anak-anak</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Anak-anak')}</h3>
           <div>
             {parent.children && parent.children.length > 0 ? (
               parent.children.map((child) => (
@@ -145,24 +147,24 @@ export default function ParentDetail() {
                     <p style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)' }}>{child.name}</p>
                   </div>
                   <span className={`tc-badge ${child.status === 'active' ? 'tc-badge-success' : 'tc-badge-info'}`}>
-                    {child.status === 'active' ? 'Aktif' : 'Nonaktif'}
+                    {child.status === 'active' ? t('Aktif') : t('Nonaktif')}
                   </span>
                 </div>
               ))
             ) : (
-              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>Belum ada anak terdaftar.</p>
+              <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>{t('Belum ada anak terdaftar.')}</p>
             )}
           </div>
         </div>
 
         {/* Status Akun */}
         <div className="tc-card" style={{ padding: '20px' }}>
-          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>Status Akun</h3>
+          <h3 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '14px', color: 'var(--color-text)' }}>{t('Status Akun')}</h3>
           <div>
-            <InfoRow label="Status" value={parent.effective_status === 'active' ? 'Aktif' : 'Nonaktif'} />
-            <InfoRow label="User Status" value={parent.user?.status === 'active' ? 'Aktif' : 'Nonaktif'} />
-            <InfoRow label="Dibuat" value={parent.created_at ? new Date(parent.created_at).toLocaleDateString('id-ID') : '-'} />
-            <InfoRow label="Diperbarui" value={parent.updated_at ? new Date(parent.updated_at).toLocaleDateString('id-ID') : '-'} />
+            <InfoRow label={t('Status')} value={parent.effective_status === 'active' ? t('Aktif') : t('Nonaktif')} />
+            <InfoRow label="User Status" value={parent.user?.status === 'active' ? t('Aktif') : t('Nonaktif')} />
+            <InfoRow label={t('Dibuat')} value={parent.created_at ? new Date(parent.created_at).toLocaleDateString('id-ID') : '-'} />
+            <InfoRow label={t('Diperbarui')} value={parent.updated_at ? new Date(parent.updated_at).toLocaleDateString('id-ID') : '-'} />
           </div>
         </div>
       </div>

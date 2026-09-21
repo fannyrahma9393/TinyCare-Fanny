@@ -1,18 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { dailyStoriesAPI, childrenAPI } from '../services/api';
 import { PageHeader, Modal, EmptyState } from '../components/PageHeader';
 import ChildPhoto from '../components/ChildPhoto';
 
-const moodConfig = {
-  bahagia: { label: 'Bahagia', icon: '😊', color: 'var(--color-success)', bg: 'var(--color-success-bg)' },
-  biasa: { label: 'Biasa', icon: '😐', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
-  sedih: { label: 'Sedih', icon: '😢', color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
-  sakit: { label: 'Sakit', icon: '🤒', color: 'var(--color-error)', bg: 'var(--color-error-bg)' },
-  rewel: { label: 'Rewel', icon: '😫', color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
-};
+const moodConfig = (t) => ({
+  bahagia: { label: t('Bahagia'), icon: '😊', color: 'var(--color-success)', bg: 'var(--color-success-bg)' },
+  biasa: { label: t('Biasa'), icon: '😐', color: 'var(--color-text-muted)', bg: 'var(--color-bg-alt)' },
+  sedih: { label: t('Sedih'), icon: '😢', color: 'var(--color-info)', bg: 'var(--color-info-bg)' },
+  sakit: { label: t('Sakit'), icon: '🤒', color: 'var(--color-error)', bg: 'var(--color-error-bg)' },
+  rewel: { label: t('Rewel'), icon: '😫', color: 'var(--color-warning)', bg: 'var(--color-warning-bg)' },
+});
 
 export default function DailyStoryDetail() {
+  const { t } = useTranslation();
   const { childId } = useParams();
   const navigate = useNavigate();
 
@@ -32,7 +34,7 @@ export default function DailyStoryDetail() {
       const res = await childrenAPI.get(childId);
       setChild(res.data.data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal memuat data anak.');
+      setError(err.response?.data?.message || t('Gagal memuat data anak.'));
     }
   }
 
@@ -43,7 +45,7 @@ export default function DailyStoryDetail() {
       const res = await dailyStoriesAPI.list({ child_id: childId, date: selectedDate });
       setStories(res.data.data.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal memuat Daily Stories.');
+      setError(err.response?.data?.message || t('Gagal memuat Daily Stories.'));
     } finally {
       setLoading(false);
     }
@@ -70,9 +72,11 @@ export default function DailyStoryDetail() {
       setFormData({ summary: '', mood: 'biasa', meal_notes: '', sleep_notes: '', admin_notes: '', meal_rating: '', sleep_hours: '' });
       loadStories();
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal membuat Daily Story.');
+      alert(err.response?.data?.message || t('Gagal membuat Daily Story.'));
     }
   };
+
+  const mc = moodConfig(t);
 
   return (
     <div>
@@ -85,10 +89,10 @@ export default function DailyStoryDetail() {
               </svg>
             </button>
             <ChildPhoto child={child} width={60} alt={child?.name} />
-            <span>{child?.name || 'Memuat...'}</span>
+            <span>{child?.name || t('Memuat...')}</span>
           </div>
         }
-        subtitle="Daily Story harian anak"
+        subtitle={t('Daily Story harian anak')}
         action={
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <input
@@ -98,7 +102,7 @@ export default function DailyStoryDetail() {
               className="tc-input"
               style={{ width: '180px' }}
             />
-            <button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">+ Buat Story</button>
+            <button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">{t('+ Buat Story')}</button>
           </div>
         }
       />
@@ -107,7 +111,7 @@ export default function DailyStoryDetail() {
         <div className="tc-error-state" style={{ marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
           <button onClick={() => { setError(''); loadStories(); }} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>
-            Coba Lagi
+            {t('Coba Lagi')}
           </button>
         </div>
       )}
@@ -119,18 +123,18 @@ export default function DailyStoryDetail() {
       ) : stories.length === 0 && !error ? (
         <EmptyState
           icon="📖"
-          title="Belum ada Daily Story"
-          description={`Tidak ada cerita untuk tanggal ${new Date(selectedDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
+          title={t('Belum ada Daily Story')}
+          description={t('Tidak ada cerita untuk tanggal {{date}}.', { date: new Date(selectedDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) })}
           action={
             <button onClick={() => setShowModal(true)} className="tc-btn tc-btn-primary">
-              Buat Sekarang
+              {t('Buat Sekarang')}
             </button>
           }
         />
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '16px' }}>
           {stories.map((story) => {
-            const mood = moodConfig[story.mood] || moodConfig.biasa;
+            const mood = mc[story.mood] || mc.biasa;
             return (
               <div key={story.id} className="tc-card" style={{ overflow: 'hidden' }}>
                 <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border-light)' }}>
@@ -151,15 +155,15 @@ export default function DailyStoryDetail() {
                   {story.summary && <p style={{ fontSize: '13px', marginBottom: '12px', color: 'var(--color-text-secondary)', lineHeight: '1.5' }}>{story.summary}</p>}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '12px' }}>
                     <div style={{ background: 'var(--color-bg-alt)', borderRadius: 'var(--radius-md)', padding: '10px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Rating Makan</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Rating Makan')}</p>
                       <p style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-warning)' }}>{story.meal_rating || '-'}</p>
                     </div>
                     <div style={{ background: 'var(--color-bg-alt)', borderRadius: 'var(--radius-md)', padding: '10px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Jam Tidur</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Jam Tidur')}</p>
                       <p style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-info)' }}>{story.sleep_hours ? `${story.sleep_hours}j` : '-'}</p>
                     </div>
                     <div style={{ background: mood.bg, borderRadius: 'var(--radius-md)', padding: '10px', textAlign: 'center' }}>
-                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>Mood</p>
+                      <p style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>{t('Mood')}</p>
                       <p style={{ fontSize: '14px', fontWeight: '600', color: mood.color }}>{mood.label}</p>
                     </div>
                   </div>
@@ -172,17 +176,17 @@ export default function DailyStoryDetail() {
         </div>
       )}
 
-      <Modal open={showModal} onClose={() => setShowModal(false)} title="Buat Daily Story" maxWidth="560px">
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={t('Buat Daily Story')} maxWidth="560px">
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label className="tc-label">Ringkasan Hari Ini</label>
-              <textarea value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} className="tc-input" rows="3" placeholder="Ceritakan aktivitas anak hari ini..." />
+              <label className="tc-label">{t('Ringkasan Hari Ini')}</label>
+              <textarea value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} className="tc-input" rows="3" placeholder={t('Ceritakan aktivitas anak hari ini...')} />
             </div>
             <div>
-              <label className="tc-label">Mood Anak</label>
+              <label className="tc-label">{t('Mood Anak')}</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '8px' }}>
-                {Object.entries(moodConfig).map(([m, c]) => (
+                {Object.entries(mc).map(([m, c]) => (
                   <button key={m} type="button" onClick={() => setFormData({ ...formData, mood: m })} style={{
                     padding: '8px', borderRadius: 'var(--radius-md)', border: `2px solid ${formData.mood === m ? 'var(--color-primary)' : 'var(--color-border)'}`,
                     background: formData.mood === m ? 'var(--color-primary-lighter)' : 'transparent',
@@ -196,26 +200,26 @@ export default function DailyStoryDetail() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
               <div>
-                <label className="tc-label">Rating Makan (1-5)</label>
+                <label className="tc-label">{t('Rating Makan (1-5)')}</label>
                 <input type="number" value={formData.meal_rating} onChange={(e) => setFormData({ ...formData, meal_rating: e.target.value })} className="tc-input" min="1" max="5" step="0.5" />
               </div>
               <div>
-                <label className="tc-label">Jam Tidur Siang</label>
+                <label className="tc-label">{t('Jam Tidur Siang')}</label>
                 <input type="number" value={formData.sleep_hours} onChange={(e) => setFormData({ ...formData, sleep_hours: e.target.value })} className="tc-input" min="0" max="12" step="0.5" />
               </div>
             </div>
             <div>
-              <label className="tc-label">Catatan Makan</label>
+              <label className="tc-label">{t('Catatan Makan')}</label>
               <textarea value={formData.meal_notes} onChange={(e) => setFormData({ ...formData, meal_notes: e.target.value })} className="tc-input" rows="2" />
             </div>
             <div>
-              <label className="tc-label">Catatan Tidur</label>
+              <label className="tc-label">{t('Catatan Tidur')}</label>
               <textarea value={formData.sleep_notes} onChange={(e) => setFormData({ ...formData, sleep_notes: e.target.value })} className="tc-input" rows="2" />
             </div>
           </div>
           <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>Batal</button>
-            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>Simpan</button>
+            <button type="button" onClick={() => setShowModal(false)} className="tc-btn tc-btn-secondary" style={{ flex: 1 }}>{t('Batal')}</button>
+            <button type="submit" className="tc-btn tc-btn-primary" style={{ flex: 1 }}>{t('Simpan')}</button>
           </div>
         </form>
       </Modal>

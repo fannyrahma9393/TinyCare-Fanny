@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/currency.dart';
 import 'invoice_detail_page.dart';
+import '../l10n/app_strings.dart';
 
 class InvoicesPage extends StatefulWidget {
   const InvoicesPage({super.key});
@@ -39,7 +40,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'Gagal memuat tagihan. Silakan coba lagi.';
+        _errorMessage = tr('Gagal memuat tagihan. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -61,15 +62,15 @@ class _InvoicesPageState extends State<InvoicesPage> {
   String _statusLabel(String status) {
     switch (status) {
       case 'paid':
-        return 'Lunas';
+        return tr('Lunas');
       case 'pending':
-        return 'Menunggu Pembayaran';
+        return tr('Menunggu Pembayaran');
       case 'failed':
-        return 'Gagal';
+        return tr('Gagal');
       case 'expired':
-        return 'Kedaluwarsa';
+        return tr('Kedaluwarsa');
       case 'cancelled':
-        return 'Dibatalkan';
+        return tr('Dibatalkan');
       default:
         return status;
     }
@@ -82,7 +83,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Status invoice diperbarui.'),
+            content: Text(tr('Status invoice diperbarui.')),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -93,7 +94,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response['message'] ?? 'Gagal memperbarui status.'),
+            content: Text(response['message'] ?? tr('Gagal memperbarui status.')),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -104,7 +105,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Gagal memperbarui status.'),
+          content: Text(tr('Gagal memperbarui status.')),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -120,7 +121,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tagihan'),
+        title: Text(tr('Tagihan')),
       ),
       floatingActionButton: isAdmin ? FloatingActionButton(
         onPressed: () async {
@@ -145,8 +146,8 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   child: _invoices.isEmpty
                       ? AppWidgets.emptyState(
                           icon: Icons.receipt_long,
-                          title: 'Belum ada tagihan',
-                          subtitle: 'Tagihan akan muncul ketika ada invoice baru.',
+                          title: tr('Belum ada tagihan'),
+                          subtitle: tr('Tagihan akan muncul ketika ada invoice baru.'),
                         )
                       : _buildList(),
                 ),
@@ -214,8 +215,8 @@ class _InvoicesPageState extends State<InvoicesPage> {
               const SizedBox(height: 12),
 
               // Info rows
-              AppWidgets.infoRow('Anak', inv['child']?['name'] ?? '-'),
-              AppWidgets.infoRow('Paket', inv['package']?['name'] ?? '-'),
+              AppWidgets.infoRow(tr('Anak'), inv['child']?['name'] ?? '-'),
+              AppWidgets.infoRow(tr('Paket'), inv['package']?['name'] ?? '-'),
 
               Divider(
                 height: 17,
@@ -226,7 +227,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Total', style: TextStyle(
+                  Text(tr('Total'), style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                     color: ThemeHelper.text(context),
@@ -263,7 +264,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   child: ElevatedButton.icon(
                     onPressed: () => _showInvoiceDetail(inv),
                     icon: const Icon(Icons.payment, size: 18),
-                    label: const Text('Bayar Sekarang'),
+                    label: Text(tr('Bayar Sekarang')),
                   ),
                 ),
               ],
@@ -277,7 +278,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _updateInvoiceStatus(inv['id'], 'paid'),
                         icon: const Icon(Icons.check_circle, size: 16),
-                        label: const Text('Tandai Lunas', style: TextStyle(fontSize: 12)),
+                        label: Text(tr('Tandai Lunas'), style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.success,
                           side: const BorderSide(color: AppColors.success),
@@ -289,7 +290,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                       child: OutlinedButton.icon(
                         onPressed: () => _updateInvoiceStatus(inv['id'], 'cancelled'),
                         icon: const Icon(Icons.cancel, size: 16),
-                        label: const Text('Batalkan', style: TextStyle(fontSize: 12)),
+                        label: Text(tr('Batalkan'), style: TextStyle(fontSize: 12)),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.error,
                           side: const BorderSide(color: AppColors.error),
@@ -308,7 +309,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                     const Icon(Icons.check_circle, size: 16, color: AppColors.success),
                     const SizedBox(width: 6),
                     Text(
-                      'Sudah dibayar',
+                      tr('Sudah dibayar'),
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.success,
@@ -327,7 +328,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                     const Icon(Icons.schedule, size: 16, color: AppColors.error),
                     const SizedBox(width: 6),
                     Text(
-                      'Invoice kedaluwarsa',
+                      tr('Invoice kedaluwarsa'),
                       style: TextStyle(
                         fontSize: 13,
                         color: AppColors.error,
@@ -399,7 +400,7 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat data.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat data.'); _isLoading = false; });
     }
   }
 
@@ -420,7 +421,7 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Invoice berhasil dibuat.'),
+              content: Text(tr('Invoice berhasil dibuat.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -429,7 +430,7 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
           Navigator.pop(context, true);
         }
       } else {
-        setState(() { _error = response['message'] ?? 'Gagal membuat invoice.'; _isSubmitting = false; });
+        setState(() { _error = response['message'] ?? tr('Gagal membuat invoice.'); _isSubmitting = false; });
       }
     } catch (e) {
       setState(() { _error = ApiErrorHandler.getMessage(e); _isSubmitting = false; });
@@ -440,13 +441,13 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Buat Invoice')),
+        appBar: AppBar(title: Text(tr('Buat Invoice'))),
         body: AppWidgets.loadingIndicator(),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Buat Invoice')),
+      appBar: AppBar(title: Text(tr('Buat Invoice'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -461,31 +462,31 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
 
               DropdownButtonFormField<int>(
                 initialValue: _selectedChildId,
-                decoration: const InputDecoration(labelText: 'Anak *'),
+                decoration: InputDecoration(labelText: tr('Anak *')),
                 items: _children.map<DropdownMenuItem<int>>((c) =>
                   DropdownMenuItem(value: c['id'], child: Text(c['name'] ?? '-'))
                 ).toList(),
                 onChanged: (v) => setState(() => _selectedChildId = v),
-                validator: (v) => v == null ? 'Pilih anak' : null,
+                validator: (v) => v == null ? tr('Pilih anak') : null,
               ),
               const SizedBox(height: 16),
 
               DropdownButtonFormField<int>(
                 initialValue: _selectedPackageId,
-                decoration: const InputDecoration(labelText: 'Paket *'),
+                decoration: InputDecoration(labelText: tr('Paket *')),
                 items: _packages.map<DropdownMenuItem<int>>((p) =>
                   DropdownMenuItem(value: p['id'], child: Text('${p['name']} - ${CurrencyHelper.formatRupiah(p['price'])}'))
                 ).toList(),
                 onChanged: (v) => setState(() => _selectedPackageId = v),
-                validator: (v) => v == null ? 'Pilih paket' : null,
+                validator: (v) => v == null ? tr('Pilih paket') : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _dueDateController,
-                decoration: const InputDecoration(labelText: 'Jatuh Tempo *', hintText: 'YYYY-MM-DD'),
+                decoration: InputDecoration(labelText: tr('Jatuh Tempo *'), hintText: tr('YYYY-MM-DD')),
                 keyboardType: TextInputType.datetime,
-                validator: (v) => v == null || v.isEmpty ? 'Tanggal jatuh tempo tidak boleh kosong' : null,
+                validator: (v) => v == null || v.isEmpty ? tr('Tanggal jatuh tempo tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
@@ -493,9 +494,9 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
                 controller: _voucherCodeController,
                 textInputAction: TextInputAction.next,
                 textCapitalization: TextCapitalization.characters,
-                decoration: const InputDecoration(
-                  labelText: 'Kode Voucher',
-                  hintText: 'Opsional',
+                decoration: InputDecoration(
+                  labelText: tr('Kode Voucher'),
+                  hintText: tr('Opsional'),
                 ),
                 style: const TextStyle(fontFamily: 'monospace'),
               ),
@@ -504,7 +505,7 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                decoration: const InputDecoration(labelText: 'Catatan', alignLabelWithHint: true),
+                decoration: InputDecoration(labelText: tr('Catatan'), alignLabelWithHint: true),
               ),
               const SizedBox(height: 24),
 
@@ -514,7 +515,7 @@ class _InvoiceFormPageState extends State<_InvoiceFormPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Buat Invoice', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(tr('Buat Invoice'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

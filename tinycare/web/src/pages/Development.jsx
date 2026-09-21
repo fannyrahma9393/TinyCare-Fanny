@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { childrenAPI } from '../services/api';
 import { PageHeader, EmptyState } from '../components/PageHeader';
 import ChildPhoto from '../components/ChildPhoto';
 
 export default function Development() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ export default function Development() {
       setChildren(res.data.data.data || []);
       setError('');
     } catch (err) {
-      setError(err.response?.data?.message || 'Gagal memuat data anak.');
+      setError(err.response?.data?.message || t('Gagal memuat data anak.'));
     } finally {
       setLoading(false);
     }
@@ -33,14 +35,14 @@ export default function Development() {
   return (
     <div>
       <PageHeader
-        title="Perkembangan Anak"
-        subtitle="Pilih anak untuk melihat dan mengelola data perkembangan"
+        title={t('Perkembangan Anak')}
+        subtitle={t('Pilih anak untuk melihat dan mengelola data perkembangan')}
       />
 
       {error && (
         <div className="tc-error-state" style={{ padding: '24px', marginBottom: '16px' }}>
           <p className="tc-empty-state-title">{error}</p>
-          <button onClick={loadChildren} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>Coba Lagi</button>
+          <button onClick={loadChildren} className="tc-btn tc-btn-secondary tc-btn-sm" style={{ marginTop: '12px' }}>{t('Coba Lagi')}</button>
         </div>
       )}
 
@@ -58,7 +60,7 @@ export default function Development() {
               </div>
               <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '4px' }}>{child.name}</h3>
               <span className={`tc-badge ${child.status === 'active' ? 'tc-badge-success' : 'tc-badge-info'}`}>
-                {child.status === 'active' ? 'Status: Aktif' : 'Status: Nonaktif'}
+                {t(child.status === 'active' ? 'Status: Aktif' : 'Status: Nonaktif')}
               </span>
             </div>
           ))}
@@ -68,8 +70,8 @@ export default function Development() {
       {!error && children.length === 0 && (
         <EmptyState
           icon="📈"
-          title="Belum ada data anak"
-          description="Tambahkan data anak terlebih dahulu untuk melihat perkembangan."
+          title={t('Belum ada data anak')}
+          description={t('Tambahkan data anak terlebih dahulu untuk melihat perkembangan.')}
         />
       )}
     </div>

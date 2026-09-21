@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../widgets/child_photo.dart';
 import 'development_detail_page.dart';
+import '../l10n/app_strings.dart';
 
 class DevelopmentPage extends StatefulWidget {
   const DevelopmentPage({super.key});
@@ -37,7 +38,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data.';
+        _error = tr('Gagal memuat data.');
         _isLoading = false;
       });
     }
@@ -49,7 +50,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
     final mutedColor = ThemeHelper.textMuted(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Perkembangan Anak')),
+      appBar: AppBar(title: Text(tr('Perkembangan Anak'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -60,8 +61,8 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
               : _children.isEmpty
                   ? AppWidgets.emptyState(
                       icon: Icons.trending_up,
-                      title: 'Belum ada data anak',
-                      subtitle: 'Data akan muncul ketika anak sudah terdaftar di daycare.',
+                      title: tr('Belum ada data anak'),
+                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
                     )
                   : RefreshIndicator(
                       onRefresh: _loadChildren,
@@ -73,7 +74,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Text(
-                              'Pilih anak untuk melihat dan mengelola data perkembangan',
+                              tr('Pilih anak untuk melihat dan mengelola data perkembangan'),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: mutedColor,
@@ -151,8 +152,8 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                                           ),
                                           child: Text(
                                             isActive
-                                                ? 'Status: Aktif'
-                                                : 'Status: Nonaktif',
+                                                ? tr('Status: Aktif')
+                                                : tr('Status: Nonaktif'),
                                             style: TextStyle(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w600,
@@ -168,7 +169,7 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                                               MainAxisAlignment.center,
                                           children: [
                                             Text(
-                                              'Lihat Perkembangan',
+                                              tr('Lihat Perkembangan'),
                                               style: const TextStyle(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.w600,
@@ -255,7 +256,7 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Penilaian berhasil ditambahkan.'),
+              content: Text(tr('Penilaian berhasil ditambahkan.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -265,7 +266,7 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan.';
+          _error = response['message'] ?? tr('Gagal menyimpan.');
           _isSubmitting = false;
         });
       }
@@ -280,7 +281,7 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Penilaian Perkembangan')),
+      appBar: AppBar(title: Text(tr('Tambah Penilaian Perkembangan'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -295,37 +296,37 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
 
               DropdownButtonFormField<int>(
                 initialValue: _selectedCategoryId,
-                decoration: const InputDecoration(labelText: 'Kategori *'),
+                decoration: InputDecoration(labelText: tr('Kategori *')),
                 items: widget.categories
                     .map<DropdownMenuItem<int>>((c) => DropdownMenuItem(
                         value: c['id'],
                         child: Text('${c['icon'] ?? ''} ${c['name'] ?? ''}')))
                     .toList(),
                 onChanged: (v) => setState(() => _selectedCategoryId = v),
-                validator: (v) => v == null ? 'Pilih kategori' : null,
+                validator: (v) => v == null ? tr('Pilih kategori') : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _indicatorController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Indikator *'),
+                decoration: InputDecoration(labelText: tr('Indikator *')),
                 validator: (v) =>
-                    v == null || v.isEmpty ? 'Indikator tidak boleh kosong' : null,
+                    v == null || v.isEmpty ? tr('Indikator tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _dateController,
-                decoration: const InputDecoration(
-                    labelText: 'Tanggal Observasi *', hintText: 'YYYY-MM-DD'),
+                decoration: InputDecoration(
+                    labelText: tr('Tanggal Observasi *'), hintText: tr('YYYY-MM-DD')),
                 keyboardType: TextInputType.datetime,
                 validator: (v) =>
-                    v == null || v.isEmpty ? 'Tanggal tidak boleh kosong' : null,
+                    v == null || v.isEmpty ? tr('Tanggal tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
-              Text('Progres',
+              Text(tr('Progres'),
                   style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -335,11 +336,11 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildProgressChip('belum', 'Belum'),
-                  _buildProgressChip('mulai', 'Mulai'),
-                  _buildProgressChip('berkembang', 'Berkembang'),
-                  _buildProgressChip('baik', 'Baik'),
-                  _buildProgressChip('sangat_baik', 'Sangat Baik'),
+                  _buildProgressChip('belum', tr('Belum')),
+                  _buildProgressChip('mulai', tr('Mulai')),
+                  _buildProgressChip('berkembang', tr('Berkembang')),
+                  _buildProgressChip('baik', tr('Baik')),
+                  _buildProgressChip('sangat_baik', tr('Sangat Baik')),
                 ],
               ),
               const SizedBox(height: 16),
@@ -347,8 +348,8 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
               TextFormField(
                 controller: _notesController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                    labelText: 'Catatan', alignLabelWithHint: true),
+                decoration: InputDecoration(
+                    labelText: tr('Catatan'), alignLabelWithHint: true),
               ),
               const SizedBox(height: 24),
 
@@ -362,7 +363,7 @@ class _AssessmentFormPageState extends State<AssessmentFormPage> {
                           height: 20,
                           child: CircularProgressIndicator(
                               color: Colors.white, strokeWidth: 2))
-                      : const Text('Simpan Penilaian',
+                      : Text(tr('Simpan Penilaian'),
                           style:
                               TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),

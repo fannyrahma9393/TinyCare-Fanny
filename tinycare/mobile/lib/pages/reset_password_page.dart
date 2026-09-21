@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -48,17 +49,17 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       if (response['success'] == true) {
         if (!mounted) return;
-        AppWidgets.showSnackBar(context, response['message'] ?? 'Password berhasil direset.');
+        AppWidgets.showSnackBar(context, response['message'] ?? tr('Password berhasil direset.'));
         Navigator.pushReplacementNamed(context, '/login');
       } else {
         setState(() {
-          _error = response['message'] ?? 'Reset password gagal. Silakan coba lagi.';
+          _error = response['message'] ?? tr('Reset password gagal. Silakan coba lagi.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat terhubung ke server. Silakan coba lagi.';
+        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -67,7 +68,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      appBar: AppBar(title: Text(tr('Reset Password'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -76,7 +77,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Masukkan kode reset dari email, email akun Anda, dan password baru.',
+                tr('Masukkan kode reset dari email, email akun Anda, dan password baru.'),
                 style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
               ),
               const SizedBox(height: 24),
@@ -97,8 +98,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               TextFormField(
                 controller: _tokenController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Kode Reset *'),
-                validator: (v) => v == null || v.isEmpty ? 'Kode reset tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Kode Reset *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Kode reset tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
@@ -106,11 +107,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Email *'),
+                decoration: InputDecoration(labelText: tr('Email *')),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Email tidak boleh kosong';
+                  if (v == null || v.isEmpty) return tr('Email tidak boleh kosong');
                   final emailRegex = RegExp(r'^[\w-\.]+@[\w-]+\.[a-zA-Z]{2,}$');
-                  if (!emailRegex.hasMatch(v)) return 'Email tidak valid';
+                  if (!emailRegex.hasMatch(v)) return tr('Email tidak valid');
                   return null;
                 },
               ),
@@ -121,16 +122,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 obscureText: _obscurePassword,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Password Baru *',
+                  labelText: tr('Password Baru *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    tooltip: _obscurePassword ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscurePassword ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Password tidak boleh kosong';
-                  if (v.length < 8) return 'Password minimal 8 karakter';
+                  if (v == null || v.isEmpty) return tr('Password tidak boleh kosong');
+                  if (v.length < 8) return tr('Password minimal 8 karakter');
                   return null;
                 },
               ),
@@ -142,15 +143,15 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleSubmit(),
                 decoration: InputDecoration(
-                  labelText: 'Konfirmasi Password Baru *',
+                  labelText: tr('Konfirmasi Password Baru *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                    tooltip: _obscureConfirm ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscureConfirm ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v != _passwordController.text) return 'Password tidak cocok';
+                  if (v != _passwordController.text) return tr('Password tidak cocok');
                   return null;
                 },
               ),
@@ -162,7 +163,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Reset Password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(tr('Reset Password'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

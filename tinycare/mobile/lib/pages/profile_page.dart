@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -37,13 +38,13 @@ class _ProfilePageState extends State<ProfilePage> {
         });
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal memuat profil.';
+          _error = response['message'] ?? tr('Gagal memuat profil.');
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat memuat profil. Silakan coba lagi.';
+        _error = tr('Tidak dapat memuat profil. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -55,7 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil'),
+        title: Text(tr('Profil')),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_outlined),
@@ -63,14 +64,14 @@ class _ProfilePageState extends State<ProfilePage> {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Keluar'),
-                  content: const Text('Apakah Anda yakin ingin keluar?'),
+                  title: Text(tr('Keluar')),
+                  content: Text(tr('Apakah Anda yakin ingin keluar?')),
                   actions: [
-                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+                    TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
                       style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                      child: const Text('Keluar'),
+                      child: Text(tr('Keluar')),
                     ),
                   ],
                 ),
@@ -99,7 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (user == null) {
       return AppWidgets.emptyState(
         icon: Icons.person_outline,
-        title: 'Data profil tidak tersedia',
+        title: tr('Data profil tidak tersedia'),
       );
     }
 
@@ -156,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 10),
                 AppWidgets.statusBadge(
-                  user['role'] == 'parent' ? 'Orang Tua' : user['role'] ?? '-',
+                  user['role'] == 'parent' ? tr('Orang Tua') : user['role'] ?? '-',
                   AppColors.primary,
                 ),
               ],
@@ -177,13 +178,13 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Informasi Akun', style: AppTypography.h3.copyWith(color: textColor)),
+                Text(tr('Informasi Akun'), style: AppTypography.h3.copyWith(color: textColor)),
                 const SizedBox(height: 16),
-                AppWidgets.infoRow('Nama', user['name'] ?? '-'),
-                AppWidgets.infoRow('Email', user['email'] ?? '-'),
-                AppWidgets.infoRow('Nomor HP', user['phone'] ?? '-'),
-                AppWidgets.infoRow('Role', user['role'] == 'parent' ? 'Orang Tua' : (user['role'] ?? '-')),
-                AppWidgets.infoRow('Status', user['status'] == 'active' ? 'Aktif' : (user['status'] ?? '-')),
+                AppWidgets.infoRow(tr('Nama'), user['name'] ?? '-'),
+                AppWidgets.infoRow(tr('Email'), user['email'] ?? '-'),
+                AppWidgets.infoRow(tr('Nomor HP'), user['phone'] ?? '-'),
+                AppWidgets.infoRow(tr('Role'), user['role'] == 'parent' ? tr('Orang Tua') : (user['role'] ?? '-')),
+                AppWidgets.infoRow(tr('Status'), user['status'] == 'active' ? tr('Aktif') : (user['status'] ?? '-')),
               ],
             ),
           ),
@@ -193,10 +194,10 @@ class _ProfilePageState extends State<ProfilePage> {
           AppWidgets.menuGroup(
             [
               {
-                'label': 'Ubah Password',
+                'label': tr('Ubah Password'),
                 'icon': Icons.lock_outline,
                 'onTap': () => Navigator.pushNamed(context, '/change-password'),
-                'subtitle': 'Ganti kata sandi akun Anda',
+                'subtitle': tr('Ganti kata sandi akun Anda'),
               },
             ],
             context: context,
@@ -204,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 16),
 
           // Theme Toggle
-          AppWidgets.sectionHeader('Tampilan', context: context),
+          AppWidgets.sectionHeader(tr('Tampilan'), context: context),
           const SizedBox(height: 12),
           const ThemeSwitcher(),
           const SizedBox(height: 16),
@@ -221,10 +222,10 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Tentang Aplikasi', style: AppTypography.h3.copyWith(color: textColor)),
+                Text(tr('Tentang Aplikasi'), style: AppTypography.h3.copyWith(color: textColor)),
                 const SizedBox(height: 16),
-                AppWidgets.infoRow('Aplikasi', 'TinyCare'),
-                AppWidgets.infoRow('Versi', '1.0.0'),
+                AppWidgets.infoRow(tr('Aplikasi'), tr('TinyCare')),
+                AppWidgets.infoRow(tr('Versi'), '1.0.0'),
               ],
             ),
           ),

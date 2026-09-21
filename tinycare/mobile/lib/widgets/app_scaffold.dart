@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 /// Bottom navigation shell for the app.
 ///
@@ -85,63 +86,63 @@ class _AppScaffoldState extends State<AppScaffold> {
     );
   }
 
-  List<Widget> get _parentPages => const [
-    _NavigatePage(route: '/dashboard', label: 'Beranda'),
-    _NavigatePage(route: '/children', label: 'Anak'),
-    _NavigatePage(route: '/invoices', label: 'Tagihan'),
-    _NavigatePage(route: '/profile', label: 'Profil'),
+  List<Widget> get _parentPages => [
+    _NavigatePage(route: '/dashboard', label: tr('Beranda')),
+    _NavigatePage(route: '/children', label: tr('Anak')),
+    _NavigatePage(route: '/invoices', label: tr('Tagihan')),
+    _NavigatePage(route: '/profile', label: tr('Profil')),
   ];
 
-  List<Widget> get _adminPages => const [
-    _NavigatePage(route: '/admin-dashboard', label: 'Dashboard'),
-    _NavigatePage(route: '/children', label: 'Anak'),
-    _NavigatePage(route: '/invoices', label: 'Invoice'),
-    _NavigatePage(route: '/profile', label: 'Profil'),
+  List<Widget> get _adminPages => [
+    _NavigatePage(route: '/admin-dashboard', label: tr('Dashboard')),
+    _NavigatePage(route: '/children', label: tr('Anak')),
+    _NavigatePage(route: '/invoices', label: tr('Invoice')),
+    _NavigatePage(route: '/profile', label: tr('Profil')),
   ];
 
-  List<BottomNavigationBarItem> get _parentNavItems => const [
+  List<BottomNavigationBarItem> get _parentNavItems => [
     BottomNavigationBarItem(
       icon: Icon(Icons.home_outlined),
       activeIcon: Icon(Icons.home),
-      label: 'Beranda',
+      label: tr('Beranda'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.child_care_outlined),
       activeIcon: Icon(Icons.child_care),
-      label: 'Anak',
+      label: tr('Anak'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.receipt_long_outlined),
       activeIcon: Icon(Icons.receipt_long),
-      label: 'Tagihan',
+      label: tr('Tagihan'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.person_outline),
       activeIcon: Icon(Icons.person),
-      label: 'Profil',
+      label: tr('Profil'),
     ),
   ];
 
-  List<BottomNavigationBarItem> get _adminNavItems => const [
+  List<BottomNavigationBarItem> get _adminNavItems => [
     BottomNavigationBarItem(
       icon: Icon(Icons.dashboard_outlined),
       activeIcon: Icon(Icons.dashboard),
-      label: 'Dashboard',
+      label: tr('Dashboard'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.child_care_outlined),
       activeIcon: Icon(Icons.child_care),
-      label: 'Anak',
+      label: tr('Anak'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.receipt_long_outlined),
       activeIcon: Icon(Icons.receipt_long),
-      label: 'Invoice',
+      label: tr('Invoice'),
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.person_outline),
       activeIcon: Icon(Icons.person),
-      label: 'Profil',
+      label: tr('Profil'),
     ),
   ];
 }
@@ -168,7 +169,7 @@ class _NavigatePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Buka $label',
+              tr('Buka {{label}}', {'label': label}),
               style: AppTypography.h3.copyWith(color: ThemeHelper.text(context)),
             ),
             const SizedBox(height: 16),
@@ -176,7 +177,7 @@ class _NavigatePage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, route);
               },
-              child: const Text('Buka Halaman'),
+              child: Text(tr('Buka Halaman')),
             ),
           ],
         ),

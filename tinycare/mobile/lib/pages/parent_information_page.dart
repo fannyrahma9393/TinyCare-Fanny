@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../l10n/app_strings.dart';
 
 /// Parent view: child information.
 /// Mirrors web `ParentInformation.jsx`: first pick a child via card, then
@@ -43,7 +44,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Gagal memuat data anak.';
+        _error = tr('Gagal memuat data anak.');
         _isLoading = false;
       });
     }
@@ -64,7 +65,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Gagal memuat informasi.';
+        _error = tr('Gagal memuat informasi.');
         _informations = [];
         _isLoadingInfo = false;
       });
@@ -88,7 +89,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
   String _formatDate(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return '-';
     try {
-      final parts = dateStr.split('T');
+      final parts = dateStr.split(tr('T'));
       final datePart = parts[0];
       final partsDate = datePart.split('-');
       if (partsDate.length == 3) {
@@ -96,8 +97,8 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
         final month = int.tryParse(partsDate[1]) ?? 0;
         final year = int.tryParse(partsDate[0]) ?? 0;
         final months = [
-          'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-          'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+          tr('Januari'), tr('Februari'), tr('Maret'), tr('April'), tr('Mei'), tr('Juni'),
+          tr('Juli'), tr('Agustus'), tr('September'), tr('Oktober'), tr('November'), tr('Desember'),
         ];
         if (month >= 1 && month <= 12) {
           return '$day ${months[month - 1]} $year';
@@ -112,7 +113,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Informasi Anak')),
+      appBar: AppBar(title: Text(tr('Informasi Anak'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -138,8 +139,8 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
       if (_children.isEmpty) {
         return AppWidgets.emptyState(
           icon: Icons.child_care,
-          title: 'Belum ada anak',
-          subtitle: 'Anda belum memiliki data anak yang terdaftar.',
+          title: tr('Belum ada anak'),
+          subtitle: tr('Anda belum memiliki data anak yang terdaftar.'),
         );
       }
 
@@ -193,7 +194,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'}'
+                      '${child['gender'] == 'male' ? tr('Laki-laki') : tr('Perempuan')}'
                       '${_birthLabel(child['birth_date'])}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -207,7 +208,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Lihat Informasi',
+                          tr('Lihat Informasi'),
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -249,7 +250,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
             const Icon(Icons.info_outline, size: 48, color: AppColors.textMuted),
             const SizedBox(height: 12),
             Text(
-              'Belum ada informasi',
+              tr('Belum ada informasi'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -258,7 +259,7 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Belum ada informasi untuk $selectedName.',
+              tr('Belum ada informasi untuk {{selectedName}}.', {'selectedName': selectedName}),
               style: TextStyle(fontSize: 13, color: mutedColor),
             ),
           ],
@@ -276,9 +277,9 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
           final info = _informations[index];
           final priority = info['priority'] ?? 'normal';
           final (label, color, bg) = switch (priority) {
-            'urgent' => ('Mendesak', AppColors.error, ThemeHelper.errorBg(context)),
-            'important' => ('Penting', AppColors.warning, ThemeHelper.warningBg(context)),
-            _ => ('Normal', mutedColor, ThemeHelper.bgAlt(context)),
+            'urgent' => (tr('Mendesak'), AppColors.error, ThemeHelper.errorBg(context)),
+            'important' => (tr('Penting'), AppColors.warning, ThemeHelper.warningBg(context)),
+            _ => (tr('Normal'), mutedColor, ThemeHelper.bgAlt(context)),
           };
 
           return Container(
@@ -386,8 +387,8 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
       final parts = birthDate.toString().split('-');
       if (parts.length == 3) {
         final monthNames = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-          'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+          tr('Jan'), tr('Feb'), tr('Mar'), tr('Apr'), tr('Mei'), tr('Jun'),
+          tr('Jul'), tr('Agu'), tr('Sep'), tr('Okt'), tr('Nov'), tr('Des'),
         ];
         final m = int.tryParse(parts[1]);
         final y = int.tryParse(parts[0]);
@@ -395,6 +396,6 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
         return ' · $label ${y ?? parts[0]}';
       }
     } catch (_) {}
-    return ' · $birthDate';
+    return tr(' · {{birthDate}}', {'birthDate': birthDate});
   }
 }

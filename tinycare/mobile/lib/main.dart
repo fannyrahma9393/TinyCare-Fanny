@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'l10n/register.dart';
 import 'services/api_service.dart';
 import 'services/fcm_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/locale_provider.dart';
 import 'theme/app_theme.dart';
 import 'pages/login_page.dart';
 import 'pages/children_page.dart';
@@ -40,6 +43,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  registerLocalizations();
   ApiService().init();
 
   // Initialize Firebase Messaging (guarded: never crashes if not configured).
@@ -136,16 +140,26 @@ class TinyCareApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()..init()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()..init()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()..init()),
       ],
       child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) => MaterialApp(
-          title: 'TinyCare',
-          navigatorKey: navigatorKey,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.theme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.flutterThemeMode,
-          home: const _InitialRoute(),
+        builder: (context, themeProvider, _) {
+          final localeProvider = context.watch<LocaleProvider>();
+          return MaterialApp(
+            title: 'TinyCare',
+            navigatorKey: navigatorKey,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.theme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.flutterThemeMode,
+            locale: localeProvider.localeValue,
+            supportedLocales: const [Locale('id'), Locale('en')],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: const _InitialRoute(),
           routes: {
             '/login': (context) => const LoginPage(),
             '/register': (context) => const RegisterPage(),
@@ -174,7 +188,8 @@ class TinyCareApp extends StatelessWidget {
             '/reports': (context) => const _AuthGuard(child: ReportsPage()),
 
           },
-        ),
+        );
+        },
       ),
     );
   }

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const PLACEHOLDER = '/placeholder-avatar.svg';
 
@@ -12,6 +13,7 @@ export default function ChildPhoto({
   imgStyle,
   ...rest
 }) {
+  const { t } = useTranslation();
   const src = useMemo(
     () => (child?.photo_url || child?.photo || child?.image_url) || PLACEHOLDER,
     [child]
@@ -38,7 +40,7 @@ export default function ChildPhoto({
     >
       <img
         src={src}
-        alt={alt || child?.name || 'Foto anak'}
+        alt={alt || child?.name || t('Foto anak')}
         style={{
           width: '100%',
           height: '100%',

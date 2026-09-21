@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const [profile, setProfile] = useState(user);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [formData, setFormData] = useState({ current_password: '', password: '', password_confirmation: '' });
@@ -28,13 +30,13 @@ export default function Profile() {
         password: formData.password,
         password_confirmation: formData.password_confirmation,
       });
-      setToast({ type: 'success', message: res.data.message || 'Password berhasil diubah.' });
+      setToast({ type: 'success', message: res.data.message || t('Password berhasil diubah.') });
       setFormData({ current_password: '', password: '', password_confirmation: '' });
     } catch (err) {
       const msg = err.response?.data?.message;
       const errors = err.response?.data?.errors;
       const detail = errors ? Object.values(errors).flat().join(', ') : null;
-      setToast({ type: 'error', message: detail || msg || 'Gagal mengubah password.' });
+      setToast({ type: 'error', message: detail || msg || t('Gagal mengubah password.') });
     } finally {
       setSubmitting(false);
     }
@@ -49,8 +51,8 @@ export default function Profile() {
   return (
     <div>
       <div className="tc-page-header">
-        <h1>Profil</h1>
-        <p>Informasi akun dan keamanan Anda</p>
+        <h1>{t('Profil')}</h1>
+        <p>{t('Informasi akun dan keamanan Anda')}</p>
       </div>
 
       {toast && (
@@ -73,20 +75,20 @@ export default function Profile() {
         <h2 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '4px' }}>{p?.name || '-'}</h2>
         <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '12px' }}>{p?.email || '-'}</p>
         <span className={p?.role === 'admin_master' ? 'tc-badge tc-badge-primary' : 'tc-badge tc-badge-info'}>
-          {p?.role === 'admin_master' ? 'Admin Master' : 'Admin'}
+          {p?.role === 'admin_master' ? t('Admin Master') : t('Admin')}
         </span>
       </div>
 
       {/* Account Info */}
       <div className="tc-card" style={{ padding: '24px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '16px' }}>Informasi Akun</h3>
+        <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '16px' }}>{t('Informasi Akun')}</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
-            { label: 'Nama', value: p?.name || '-' },
-            { label: 'Email', value: p?.email || '-' },
-            { label: 'Nomor HP', value: p?.phone || '-' },
-            { label: 'Role', value: p?.role === 'admin_master' ? 'Admin Master' : 'Admin' },
-            { label: 'Status', value: p?.status === 'active' ? 'Aktif' : (p?.status || '-') },
+            { label: t('Nama'), value: p?.name || '-' },
+            { label: t('Email'), value: p?.email || '-' },
+            { label: t('Nomor HP'), value: p?.phone || '-' },
+            { label: 'Role', value: p?.role === 'admin_master' ? t('Admin Master') : t('Admin') },
+            { label: t('Status'), value: p?.status === 'active' ? t('Aktif') : (p?.status || '-') },
           ].map((item) => (
             <div key={item.label} style={{
               display: 'flex', justifyContent: 'space-between', padding: '10px 0',
@@ -101,44 +103,44 @@ export default function Profile() {
 
       {/* Change Password */}
       <div className="tc-card" style={{ padding: '24px', marginTop: '16px' }}>
-        <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '4px' }}>Ubah Password</h3>
+        <h3 style={{ fontSize: '15px', fontWeight: '700', marginBottom: '4px' }}>{t('Ubah Password')}</h3>
         <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '16px' }}>
-          Gunakan minimal 8 karakter untuk password baru.
+          {t('Gunakan minimal 8 karakter untuk password baru.')}
         </p>
         <form onSubmit={handleChangePassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '440px' }}>
           <div>
-            <label className="tc-label">Password Lama *</label>
+            <label className="tc-label">{t('Password Lama *')}</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={formData.current_password}
               onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
               className="tc-input"
-              placeholder="Masukkan password lama"
+              placeholder={t('Masukkan password lama')}
               required
               autoComplete="current-password"
             />
           </div>
           <div>
-            <label className="tc-label">Password Baru *</label>
+            <label className="tc-label">{t('Password Baru *')}</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               className="tc-input"
-              placeholder="Minimal 8 karakter"
+              placeholder={t('Minimal 8 karakter')}
               required
               minLength={8}
               autoComplete="new-password"
             />
           </div>
           <div>
-            <label className="tc-label">Konfirmasi Password Baru *</label>
+            <label className="tc-label">{t('Konfirmasi Password Baru *')}</label>
             <input
               type={showPassword ? 'text' : 'password'}
               value={formData.password_confirmation}
               onChange={(e) => setFormData({ ...formData, password_confirmation: e.target.value })}
               className="tc-input"
-              placeholder="Ulangi password baru"
+              placeholder={t('Ulangi password baru')}
               required
               minLength={8}
               autoComplete="new-password"
@@ -152,11 +154,11 @@ export default function Profile() {
               onChange={(e) => setShowPassword(e.target.checked)}
               style={{ accentColor: 'var(--color-primary)' }}
             />
-            <label htmlFor="show-pass" style={{ cursor: 'pointer' }}>Tampilkan password</label>
+            <label htmlFor="show-pass" style={{ cursor: 'pointer' }}>{t('Tampilkan password')}</label>
           </div>
           <div style={{ marginTop: '4px' }}>
             <button type="submit" disabled={submitting} className="tc-btn tc-btn-primary" style={{ width: '100%' }}>
-              {submitting ? 'Menyimpan...' : 'Ubah Password'}
+              {submitting ? t('Menyimpan...') : t('Ubah Password')}
             </button>
           </div>
           {toast && (
@@ -170,7 +172,7 @@ export default function Profile() {
       {/* Logout Button */}
       <div style={{ marginTop: '24px' }}>
         <button onClick={logout} className="tc-btn tc-btn-secondary" style={{ width: '100%', color: 'var(--color-error)' }}>
-          Keluar
+          {t('Keluar')}
         </button>
       </div>
     </div>

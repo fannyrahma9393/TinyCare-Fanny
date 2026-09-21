@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});
@@ -37,7 +38,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data pengguna. Silakan coba lagi.';
+        _error = tr('Gagal memuat data pengguna. Silakan coba lagi.');
         _isLoading = false;
       });
     }
@@ -47,13 +48,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
     try {
       final response = await _api.approveUser(userId);
       if (response['success'] == true) {
-        _showToast('Akun berhasil disetujui.');
+        _showToast(tr('Akun berhasil disetujui.'));
         _loadUsers();
       } else {
-        _showToast(response['message'] ?? 'Gagal menyetujui akun.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menyetujui akun.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menyetujui akun. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal menyetujui akun. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -64,13 +65,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
     try {
       final response = await _api.rejectUser(userId, reason: reason);
       if (response['success'] == true) {
-        _showToast('Akun berhasil ditolak.');
+        _showToast(tr('Akun berhasil ditolak.'));
         _loadUsers();
       } else {
-        _showToast(response['message'] ?? 'Gagal menolak akun.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal menolak akun.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menolak akun. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal menolak akun. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -78,16 +79,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(targetStatus == 'inactive' ? 'Nonaktifkan Akun' : 'Aktifkan Akun'),
+        title: Text(targetStatus == 'inactive' ? tr('Nonaktifkan Akun') : tr('Aktifkan Akun')),
         content: Text(targetStatus == 'inactive'
-            ? 'Nonaktifkan akun ini? Pengguna tidak dapat login selama nonaktif.'
-            : 'Aktifkan kembali akun ini?'),
+            ? tr('Nonaktifkan akun ini? Pengguna tidak dapat login selama nonaktif.')
+            : tr('Aktifkan kembali akun ini?')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: targetStatus == 'inactive' ? AppColors.warning : AppColors.success),
-            child: Text(targetStatus == 'inactive' ? 'Nonaktifkan' : 'Aktifkan'),
+            child: Text(targetStatus == 'inactive' ? tr('Nonaktifkan') : tr('Aktifkan')),
           ),
         ],
       ),
@@ -99,13 +100,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ? await _api.activateUser(userId)
           : await _api.deactivateUser(userId);
       if (response['success'] == true) {
-        _showToast(targetStatus == 'active' ? 'Akun berhasil diaktifkan.' : 'Akun berhasil dinonaktifkan.');
+        _showToast(targetStatus == 'active' ? tr('Akun berhasil diaktifkan.') : tr('Akun berhasil dinonaktifkan.'));
         _loadUsers();
       } else {
-        _showToast(response['message'] ?? 'Gagal mengubah status.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal mengubah status.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal mengubah status. Silakan coba lagi.', isError: true);
+      _showToast(tr('Gagal mengubah status. Silakan coba lagi.'), isError: true);
     }
   }
 
@@ -126,28 +127,28 @@ class _UserManagementPageState extends State<UserManagementPage> {
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tolak Akun'),
+        title: Text(tr('Tolak Akun')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Apakah Anda yakin ingin menolak akun ini?'),
+            Text(tr('Apakah Anda yakin ingin menolak akun ini?')),
             const SizedBox(height: 12),
             TextField(
               controller: controller,
               maxLines: 3,
-              decoration: const InputDecoration(
-                hintText: 'Alasan penolakan (opsional)',
+              decoration: InputDecoration(
+                hintText: tr('Alasan penolakan (opsional)'),
                 border: OutlineInputBorder(),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Tolak'),
+            child: Text(tr('Tolak')),
           ),
         ],
       ),
@@ -165,10 +166,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   String _statusLabel(String status) {
     switch (status) {
-      case 'active': return 'Aktif';
-      case 'pending': return 'Menunggu';
-      case 'rejected': return 'Ditolak';
-      case 'inactive': return 'Nonaktif';
+      case 'active': return tr('Aktif');
+      case 'pending': return tr('Menunggu');
+      case 'rejected': return tr('Ditolak');
+      case 'inactive': return tr('Nonaktif');
       default: return status;
     }
   }
@@ -176,7 +177,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pengguna')),
+      appBar: AppBar(title: Text(tr('Pengguna'))),
       body: Column(
         children: [
           // Summary Cards
@@ -185,13 +186,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  _buildSummaryChip('Total', '${_summary!['total'] ?? '-'}', AppColors.primary),
+                  _buildSummaryChip(tr('Total'), '${_summary!['total'] ?? '-'}', AppColors.primary),
                   const SizedBox(width: 8),
-                  _buildSummaryChip('Aktif', '${_summary!['active_parents'] ?? '-'}', AppColors.success),
+                  _buildSummaryChip(tr('Aktif'), '${_summary!['active_parents'] ?? '-'}', AppColors.success),
                   const SizedBox(width: 8),
-                  _buildSummaryChip('Pending', '${_summary!['pending_parents'] ?? '-'}', AppColors.warning),
+                  _buildSummaryChip(tr('Pending'), '${_summary!['pending_parents'] ?? '-'}', AppColors.warning),
                   const SizedBox(width: 8),
-                  _buildSummaryChip('Admin', '${_summary!['admins'] ?? '-'}', AppColors.info),
+                  _buildSummaryChip(tr('Admin'), '${_summary!['admins'] ?? '-'}', AppColors.info),
                 ],
               ),
             ),
@@ -203,12 +204,12 @@ class _UserManagementPageState extends State<UserManagementPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip('Semua', 'all'),
-                  _buildFilterChip('Orang Tua', 'parent'),
-                  _buildFilterChip('Menunggu', 'pending'),
-                  _buildFilterChip('Aktif', 'active'),
-                  _buildFilterChip('Nonaktif', 'inactive'),
-                  _buildFilterChip('Admin', 'admin'),
+                  _buildFilterChip(tr('Semua'), 'all'),
+                  _buildFilterChip(tr('Orang Tua'), 'parent'),
+                  _buildFilterChip(tr('Menunggu'), 'pending'),
+                  _buildFilterChip(tr('Aktif'), 'active'),
+                  _buildFilterChip(tr('Nonaktif'), 'inactive'),
+                  _buildFilterChip(tr('Admin'), 'admin'),
                 ],
               ),
             ),
@@ -224,7 +225,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     : _users.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.people_outline,
-                            title: 'Tidak ada pengguna ditemukan',
+                            title: tr('Tidak ada pengguna ditemukan'),
                           )
                         : RefreshIndicator(
                             onRefresh: _loadUsers,
@@ -318,7 +319,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           Row(
             children: [
               AppWidgets.statusBadge(
-                role == 'admin_master' ? 'Admin Master' : role == 'admin' ? 'Admin' : 'Orang Tua',
+                role == 'admin_master' ? tr('Admin Master') : role == 'admin' ? tr('Admin') : tr('Orang Tua'),
                 role == 'admin_master' ? AppColors.primary : role == 'admin' ? AppColors.info : ThemeHelper.textMuted(context),
               ),
               const Spacer(),
@@ -329,7 +330,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     minimumSize: Size.zero,
                   ),
-                  child: const Text('Setujui', style: TextStyle(fontSize: 12)),
+                  child: Text(tr('Setujui'), style: TextStyle(fontSize: 12)),
                 ),
                 const SizedBox(width: 6),
                 OutlinedButton(
@@ -340,7 +341,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     minimumSize: Size.zero,
                     side: const BorderSide(color: AppColors.error),
                   ),
-                  child: const Text('Tolak', style: TextStyle(fontSize: 12)),
+                  child: Text(tr('Tolak'), style: TextStyle(fontSize: 12)),
                 ),
               ] else if (status == 'active') ...[
                 OutlinedButton(
@@ -351,7 +352,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     minimumSize: Size.zero,
                     side: const BorderSide(color: AppColors.warning),
                   ),
-                  child: const Text('Nonaktifkan', style: TextStyle(fontSize: 12)),
+                  child: Text(tr('Nonaktifkan'), style: TextStyle(fontSize: 12)),
                 ),
               ] else if (status == 'inactive') ...[
                 ElevatedButton(
@@ -362,7 +363,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     minimumSize: Size.zero,
                   ),
-                  child: const Text('Aktifkan', style: TextStyle(fontSize: 12)),
+                  child: Text(tr('Aktifkan'), style: TextStyle(fontSize: 12)),
                 ),
               ],
             ],

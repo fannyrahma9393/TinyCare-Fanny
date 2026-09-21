@@ -7,6 +7,7 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/media_compressor.dart';
+import '../l10n/app_strings.dart';
 
 /// Parent: register their own child. Mirrors the web parent "Tambah Anak"
 /// form. Photo is compressed before upload.
@@ -102,7 +103,7 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Anak berhasil ditambahkan.'),
+            content: Text(tr('Anak berhasil ditambahkan.')),
             backgroundColor: AppColors.success,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
@@ -111,7 +112,7 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
         Navigator.pop(context, true);
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan data anak.';
+          _error = response['message'] ?? tr('Gagal menyimpan data anak.');
           _isSubmitting = false;
         });
       }
@@ -126,7 +127,7 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Anak')),
+      appBar: AppBar(title: Text(tr('Tambah Anak'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -168,7 +169,7 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
                               const Icon(Icons.add_a_photo, color: AppColors.primary, size: 28),
                               const SizedBox(height: 6),
                               Text(
-                                'Unggah Foto',
+                                tr('Unggah Foto'),
                                 style: TextStyle(fontSize: 12, color: ThemeHelper.textSecondary(context)),
                               ),
                             ],
@@ -181,26 +182,26 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama Anak *'),
-                validator: (v) => v == null || v.isEmpty ? 'Nama tidak boleh kosong' : null,
+                decoration: InputDecoration(labelText: tr('Nama Anak *')),
+                validator: (v) => v == null || v.isEmpty ? tr('Nama tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
-              Text('Jenis Kelamin', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
+              Text(tr('Jenis Kelamin'), style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
               const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: GestureDetector(
                       onTap: () => setState(() => _gender = 'male'),
-                      child: _genderBox(Icons.boy, 'Laki-laki', _gender == 'male'),
+                      child: _genderBox(Icons.boy, tr('Laki-laki'), _gender == 'male'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: GestureDetector(
                       onTap: () => setState(() => _gender = 'female'),
-                      child: _genderBox(Icons.girl, 'Perempuan', _gender == 'female'),
+                      child: _genderBox(Icons.girl, tr('Perempuan'), _gender == 'female'),
                     ),
                   ),
                 ],
@@ -210,18 +211,18 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
               TextFormField(
                 controller: _birthDateController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(
-                  labelText: 'Tanggal Lahir *',
-                  hintText: 'YYYY-MM-DD',
+                decoration: InputDecoration(
+                  labelText: tr('Tanggal Lahir *'),
+                  hintText: tr('YYYY-MM-DD'),
                 ),
                 keyboardType: TextInputType.datetime,
-                validator: (v) => v == null || v.trim().isEmpty ? 'Tanggal lahir tidak boleh kosong' : null,
+                validator: (v) => v == null || v.trim().isEmpty ? tr('Tanggal lahir tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _addressController,
-                decoration: const InputDecoration(labelText: 'Alamat'),
+                decoration: InputDecoration(labelText: tr('Alamat')),
               ),
               const SizedBox(height: 16),
 
@@ -234,13 +235,13 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
               TextFormField(
                 controller: _emNameController,
                 textInputAction: TextInputAction.next,
-                decoration: const InputDecoration(labelText: 'Nama Kontak Darurat'),
+                decoration: InputDecoration(labelText: tr('Nama Kontak Darurat')),
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _emPhoneController,
-                decoration: const InputDecoration(labelText: 'Telepon Kontak Darurat'),
+                decoration: InputDecoration(labelText: tr('Telepon Kontak Darurat')),
               ),
               const SizedBox(height: 28),
 
@@ -257,7 +258,7 @@ class _ParentChildFormPageState extends State<ParentChildFormPage> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('Simpan Anak'),
+                    : Text(tr('Simpan Anak')),
               ),
             ],
           ),

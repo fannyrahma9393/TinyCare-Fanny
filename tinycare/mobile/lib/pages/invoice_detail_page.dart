@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../l10n/app_strings.dart';
 
 /// Parent invoice detail with payment flow (VA instructions, copy amount,
 /// upload payment proof) — mirrors web ParentInvoiceDetail.
@@ -59,7 +60,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _error = 'Gagal memuat detail invoice.'; _isLoading = false; });
+      setState(() { _error = tr('Gagal memuat detail invoice.'); _isLoading = false; });
     }
   }
 
@@ -69,7 +70,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
       final data = await _api.initiatePayment('${widget.invoiceId}');
       setState(() => _paymentInfo = data);
     } catch (e) {
-      _showToast('Gagal memulai pembayaran.', isError: true);
+      _showToast(tr('Gagal memulai pembayaran.'), isError: true);
     } finally {
       setState(() => _paying = false);
     }
@@ -82,7 +83,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
 
   Future<void> _handleSubmitProof() async {
     if (_proofFile == null) {
-      _showToast('Pilih bukti pembayaran terlebih dahulu.', isError: true);
+      _showToast(tr('Pilih bukti pembayaran terlebih dahulu.'), isError: true);
       return;
     }
     setState(() => _submittingProof = true);
@@ -94,16 +95,16 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         paymentMethod: _proofMethod,
       );
       if (response['success'] == true) {
-        _showToast('Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.');
+        _showToast(tr('Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.'));
         setState(() => _showProofForm = false);
         _proofFile = null;
         _proofNotesController.clear();
         await _loadData();
       } else {
-        _showToast(response['message'] ?? 'Gagal mengirim bukti pembayaran.', isError: true);
+        _showToast(response['message'] ?? tr('Gagal mengirim bukti pembayaran.'), isError: true);
       }
     } catch (e) {
-      _showToast('Gagal mengirim bukti pembayaran.', isError: true);
+      _showToast(tr('Gagal mengirim bukti pembayaran.'), isError: true);
     } finally {
       setState(() => _submittingProof = false);
     }
@@ -132,7 +133,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Tagihan')),
+      appBar: AppBar(title: Text(tr('Detail Tagihan'))),
       body: _isLoading
           ? AppWidgets.loadingIndicator()
           : _error != null
@@ -141,7 +142,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                   _loadData();
                 })
               : _invoice == null
-                  ? AppWidgets.emptyState(icon: Icons.receipt_long, title: 'Invoice tidak ditemukan.')
+                  ? AppWidgets.emptyState(icon: Icons.receipt_long, title: tr('Invoice tidak ditemukan.'))
                   : RefreshIndicator(
                       onRefresh: _loadData,
                       color: AppColors.primary,
@@ -163,13 +164,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
     );
 
     final statusLabel = status == 'paid'
-        ? 'Lunas'
+        ? tr('Lunas')
         : status == 'pending'
-            ? 'Menunggu Pembayaran'
+            ? tr('Menunggu Pembayaran')
             : status == 'failed'
-                ? 'Gagal'
+                ? tr('Gagal')
                 : status == 'expired'
-                    ? 'Kedaluwarsa'
+                    ? tr('Kedaluwarsa')
                     : status.toUpperCase();
     final statusColor = isPaid
         ? AppColors.success
@@ -209,15 +210,15 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         ),
         child: Column(
           children: [
-            AppWidgets.infoRow('Anak', invoice['child']?['name'] ?? '-'),
-            AppWidgets.infoRow('Paket', invoice['package']?['name'] ?? '-'),
-            AppWidgets.infoRow('Subtotal', CurrencyHelper.formatRupiah(invoice['subtotal'])),
+            AppWidgets.infoRow(tr('Anak'), invoice['child']?['name'] ?? '-'),
+            AppWidgets.infoRow(tr('Paket'), invoice['package']?['name'] ?? '-'),
+            AppWidgets.infoRow(tr('Subtotal'), CurrencyHelper.formatRupiah(invoice['subtotal'])),
             if (CurrencyHelper.parseToDouble(invoice['discount']) > 0)
-              AppWidgets.infoRow('Diskon', '- ${CurrencyHelper.formatRupiah(invoice['discount'])}'),
-            AppWidgets.infoRow('Total', CurrencyHelper.formatRupiah(invoice['total']), isTotal: true),
+              AppWidgets.infoRow(tr('Diskon'), '- ${CurrencyHelper.formatRupiah(invoice['discount'])}'),
+            AppWidgets.infoRow(tr('Total'), CurrencyHelper.formatRupiah(invoice['total']), isTotal: true),
             Divider(height: 24, color: ThemeHelper.border(context)),
-            AppWidgets.infoRow('Jatuh Tempo', invoice['due_date'] ?? '-'),
-            if (invoice['notes'] != null) AppWidgets.infoRow('Catatan', invoice['notes']),
+            AppWidgets.infoRow(tr('Jatuh Tempo'), invoice['due_date'] ?? '-'),
+            if (invoice['notes'] != null) AppWidgets.infoRow(tr('Catatan'), invoice['notes']),
           ],
         ),
       ),
@@ -235,7 +236,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pembayaran',
+            Text(tr('Pembayaran'),
                 style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
             const SizedBox(height: 14),
             if (isPaid)
@@ -265,7 +266,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Riwayat Pembayaran & Bukti',
+              Text(tr('Riwayat Pembayaran & Bukti'),
                   style: AppTypography.h3.copyWith(color: ThemeHelper.text(context))),
               const SizedBox(height: 12),
               ..._payments.map<Widget>((p) => _buildPaymentHistoryTile(p)),
@@ -291,10 +292,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             children: [
               const Icon(Icons.check_circle_outline, color: AppColors.success, size: 32),
               const SizedBox(height: 8),
-              Text('Pembayaran Berhasil',
+              Text(tr('Pembayaran Berhasil'),
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.success)),
               const SizedBox(height: 4),
-              Text('Invoice ini sudah lunas.',
+              Text(tr('Invoice ini sudah lunas.'),
                   style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
             ],
           ),
@@ -312,10 +313,12 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Dibayar pada: $paidAt',
+                Text(tr('Dibayar pada: {{paidAt}}', {'paidAt': paidAt}),
                     style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                 const SizedBox(height: 2),
-                Text('Metode: ${p['payment_method'] ?? 'Bank Transfer'}',
+                Text(tr('Metode: {{method}}', {
+                  'method': p['payment_method'] ?? tr('Bank Transfer'),
+                }),
                     style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
               ],
             ),
@@ -343,7 +346,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           ),
           child: Column(
             children: [
-              Text('Virtual Account',
+              Text(tr('Virtual Account'),
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.info)),
               const SizedBox(height: 6),
               Text('${info['va_number'] ?? '-'}',
@@ -355,7 +358,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           ),
         ),
         const SizedBox(height: 14),
-        Text('Transfer sebesar:',
+        Text(tr('Transfer sebesar:'),
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
         const SizedBox(height: 6),
         Row(
@@ -372,16 +375,19 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                 minimumSize: Size.zero,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: Text(_copied ? '✓' : 'Salin', style: const TextStyle(fontSize: 11)),
+              child: Text(_copied ? '✓' : tr('Salin'), style: const TextStyle(fontSize: 11)),
             ),
           ],
         ),
         if ((totalWithCode - baseAmount) > 0)
-          Text('Termasuk digit unik: +${(totalWithCode - baseAmount).toStringAsFixed(0)}',
+          Text(
+              tr('Termasuk digit unik: +{{code}}', {
+                'code': (totalWithCode - baseAmount).toStringAsFixed(0),
+              }),
               style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
         const SizedBox(height: 14),
         if (instructions is Map && instructions.isNotEmpty) ...[
-          Text('Cara Pembayaran:',
+          Text(tr('Cara Pembayaran:'),
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
           const SizedBox(height: 8),
           ...instructions.entries.map<Widget>((e) => Container(
@@ -409,7 +415,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           height: 44,
           child: ElevatedButton(
             onPressed: () => setState(() => _showProofForm = !_showProofForm),
-            child: Text(_showProofForm ? 'Tutup' : 'Kirim Bukti Pembayaran',
+            child: Text(_showProofForm ? tr('Tutup') : tr('Kirim Bukti Pembayaran'),
                 style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           ),
         ),
@@ -423,10 +429,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
       children: [
         Text(
           pendingNoProof
-              ? 'Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.'
+              ? tr('Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.')
               : hasPendingPayment
-                  ? 'Pembayaran sedang menunggu verifikasi admin.'
-                  : 'Klik tombol di bawah untuk memulai pembayaran.',
+                  ? tr('Pembayaran sedang menunggu verifikasi admin.')
+                  : tr('Klik tombol di bawah untuk memulai pembayaran.'),
           style: TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context)),
           textAlign: TextAlign.center,
         ),
@@ -437,7 +443,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
             height: 48,
             child: ElevatedButton(
               onPressed: () => setState(() => _showProofForm = !_showProofForm),
-              child: Text(_showProofForm ? 'Tutup' : 'Kirim Bukti Pembayaran',
+              child: Text(_showProofForm ? tr('Tutup') : tr('Kirim Bukti Pembayaran'),
                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
@@ -450,7 +456,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
               onPressed: _paying ? null : _handleInitiatePayment,
               child: _paying
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Bayar Sekarang', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  : Text(tr('Bayar Sekarang'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -469,10 +475,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Upload Bukti Pembayaran',
+          Text(tr('Upload Bukti Pembayaran'),
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: ThemeHelper.text(context))),
           const SizedBox(height: 12),
-          Text('Metode Pembayaran',
+          Text(tr('Metode Pembayaran'),
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: ThemeHelper.textSecondary(context))),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
@@ -483,15 +489,15 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
               fillColor: ThemeHelper.surface(context),
               border: OutlineInputBorder(borderRadius: AppRadius.mdAll, borderSide: BorderSide(color: ThemeHelper.border(context))),
             ),
-            items: const [
-              DropdownMenuItem(value: 'bank_transfer', child: Text('Bank Transfer')),
-              DropdownMenuItem(value: 'ewallet', child: Text('E-Wallet')),
-              DropdownMenuItem(value: 'cash', child: Text('Tunai')),
+            items: [
+              DropdownMenuItem(value: 'bank_transfer', child: Text(tr('Bank Transfer'))),
+              DropdownMenuItem(value: 'ewallet', child: Text(tr('E-Wallet'))),
+              DropdownMenuItem(value: 'cash', child: Text(tr('Tunai'))),
             ],
             onChanged: (v) => setState(() => _proofMethod = v ?? 'bank_transfer'),
           ),
           const SizedBox(height: 12),
-          Text('Bukti Pembayaran *',
+          Text(tr('Bukti Pembayaran *'),
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: ThemeHelper.textSecondary(context))),
           const SizedBox(height: 6),
           InkWell(
@@ -511,7 +517,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      _proofFile?.name ?? 'Pilih gambar bukti transfer',
+                      _proofFile?.name ?? tr('Pilih gambar bukti transfer'),
                       style: TextStyle(fontSize: 13, color: _proofFile != null ? ThemeHelper.text(context) : ThemeHelper.textMuted(context)),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -523,9 +529,9 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           const SizedBox(height: 12),
           TextField(
             controller: _proofNotesController,
-            decoration: const InputDecoration(
-              labelText: 'Catatan (opsional)',
-              hintText: 'Contoh: Transfer via BCA mobile',
+            decoration: InputDecoration(
+              labelText: tr('Catatan (opsional)'),
+              hintText: tr('Contoh: Transfer via BCA mobile'),
             ),
           ),
           const SizedBox(height: 14),
@@ -536,7 +542,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
               onPressed: _submittingProof ? null : _handleSubmitProof,
               child: _submittingProof
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Kirim Bukti', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  : Text(tr('Kirim Bukti'), style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
             ),
           ),
         ],
@@ -547,10 +553,10 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   Widget _buildPaymentHistoryTile(dynamic p) {
     final pStatus = p['status'] ?? '';
     final statusLabel = pStatus == 'verified'
-        ? 'Lunas'
+        ? tr('Lunas')
         : pStatus == 'pending'
-            ? 'Menunggu Verifikasi'
-            : 'Ditolak';
+            ? tr('Menunggu Verifikasi')
+            : tr('Ditolak');
     final statusColor = pStatus == 'verified'
         ? AppColors.success
         : pStatus == 'pending'
@@ -581,11 +587,12 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                     Text(CurrencyHelper.formatRupiah(p['amount']),
                         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: ThemeHelper.text(context))),
                     const SizedBox(height: 2),
-                    Text('${p['payment_method'] ?? 'Bank Transfer'} · ${_shortDate(createdAt)}',
+                    Text(
+                        '${p['payment_method'] != null ? tr(p['payment_method'].toString()) : tr('Bank Transfer')} · ${_shortDate(createdAt)}',
                         style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                     if (notes != null) ...[
                       const SizedBox(height: 2),
-                      Text('Catatan: $notes',
+                      Text(tr('Catatan: {{notes}}', {'notes': notes}),
                           style: TextStyle(fontSize: 12, color: ThemeHelper.textMuted(context))),
                     ],
                   ],
@@ -596,7 +603,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
           ),
           if (hasProof) ...[
             const SizedBox(height: 10),
-            Text('BUKTI PEMBAYARAN',
+            Text(tr('BUKTI PEMBAYARAN'),
                 style: AppTypography.label.copyWith(color: ThemeHelper.textMuted(context))),
             const SizedBox(height: 6),
             if (_isImageFile(proofFile))
@@ -614,7 +621,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                       height: 96,
                       color: ThemeHelper.surface(context),
                       alignment: Alignment.center,
-                      child: Text('Gagal dimuat',
+                      child: Text(tr('Gagal dimuat'),
                           style: TextStyle(fontSize: 11, color: ThemeHelper.textMuted(context))),
                     ),
                   ),
@@ -629,7 +636,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 ),
                 icon: const Icon(Icons.picture_as_pdf, size: 16),
-                label: Text('Lihat Bukti (PDF)', style: const TextStyle(fontSize: 12)),
+                label: Text(tr('Lihat Bukti (PDF)'), style: const TextStyle(fontSize: 12)),
               ),
           ],
         ],
@@ -644,7 +651,7 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   Future<void> _openUrl(String url) async {
     final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      _showToast('Tidak dapat membuka dokumen.', isError: true);
+      _showToast(tr('Tidak dapat membuka dokumen.'), isError: true);
     }
   }
 

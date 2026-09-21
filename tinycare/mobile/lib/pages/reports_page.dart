@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
+import '../l10n/app_strings.dart';
 
 class ReportsPage extends StatefulWidget {
   const ReportsPage({super.key});
@@ -90,7 +91,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
   Future<void> _generateReport() async {
     if (_selectedChildId == null) {
-      _showToast('Pilih anak terlebih dahulu.', isError: true);
+      _showToast(tr('Pilih anak terlebih dahulu.'), isError: true);
       return;
     }
 
@@ -103,7 +104,7 @@ class _ReportsPageState extends State<ReportsPage> {
             '${monday.year}-${monday.month.toString().padLeft(2, '0')}-${monday.day.toString().padLeft(2, '0')}';
         final res = await _api.generateWeeklyReport(_selectedChildId!, weekStart: weekStart);
         if (res['success'] == false) {
-          _showToast(res['message'] ?? 'Gagal membuat laporan.', isError: true);
+          _showToast(res['message'] ?? tr('Gagal membuat laporan.'), isError: true);
           if (mounted) setState(() => _generating = false);
           return;
         }
@@ -111,12 +112,12 @@ class _ReportsPageState extends State<ReportsPage> {
         final now = DateTime.now();
         final res = await _api.generateMonthlyReport(_selectedChildId!, month: now.month, year: now.year);
         if (res['success'] == false) {
-          _showToast(res['message'] ?? 'Gagal membuat laporan.', isError: true);
+          _showToast(res['message'] ?? tr('Gagal membuat laporan.'), isError: true);
           if (mounted) setState(() => _generating = false);
           return;
         }
       }
-      _showToast('Laporan berhasil dibuat!');
+      _showToast(tr('Laporan berhasil dibuat!'));
       await _loadData();
     } catch (e) {
       _showToast(ApiErrorHandler.getMessage(e), isError: true);
@@ -144,7 +145,7 @@ class _ReportsPageState extends State<ReportsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Laporan'),
+        title: Text(tr('Laporan')),
         actions: [
           // Child selector
           if (_children.isNotEmpty)
@@ -153,7 +154,7 @@ class _ReportsPageState extends State<ReportsPage> {
               child: DropdownButton<int>(
                 value: _selectedChildId,
                 underline: const SizedBox(),
-                hint: const Text('Pilih Anak', style: TextStyle(fontSize: 13)),
+                hint: Text(tr('Pilih Anak'), style: TextStyle(fontSize: 13)),
                 items: _children.map<DropdownMenuItem<int>>((child) {
                   return DropdownMenuItem(
                     value: child['id'],
@@ -203,7 +204,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                             : ThemeHelper.border(context)),
                                   ),
                                   child: Center(
-                                    child: Text('Mingguan',
+                                    child: Text(tr('Mingguan'),
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
@@ -234,7 +235,7 @@ class _ReportsPageState extends State<ReportsPage> {
                                             : ThemeHelper.border(context)),
                                   ),
                                   child: Center(
-                                    child: Text('Bulanan',
+                                    child: Text(tr('Bulanan'),
                                         style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
@@ -253,13 +254,13 @@ class _ReportsPageState extends State<ReportsPage> {
                         // Report content
                         if (_activeTab == 'weekly') ...[
                           if (_weeklyReports.isEmpty)
-                            _buildEmptyOrGenerate('Mingguan', isAdmin)
+                            _buildEmptyOrGenerate(tr('Mingguan'), isAdmin)
                           else
                             ..._weeklyReports
                                 .map((r) => _buildWeeklyReportCard(r)),
                         ] else ...[
                           if (_monthlyReports.isEmpty)
-                            _buildEmptyOrGenerate('Bulanan', isAdmin)
+                            _buildEmptyOrGenerate(tr('Bulanan'), isAdmin)
                           else
                             ..._monthlyReports
                                 .map((r) => _buildMonthlyReportCard(r)),
@@ -293,14 +294,14 @@ class _ReportsPageState extends State<ReportsPage> {
                 size: 32, color: AppColors.primary),
           ),
           const SizedBox(height: 16),
-          Text('Belum ada laporan $type',
+          Text(tr('Belum ada laporan {{type}}', {'type': type}),
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: ThemeHelper.text(context))),
           const SizedBox(height: 8),
           Text(
-            'Laporan $type belum dibuat. Tekan tombol di bawah untuk generate laporan pertama.',
+            tr('Laporan {{type}} belum dibuat. Tekan tombol di bawah untuk generate laporan pertama.', {'type': type}),
             textAlign: TextAlign.center,
             style:
                 TextStyle(fontSize: 13, color: ThemeHelper.textSecondary(context)),
@@ -319,8 +320,8 @@ class _ReportsPageState extends State<ReportsPage> {
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.auto_awesome, size: 18),
                 label: Text(_generating
-                    ? 'Generating...'
-                    : 'Generate Laporan $type'),
+                    ? tr('Generating...')
+                    : tr('Generate Laporan {{type}}', {'type': type})),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -366,7 +367,7 @@ class _ReportsPageState extends State<ReportsPage> {
                 ),
               ),
               AppWidgets.statusBadge(
-                  report['is_generated'] == true ? 'Generated' : 'Draft',
+                  report['is_generated'] == true ? tr('Generated') : tr('Draft'),
                   report['is_generated'] == true
                       ? AppColors.success
                       : AppColors.warning),
@@ -395,20 +396,20 @@ class _ReportsPageState extends State<ReportsPage> {
   }
 
   Widget _buildMonthlyReportCard(dynamic report) {
-    const monthNames = [
+    final monthNames = [
       '',
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember'
+      tr('Januari'),
+      tr('Februari'),
+      tr('Maret'),
+      tr('April'),
+      tr('Mei'),
+      tr('Juni'),
+      tr('Juli'),
+      tr('Agustus'),
+      tr('September'),
+      tr('Oktober'),
+      tr('November'),
+      tr('Desember')
     ];
     final month = report['month'] ?? 0;
     final year = report['year'] ?? '';
@@ -447,7 +448,7 @@ class _ReportsPageState extends State<ReportsPage> {
                 ),
               ),
               AppWidgets.statusBadge(
-                  report['is_generated'] == true ? 'Generated' : 'Draft',
+                  report['is_generated'] == true ? tr('Generated') : tr('Draft'),
                   report['is_generated'] == true
                       ? AppColors.success
                       : AppColors.warning),

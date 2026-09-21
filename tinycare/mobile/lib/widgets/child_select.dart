@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import 'child_photo.dart';
+import '../l10n/app_strings.dart';
 
 /// Shared child-picker used by PARENT flows (Activities, Development, Child
 /// Information, Daily Stories) to mirror the web "child card" selection.
@@ -60,7 +61,7 @@ class ChildPickerGrid extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${child['gender'] == 'male' ? 'Laki-laki' : 'Perempuan'}'
+                  '${child['gender'] == 'male' ? tr('Laki-laki') : tr('Perempuan')}'
                       '${_birthLabel(child['birth_date'])}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -92,8 +93,8 @@ class ChildPickerGrid extends StatelessWidget {
       final parts = birthDate.toString().split('-');
       if (parts.length == 3) {
         final monthNames = [
-          'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-          'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+          tr('Jan'), tr('Feb'), tr('Mar'), tr('Apr'), tr('Mei'), tr('Jun'),
+          tr('Jul'), tr('Agu'), tr('Sep'), tr('Okt'), tr('Nov'), tr('Des'),
         ];
         final m = int.tryParse(parts[1]);
         final y = int.tryParse(parts[0]);
@@ -101,7 +102,7 @@ class ChildPickerGrid extends StatelessWidget {
         return ' · $label ${y ?? parts[0]}';
       }
     } catch (_) {}
-    return ' · $birthDate';
+    return tr(' · {{birthDate}}', {'birthDate': birthDate});
   }
 }
 
@@ -138,7 +139,7 @@ class ChildHeader extends StatelessWidget {
               Text(name, style: AppTypography.h1.copyWith(color: textColor)),
               const SizedBox(height: 4),
               Text(
-                '${gender == 'male' ? 'Laki-laki' : 'Perempuan'} · ${birthDate ?? '-'}',
+                '${gender == 'male' ? tr('Laki-laki') : tr('Perempuan')} · ${birthDate ?? '-'}',
                 style: TextStyle(fontSize: 13, color: mutedColor),
               ),
               if (subtitle != null) ...[

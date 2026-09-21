@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_strings.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -46,17 +47,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
       if (response['success'] == true) {
         if (!mounted) return;
-        AppWidgets.showSnackBar(context, response['message'] ?? 'Password berhasil diubah.');
+        AppWidgets.showSnackBar(context, response['message'] ?? tr('Password berhasil diubah.'));
         Navigator.pop(context);
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal mengubah password.';
+          _error = response['message'] ?? tr('Gagal mengubah password.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Tidak dapat terhubung ke server. Silakan coba lagi.';
+        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -65,7 +66,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ubah Password')),
+      appBar: AppBar(title: Text(tr('Ubah Password'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -74,7 +75,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Ganti password untuk mengamankan akun Anda.',
+                tr('Ganti password untuk mengamankan akun Anda.'),
                 style: AppTypography.bodySmall.copyWith(color: ThemeHelper.textSecondary(context)),
               ),
               const SizedBox(height: 24),
@@ -97,14 +98,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 obscureText: _obscureCurrent,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Password Saat Ini *',
+                  labelText: tr('Password Saat Ini *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureCurrent ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
-                    tooltip: _obscureCurrent ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscureCurrent ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
-                validator: (v) => v == null || v.isEmpty ? 'Password saat ini tidak boleh kosong' : null,
+                validator: (v) => v == null || v.isEmpty ? tr('Password saat ini tidak boleh kosong') : null,
               ),
               const SizedBox(height: 16),
 
@@ -113,16 +114,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 obscureText: _obscureNew,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Password Baru *',
+                  labelText: tr('Password Baru *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureNew ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscureNew = !_obscureNew),
-                    tooltip: _obscureNew ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscureNew ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'Password baru tidak boleh kosong';
-                  if (v.length < 8) return 'Password minimal 8 karakter';
+                  if (v == null || v.isEmpty) return tr('Password baru tidak boleh kosong');
+                  if (v.length < 8) return tr('Password minimal 8 karakter');
                   return null;
                 },
               ),
@@ -134,15 +135,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _handleSubmit(),
                 decoration: InputDecoration(
-                  labelText: 'Konfirmasi Password Baru *',
+                  labelText: tr('Konfirmasi Password Baru *'),
                   suffixIcon: IconButton(
                     icon: Icon(_obscureConfirm ? Icons.visibility_off_outlined : Icons.visibility_outlined),
                     onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                    tooltip: _obscureConfirm ? 'Password tersembunyi' : 'Password terlihat',
+                    tooltip: _obscureConfirm ? tr('Password tersembunyi') : tr('Password terlihat'),
                   ),
                 ),
                 validator: (v) {
-                  if (v != _newController.text) return 'Password tidak cocok';
+                  if (v != _newController.text) return tr('Password tidak cocok');
                   return null;
                 },
               ),
@@ -154,7 +155,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   onPressed: _isSubmitting ? null : _handleSubmit,
                   child: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Simpan Password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      : Text(tr('Simpan Password'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
             ],

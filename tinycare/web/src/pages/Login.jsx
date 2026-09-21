@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 function EyeIcon({ visible }) {
   // Icon shows the CURRENT STATE:
@@ -29,6 +31,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,7 +40,7 @@ export default function Login() {
 
     // Client-side validation before API call
     if (password.length < 8) {
-      setError('Password minimal 8 karakter.');
+      setError(t('Password minimal 8 karakter.'));
       setLoading(false);
       return;
     }
@@ -51,16 +54,16 @@ export default function Login() {
       } else if (data.user.role === 'parent') {
         navigate('/parent');
       } else {
-        setError(`Role "${data.user.role}" tidak memiliki akses ke aplikasi ini.`);
+        setError(t('Role "{{role}}" tidak memiliki akses ke aplikasi ini.', { role: data.user.role }));
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     } catch (err) {
       if (!err.response) {
         if (err.code === 'ECONNABORTED' || err.code === 'ETIMEDOUT') {
-          setError('Server terlalu lama merespons. Silakan coba lagi.');
+          setError(t('Server terlalu lama merespons. Silakan coba lagi.'));
         } else {
-          setError('Tidak dapat terhubung ke server. Pastikan server berjalan.');
+          setError(t('Tidak dapat terhubung ke server. Pastikan server berjalan.'));
         }
         return;
       }
@@ -70,7 +73,7 @@ export default function Login() {
       const message = err.response.data?.message;
 
       if (status === 401) {
-        setError(message || 'Email atau password salah.');
+        setError(message || t('Email atau password salah.'));
       } else if (status === 422 && errors) {
         if (errors.email) {
           setError(Array.isArray(errors.email) ? errors.email[0] : errors.email);
@@ -78,11 +81,11 @@ export default function Login() {
           setError(Object.values(errors).flat().join('. '));
         }
       } else if (status === 403) {
-        setError(message || 'Anda tidak memiliki akses.');
+        setError(message || t('Anda tidak memiliki akses.'));
       } else if (status >= 500) {
-        setError('Terjadi kesalahan pada server. Silakan coba lagi.');
+        setError(t('Terjadi kesalahan pada server. Silakan coba lagi.'));
       } else {
-        setError(message || 'Login gagal. Periksa email dan password.');
+        setError(message || t('Login gagal. Periksa email dan password.'));
       }
     } finally {
       setLoading(false);
@@ -204,11 +207,15 @@ export default function Login() {
         padding: '48px',
         position: 'relative',
       }}>
-        {/* Theme Toggle */}
+        {/* Theme Toggle + Language Switch */}
+        <div style={{
+          position: 'absolute', top: '20px', right: '20px',
+          display: 'flex', gap: '8px', alignItems: 'center',
+        }}>
+        <LanguageSwitcher />
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           style={{
-            position: 'absolute', top: '20px', right: '20px',
             padding: '8px', borderRadius: '10px',
             border: '1.5px solid var(--color-border)',
             background: 'var(--color-surface)',
@@ -218,7 +225,7 @@ export default function Login() {
             width: '38px', height: '38px',
             transition: 'all 0.2s',
           }}
-          title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+          title={theme === 'dark' ? t('Mode Terang') : t('Mode Gelap')}
         >
           {theme === 'dark' ? (
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -230,6 +237,7 @@ export default function Login() {
             </svg>
           )}
         </button>
+        </div>
 
         <div style={{ width: '100%', maxWidth: '380px' }}>
           {/* Mobile Logo */}
@@ -256,11 +264,11 @@ export default function Login() {
             <h2 style={{
               fontSize: '24px', fontWeight: '700',
               marginBottom: '6px', color: 'var(--color-text)',
-            }}>Masuk</h2>
+            }}>{t('Masuk')}</h2>
             <p style={{
               fontSize: '14px', color: 'var(--color-text-secondary)',
               marginBottom: '32px',
-            }}>Masukkan akun Anda untuk melanjutkan</p>
+            }}>{t('Masukkan akun Anda untuk melanjutkan')}</p>
           </div>
 
           {error && (
@@ -288,7 +296,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>Email</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>{t('Email')}</label>
               <input
                 type="email"
                 value={email}
@@ -303,14 +311,14 @@ export default function Login() {
             </div>
 
             <div style={{ marginBottom: '18px' }}>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>Password</label>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', marginBottom: '6px' }}>{t('Password')}</label>
               <div style={inputWrap}>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ ...inputStyle, paddingRight: '44px' }}
-                  placeholder="Masukkan kata sandi"
+                  placeholder={t('Masukkan kata sandi')}
                   required
                   autoComplete="current-password"
                   onFocus={(e) => { e.target.style.borderColor = 'var(--color-primary)'; e.target.style.boxShadow = '0 0 0 3px rgba(74,140,111,0.12)'; }}
@@ -320,8 +328,8 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   style={eyeBtnStyle}
-                  aria-label={showPassword ? 'Sembunyikan password' : 'Perlihatkan password'}
-                  title={showPassword ? 'Sembunyikan password' : 'Perlihatkan password'}
+                  aria-label={showPassword ? t('Sembunyikan password') : t('Perlihatkan password')}
+                  title={showPassword ? t('Sembunyikan password') : t('Perlihatkan password')}
                 >
                   <EyeIcon visible={showPassword} />
                 </button>
@@ -349,16 +357,16 @@ export default function Login() {
               {loading ? (
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
                   <div className="tc-spinner" style={{ width: '18px', height: '18px', borderWidth: '2px' }}></div>
-                  Memproses...
+                  {t('Memproses...')}
                 </span>
               ) : (
-                'Masuk'
+                t('Masuk')
               )}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: 'var(--color-text-muted)' }}>
-            Belum punya akun? <a href="/register" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'none' }}>Daftar</a>
+            {t('Belum punya akun?')} <a href="/register" style={{ color: 'var(--color-primary)', fontWeight: '600', textDecoration: 'none' }}>{t('Daftar')}</a>
           </p>
 
           <p style={{

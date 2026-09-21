@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../l10n/app_strings.dart';
 
 /// Child Information — mirrors web ChildInformation.jsx + ParentInformation.jsx.
 /// Both admin and parent see child card grid first. Click a child to see their
@@ -43,7 +44,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat data.';
+        _error = tr('Gagal memuat data.');
         _isLoading = false;
       });
     }
@@ -69,7 +70,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Gagal memuat informasi.';
+        _error = tr('Gagal memuat informasi.');
         _isLoading = false;
       });
     }
@@ -91,17 +92,18 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus Informasi'),
-        content: Text('Hapus informasi "${info['title'] ?? ''}"?'),
+        title: Text(tr('Hapus Informasi')),
+        content: Text(tr('Hapus informasi "{{title}}"?',
+            {'title': info['title'] ?? ''})),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Batal')),
+              child: Text(tr('Batal'))),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style:
                 TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Hapus'),
+            child: Text(tr('Hapus')),
           ),
         ],
       ),
@@ -110,14 +112,14 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
     try {
       final response = await _api.deleteChildInformation(info['id']);
       if (response['success'] == true) {
-        _showToast('Informasi berhasil dihapus.');
+        _showToast(tr('Informasi berhasil dihapus.'));
         _selectChild(_selectedChildId!);
       } else {
-        _showToast(response['message'] ?? 'Gagal menghapus.',
+        _showToast(response['message'] ?? tr('Gagal menghapus.'),
             isError: true);
       }
     } catch (e) {
-      _showToast('Gagal menghapus.', isError: true);
+      _showToast(tr('Gagal menghapus.'), isError: true);
     }
   }
 
@@ -130,12 +132,12 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Informasi Anak'),
+        title: Text(tr('Informasi Anak')),
         actions: [
           if (isAdmin && _selectedChildId != null)
             IconButton(
               icon: const Icon(Icons.add_outlined),
-              tooltip: 'Tambah Informasi',
+              tooltip: tr('Tambah Informasi'),
               onPressed: () async {
                 final result = await Navigator.push(
                     context,
@@ -165,8 +167,8 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
     if (_children.isEmpty) {
       return AppWidgets.emptyState(
         icon: Icons.child_care,
-        title: 'Belum ada data anak',
-        subtitle: 'Tambahkan data anak terlebih dahulu untuk mengelola informasi.',
+        title: tr('Belum ada data anak'),
+        subtitle: tr('Tambahkan data anak terlebih dahulu untuk mengelola informasi.'),
       );
     }
 
@@ -227,7 +229,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                       borderRadius: BorderRadius.circular(99),
                     ),
                     child: Text(
-                      isActive ? 'Status: Aktif' : 'Status: Nonaktif',
+                      isActive ? tr('Status: Aktif') : tr('Status: Nonaktif'),
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -240,7 +242,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Lihat Informasi',
+                        tr('Lihat Informasi'),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -309,7 +311,8 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                           color: textColor),
                     ),
                     Text(
-                      'Kelola informasi untuk ${childName ?? ''}',
+                      tr('Kelola informasi untuk {{name}}',
+                          {'name': childName ?? ''}),
                       style: TextStyle(
                           fontSize: 12, color: mutedColor),
                     ),
@@ -331,9 +334,9 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                   : _informations.isEmpty
                       ? AppWidgets.emptyState(
                           icon: Icons.info_outline,
-                          title: 'Belum ada informasi',
-                          subtitle:
-                              'Belum ada informasi untuk ${childName ?? 'anak ini'}.',
+                          title: tr('Belum ada informasi'),
+                          subtitle: tr('Belum ada informasi untuk {{name}}.',
+                              {'name': childName ?? tr('anak ini')}),
                         )
                       : RefreshIndicator(
                           onRefresh: () => _selectChild(_selectedChildId!),
@@ -355,9 +358,9 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
     final isAdmin = auth.isAdmin;
     final priority = info['priority'] ?? 'normal';
     final (label, color, bg) = switch (priority) {
-      'urgent' => ('Mendesak', AppColors.error, ThemeHelper.errorBg(context)),
-      'important' => ('Penting', AppColors.warning, ThemeHelper.warningBg(context)),
-      _ => ('Normal', ThemeHelper.textMuted(context), ThemeHelper.bgAlt(context)),
+      'urgent' => (tr('Mendesak'), AppColors.error, ThemeHelper.errorBg(context)),
+      'important' => (tr('Penting'), AppColors.warning, ThemeHelper.warningBg(context)),
+      _ => (tr('Normal'), ThemeHelper.textMuted(context), ThemeHelper.bgAlt(context)),
     };
 
     return Container(
@@ -414,9 +417,9 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                       _deleteInformation(info);
                     }
                   },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'edit', child: Text('Edit')),
-                    PopupMenuItem(value: 'delete', child: Text('Hapus')),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(value: 'edit', child: Text(tr('Edit'))),
+                    PopupMenuItem(value: 'delete', child: Text(tr('Hapus'))),
                   ],
                 ),
             ],
@@ -435,7 +438,10 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                       fontSize: 11,
                       color: ThemeHelper.textMuted(context))),
               if (info['creator'] != null)
-                Text(' · oleh ${info['creator']['name'] ?? ''}',
+                Text(
+                    tr(' · oleh {{name}}', {
+                      'name': info['creator']['name'] ?? '',
+                    }),
                     style: TextStyle(
                         fontSize: 11,
                         color: ThemeHelper.textMuted(context))),
@@ -526,8 +532,8 @@ class _InformationFormPageState extends State<_InformationFormPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(_isEditing
-                  ? 'Informasi diperbarui.'
-                  : 'Informasi berhasil dibuat.'),
+                  ? tr('Informasi diperbarui.')
+                  : tr('Informasi berhasil dibuat.')),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -538,13 +544,13 @@ class _InformationFormPageState extends State<_InformationFormPage> {
         }
       } else {
         setState(() {
-          _error = response['message'] ?? 'Gagal menyimpan.';
+          _error = response['message'] ?? tr('Gagal menyimpan.');
           _isSubmitting = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Gagal menyimpan. Silakan coba lagi.';
+        _error = tr('Gagal menyimpan. Silakan coba lagi.');
         _isSubmitting = false;
       });
     }
@@ -554,7 +560,7 @@ class _InformationFormPageState extends State<_InformationFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(_isEditing ? 'Edit Informasi' : 'Tambah Informasi')),
+          title: Text(_isEditing ? tr('Edit Informasi') : tr('Tambah Informasi'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -570,7 +576,7 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                 DropdownButtonFormField<int>(
                   initialValue: _childId,
                   decoration:
-                      const InputDecoration(labelText: 'Anak *'),
+                      InputDecoration(labelText: tr('Anak *')),
                   items: widget.children
                       .map<DropdownMenuItem<int>>((c) =>
                           DropdownMenuItem(
@@ -579,7 +585,7 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                       .toList(),
                   onChanged: (v) =>
                       setState(() => _childId = v),
-                  validator: (v) => v == null ? 'Pilih anak' : null,
+                  validator: (v) => v == null ? tr('Pilih anak') : null,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -587,9 +593,9 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                 controller: _titleController,
                 textInputAction: TextInputAction.next,
                 decoration:
-                    const InputDecoration(labelText: 'Judul *'),
+                    InputDecoration(labelText: tr('Judul *')),
                 validator: (v) => v == null || v.isEmpty
-                    ? 'Judul tidak boleh kosong'
+                    ? tr('Judul tidak boleh kosong')
                     : null,
               ),
               const SizedBox(height: 16),
@@ -597,14 +603,14 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                 controller: _contentController,
                 maxLines: 5,
                 textInputAction: TextInputAction.newline,
-                decoration: const InputDecoration(
-                    labelText: 'Konten *', alignLabelWithHint: true),
+                decoration: InputDecoration(
+                    labelText: tr('Konten *'), alignLabelWithHint: true),
                 validator: (v) => v == null || v.isEmpty
-                    ? 'Konten tidak boleh kosong'
+                    ? tr('Konten tidak boleh kosong')
                     : null,
               ),
               const SizedBox(height: 16),
-              Text('Prioritas',
+              Text(tr('Prioritas'),
                   style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -614,9 +620,9 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  _buildPriorityChip('normal', 'Normal'),
-                  _buildPriorityChip('important', 'Penting'),
-                  _buildPriorityChip('urgent', 'Mendesak'),
+                  _buildPriorityChip('normal', tr('Normal')),
+                  _buildPriorityChip('important', tr('Penting')),
+                  _buildPriorityChip('urgent', tr('Mendesak')),
                 ],
               ),
               const SizedBox(height: 24),
@@ -632,8 +638,8 @@ class _InformationFormPageState extends State<_InformationFormPage> {
                               color: Colors.white, strokeWidth: 2))
                       : Text(
                           _isEditing
-                              ? 'Simpan Perubahan'
-                              : 'Simpan Informasi',
+                              ? tr('Simpan Perubahan')
+                              : tr('Simpan Informasi'),
                           style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600)),
