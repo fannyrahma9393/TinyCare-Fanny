@@ -174,4 +174,59 @@ class ApiErrorHandler {
     }
     return false;
   }
+
+  /// Whether the failure means "the backend could not be reached / is not
+  /// usable right now", as opposed to a real answer from a live API.
+  ///
+  /// True for transport problems (no connection, timeout, cancelled socket) and
+  /// for 5xx responses. False for any 4xx: a 401/403/404/422 proves the API is
+  /// online, so those keep following the regular authentication/error flow and
+  /// must never be presented as an offline state.
+  static bool isReachabilityError(dynamic error) {
+    if (error is DioException) {
+      final response = error.response;
+      if (response != null) {
+        final status = response.statusCode ?? 0;
+        if (status >= 400 && status < 500) return false;
+        if (status >= 500) return true;
+        // A 2xx never arrives here; treat an unlabelled response as reachable.
+        return false;
+      }
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.connectionError:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return true;
+        case DioExceptionType.unknown:
+          final message = error.message ?? '';
+          return message.contains('SocketException') ||
+              message.contains('Connection refused') ||
+              message.contains('Failed host lookup') ||
+              message.contains('Network is unreachable');
+        case DioExceptionType.badCertificate:
+        case DioExceptionType.cancel:
+        case DioExceptionType.badResponse:
+          return false;
+        // Newer Dio releases add types here; anything unknown is treated as a
+        // transport problem only when it carries a socket/host error.
+        default:
+          final message = error.message ?? '';
+          return message.contains('SocketException') ||
+              message.contains('Connection refused') ||
+              message.contains('Failed host lookup') ||
+              message.contains('Network is unreachable');
+      }
+    }
+    return false;
+  }
+
+  /// Message shown when a WRITE operation could not be delivered because the
+  /// backend is unreachable. The data has NOT been sent — never claim success.
+  static String writeFailureMessage(dynamic error) {
+    if (isReachabilityError(error)) {
+      return 'Tidak ada koneksi. Data belum dikirim.';
+    }
+    return getMessage(error);
+  }
 }

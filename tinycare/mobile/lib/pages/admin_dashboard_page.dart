@@ -380,7 +380,7 @@ class _DataManagementTab extends StatelessWidget {
             {'label': tr('Pengguna'), 'icon': Icons.people_outline, 'route': '/users', 'subtitle': tr('Kelola semua pengguna')},
             {'label': tr('Orang Tua'), 'icon': Icons.family_restroom_outlined, 'route': '/parents', 'subtitle': tr('Data orang tua')},
             {'label': tr('Anak'), 'icon': Icons.child_care_outlined, 'route': '/children', 'subtitle': tr('Data anak terdaftar')},
-            {'label': tr('Informasi Anak'), 'icon': Icons.fact_check_outlined, 'route': '/information', 'subtitle': 'Catatan/informasi khusus'},
+            {'label': tr('Informasi Anak'), 'icon': Icons.fact_check_outlined, 'route': '/information', 'subtitle': tr('Catatan/informasi khusus')},
           ]),
           const SizedBox(height: 24),
 
@@ -452,7 +452,7 @@ class _MenuTab extends StatelessWidget {
             AppWidgets.sectionHeader(tr('Pengaturan Admin'), context: context),
             const SizedBox(height: 12),
             _buildMenuGroup(context, [
-              {'label': tr('Kelola Admin'), 'icon': Icons.shield_outlined, 'route': '/admin-management', 'subtitle': 'Aktifkan/nonaktifkan admin'},
+              {'label': tr('Kelola Admin'), 'icon': Icons.shield_outlined, 'route': '/admin-management', 'subtitle': tr('Aktifkan/nonaktifkan admin')},
             ]),
             const SizedBox(height: 24),
           ],

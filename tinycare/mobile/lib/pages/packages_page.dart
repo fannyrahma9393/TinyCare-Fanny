@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 class PackagesPage extends StatefulWidget {
@@ -11,27 +14,23 @@ class PackagesPage extends StatefulWidget {
   State<PackagesPage> createState() => _PackagesPageState();
 }
 
-class _PackagesPageState extends State<PackagesPage> {
+class _PackagesPageState extends State<PackagesPage> with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _packages = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first package list. Create/edit/delete re-fetch from the API so the
+  /// cached copy only ever mirrors backend-accepted state.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _packages => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadPackages();
   }
 
-  Future<void> _loadPackages() async {
-    setState(() { _isLoading = true; _error = null; });
-    try {
-      final packages = await _api.getPackages();
-      setState(() { _packages = packages; _isLoading = false; });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat data paket.'); _isLoading = false; });
-    }
-  }
+  Future<void> _loadPackages() => _repo.loadPackages(_res);
 
   Future<void> _showCreateForm() async {
     final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const _PackageFormPage()));
@@ -92,25 +91,36 @@ class _PackagesPageState extends State<PackagesPage> {
           IconButton(icon: const Icon(Icons.add), onPressed: _showCreateForm),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadPackages)
-              : _packages.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.inventory_2_outlined,
-                      title: tr('Belum ada paket'),
-                      subtitle: tr('Ketuk tombol + untuk menambahkan paket.'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadPackages,
-                      color: AppColors.primary,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        itemCount: _packages.length,
-                        itemBuilder: (context, index) => _buildPackageCard(_packages[index]),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadPackages),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadPackages,
+                      )
+                    : _packages.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.inventory_2_outlined,
+                            title: tr('Belum ada paket'),
+                            subtitle: tr('Ketuk tombol + untuk menambahkan paket.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadPackages,
+                            color: AppColors.primary,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              itemCount: _packages.length,
+                              itemBuilder: (context, index) =>
+                                  _buildPackageCard(_packages[index]),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 

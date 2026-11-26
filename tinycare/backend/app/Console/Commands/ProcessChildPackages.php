@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\ChildPackage;
 use App\Models\Notification;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -75,8 +76,8 @@ class ProcessChildPackages extends Command
             ->locale('id')
             ->isoFormat('D MMMM YYYY');
 
-        $title = 'Paket Anak Akan Segera Berakhir';
-        $body = "Paket {$child->name} akan berakhir pada {$endLabel}. Silakan lakukan perpanjangan paket jika diperlukan.";
+        $title = TransKey::t('notif.package.expiring.title', [], 'Paket Anak Akan Segera Berakhir');
+        $body = TransKey::t('notif.package.expiring', ['child_name' => $child->name, 'date' => $endLabel], "Paket {$child->name} akan berakhir pada {$endLabel}. Silakan lakukan perpanjangan paket jika diperlukan.");
         $link = '/parent/children/'.$child->id.'/package';
 
         $fcm->notifyChildParents(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../pages/dashboard_page.dart';
 import '../pages/activities_page.dart';
@@ -17,6 +18,7 @@ import '../pages/child_detail_page.dart';
 import '../pages/parent_child_form_page.dart';
 import 'child_photo.dart';
 import 'language_switcher.dart';
+import 'offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Parent scaffold with bottom navigation bar matching web ParentLayout sidebar.
@@ -94,27 +96,22 @@ class _ParentChildrenPage extends StatefulWidget {
   State<_ParentChildrenPage> createState() => _ParentChildrenPageState();
 }
 
-class _ParentChildrenPageState extends State<_ParentChildrenPage> {
-  final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  bool _isLoading = true;
-  String? _error;
+class _ParentChildrenPageState extends State<_ParentChildrenPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list for the signed-in parent.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _children => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadChildren();
   }
 
-  Future<void> _loadChildren() async {
-    setState(() { _isLoading = true; _error = null; });
-    try {
-      final children = await _api.getChildren();
-      setState(() { _children = children; _isLoading = false; });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat data anak.'); _isLoading = false; });
-    }
-  }
+  Future<void> _loadChildren() => _repo.loadChildren(_res);
 
   @override
   Widget build(BuildContext context) {
@@ -135,25 +132,35 @@ class _ParentChildrenPageState extends State<_ParentChildrenPage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadChildren)
-              : _children.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.child_care,
-                      title: tr('Belum ada data anak'),
-                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadChildren,
-                      color: AppColors.primary,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _children.length,
-                        itemBuilder: (context, index) => _buildChildCard(_children[index]),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadChildren),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadChildren,
+                      )
+                    : _children.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.child_care,
+                            title: tr('Belum ada data anak'),
+                            subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadChildren,
+                            color: AppColors.primary,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _children.length,
+                              itemBuilder: (context, index) => _buildChildCard(_children[index]),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 

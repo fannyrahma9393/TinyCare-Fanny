@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Child;
 use App\Models\DailyStory;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -84,17 +85,17 @@ class DailyStoryController extends Controller
             $child,
             [
                 'type' => 'daily_story',
-                'title' => 'Daily Story '.($child->name ?? 'Anak'),
+                'title' => TransKey::t('notif.daily_story.db_title', ['child_name' => $child->name ?? ''], 'Daily Story '.($child->name ?? 'Anak')),
                 'message' => $validated['summary']
-                    ?: 'Daily Story untuk '.($child->name ?? 'anak Anda').' telah dibuat.',
+                    ?: TransKey::t('notif.daily_story.db_body', ['child_name' => $child->name ?? 'anak Anda'], 'Daily Story untuk '.($child->name ?? 'anak Anda').' telah dibuat.'),
                 'link' => '/parent/children/'.$child->id.'/daily-stories',
                 'data' => [
                     'type' => 'daily_story',
                     'child_id' => $child->id,
                 ],
             ],
-            'Daily Story',
-            'Daily Story baru untuk '.($child->name ?? 'anak Anda').'.',
+            TransKey::t('notif.daily_story.title', [], 'Daily Story'),
+            TransKey::t('notif.daily_story.body', ['child_name' => $child->name ?? 'anak Anda'], 'Daily Story baru untuk '.($child->name ?? 'anak Anda').'.'),
             '/parent/children/'.$child->id.'/daily-stories',
             [
                 'type' => 'daily_story',

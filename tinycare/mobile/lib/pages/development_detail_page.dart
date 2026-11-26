@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Development detail for one child — mirrors web DevelopmentDetail.jsx.
@@ -18,12 +21,17 @@ class DevelopmentDetailPage extends StatefulWidget {
   State<DevelopmentDetailPage> createState() => _DevelopmentDetailPageState();
 }
 
-class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
+class _DevelopmentDetailPageState extends State<DevelopmentDetailPage>
+    with ResourceBinding {
   final ApiService _api = ApiService();
-  Map<String, dynamic>? _child;
-  Map<String, dynamic>? _developmentData;
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first child header + development assessments.
+  late final CachedResource<Map<String, dynamic>> _childRes;
+  late final CachedResource<Map<String, dynamic>> _developmentRes;
+
+  Map<String, dynamic>? get _child => _childRes.data;
+  Map<String, dynamic>? get _developmentData => _developmentRes.data;
 
   // Reports
   List<dynamic> _weeklyReports = [];
@@ -34,48 +42,44 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
   @override
   void initState() {
     super.initState();
+    _childRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
+    _developmentRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
     _loadData();
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    await Future.wait([
+      _repo.loadChildDetail(widget.childId, _childRes),
+      _repo.loadDevelopment(widget.childId, _developmentRes),
+    ]);
+    // Load reports in parallel (optional, don't block)
+    List<dynamic> weekly = [];
+    List<dynamic> monthly = [];
     try {
-      final child = await _api.getChild(widget.childId);
-      final data = await _api.getDevelopment(widget.childId);
-      // Load reports in parallel (optional, don't block)
-      List<dynamic> weekly = [];
-      List<dynamic> monthly = [];
-      try {
-        final weeklyRes = await _api.getWeeklyReports(perPage: 10);
-        final weeklyData = weeklyRes['data'];
-        if (weeklyData is Map && weeklyData.containsKey('data')) {
-          weekly = weeklyData['data'] ?? [];
-        }
-      } catch (_) {}
-      try {
-        final monthlyRes = await _api.getMonthlyReports(perPage: 10);
-        final monthlyData = monthlyRes['data'];
-        if (monthlyData is Map && monthlyData.containsKey('data')) {
-          monthly = monthlyData['data'] ?? [];
-        }
-      } catch (_) {}
-      if (!mounted) return;
-      setState(() {
-        _child = child;
-        _developmentData = data;
-        _weeklyReports = weekly;
-        _monthlyReports = monthly;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data perkembangan.');
-        _isLoading = false;
-      });
-    }
+      final weeklyRes = await _api.getWeeklyReports(perPage: 10);
+      final weeklyData = weeklyRes['data'];
+      if (weeklyData is Map && weeklyData.containsKey('data')) {
+        weekly = weeklyData['data'] ?? [];
+      }
+    } catch (_) {}
+    try {
+      final monthlyRes = await _api.getMonthlyReports(perPage: 10);
+      final monthlyData = monthlyRes['data'];
+      if (monthlyData is Map && monthlyData.containsKey('data')) {
+        monthly = monthlyData['data'] ?? [];
+      }
+    } catch (_) {}
+    if (!mounted) return;
+    setState(() {
+      _weeklyReports = weekly;
+      _monthlyReports = monthly;
+    });
   }
 
   Future<void> _generateWeeklyReport() async {
@@ -154,54 +158,56 @@ class _DevelopmentDetailPageState extends State<DevelopmentDetailPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(tr('Perkembangan Anak'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!,
-                  onRetry: () {
-                    setState(() {
-                      _isLoading = true;
-                      _error = null;
-                    });
-                    _loadData();
-                  },
-                )
-              : _child == null
-                  ? AppWidgets.emptyState(
-                      icon: Icons.child_care,
-                      title: tr('Anak tidak ditemukan.'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: AppColors.primary,
-                      child: ListView(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        children: [
-                          // Child header
-                          ChildHeader(
-                            child: _child,
-                            subtitle: tr('Perkembangan & penilaian anak Anda.'),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _childRes, onRetry: _loadData),
+          Expanded(
+            child: _childRes.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _childRes.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_childRes.error!),
+                        onRetry: _loadData,
+                      )
+                    : _child == null
+                        ? AppWidgets.emptyState(
+                            icon: Icons.child_care,
+                            title: tr('Anak tidak ditemukan.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadData,
+                            color: AppColors.primary,
+                            child: ListView(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              children: [
+                                // Child header
+                                ChildHeader(
+                                  child: _child,
+                                  subtitle: tr('Perkembangan & penilaian anak Anda.'),
+                                ),
+                                const SizedBox(height: 20),
+
+                                // Category cards
+                                Text(tr('Kategori Perkembangan'),
+                                    style: AppTypography.h3
+                                        .copyWith(color: textColor)),
+                                const SizedBox(height: 14),
+                                ..._buildCategoryCards(),
+
+                                // Reports section (admin only — matches web)
+                                if (isAdmin) ...[
+                                  const SizedBox(height: 24),
+                                  _buildReportsSection(),
+                                ],
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 20),
-
-                          // Category cards
-                          Text(tr('Kategori Perkembangan'),
-                              style: AppTypography.h3
-                                  .copyWith(color: textColor)),
-                          const SizedBox(height: 14),
-                          ..._buildCategoryCards(),
-
-                          // Reports section (admin only — matches web)
-                          if (isAdmin) ...[
-                            const SizedBox(height: 24),
-                            _buildReportsSection(),
-                          ],
-                        ],
-                      ),
-                    ),
+          ),
+        ],
+      ),
     );
   }
+
 
   List<Widget> _buildCategoryCards() {
     final categories = _developmentData?['categories'];

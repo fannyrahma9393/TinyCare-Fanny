@@ -8,6 +8,8 @@ import 'partials/admin_mgmt.dart';
 import 'partials/parent.dart';
 import 'partials/components.dart';
 import 'partials/scaffolds.dart';
+import 'partials/misc.dart';
+import 'partials/offline.dart';
 
 /// Merges every localization partial into [AppStrings].
 /// Call this once at app startup (before runApp).
@@ -22,4 +24,6 @@ void registerLocalizations() {
   appStrings.addEn(parentEn);
   appStrings.addEn(componentsEn);
   appStrings.addEn(scaffoldsEn);
+  appStrings.addEn(miscEn);
+  appStrings.addEn(offlineEn);
 }

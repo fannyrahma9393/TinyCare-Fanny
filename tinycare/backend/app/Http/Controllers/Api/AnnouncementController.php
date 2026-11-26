@@ -7,6 +7,7 @@ use App\Models\Announcement;
 use App\Models\Child;
 use App\Models\User;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -198,7 +199,7 @@ class AnnouncementController extends Controller
             \App\Models\Notification::create([
                 'user_id' => $user->id,
                 'type' => 'announcement',
-                'title' => 'Pengumuman Baru',
+                'title' => TransKey::t('notif.announcement.title', [], 'Pengumuman Baru'),
                 'message' => $announcement->title,
                 'link' => '/announcements',
                 'data' => [
@@ -212,7 +213,7 @@ class AnnouncementController extends Controller
             // Send FCM push
             $result = $fcm->sendToUser(
                 $user->id,
-                'Pengumuman Baru',
+                TransKey::t('notif.announcement.title', [], 'Pengumuman Baru'),
                 $announcement->title,
                 '/announcements',
                 [

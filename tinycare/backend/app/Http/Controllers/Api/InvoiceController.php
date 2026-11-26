@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\TransKey;
 use App\Models\Child;
 use App\Models\Invoice;
 use App\Models\Package;
@@ -154,16 +155,16 @@ class InvoiceController extends Controller
                 $parentUser,
                 [
                     'type' => 'invoice_created',
-                    'title' => 'Tagihan Baru',
-                    'message' => "Tagihan baru untuk {$child->name}: {$package->name}",
+                    'title' => TransKey::t('notif.invoice.created.title', [], 'Tagihan Baru'),
+                    'message' => TransKey::t('notif.invoice.created', ['child_name' => $child->name, 'package_name' => $package->name], "Tagihan baru untuk {$child->name}: {$package->name}"),
                     'link' => '/invoices',
                     'data' => [
                         'type' => 'invoice_created',
                         'invoice_id' => (string) $invoice->id,
                     ],
                 ],
-                'Tagihan Baru',
-                "Tagihan baru untuk {$child->name}: {$package->name}",
+                TransKey::t('notif.invoice.created.title', [], 'Tagihan Baru'),
+                TransKey::t('notif.invoice.created', ['child_name' => $child->name, 'package_name' => $package->name], "Tagihan baru untuk {$child->name}: {$package->name}"),
                 '/invoices',
                 [
                     'type' => 'invoice_created',

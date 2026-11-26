@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Child;
 use App\Models\ChildInformation;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -68,7 +69,7 @@ class ChildInformationController extends Controller
             $child,
             [
                 'type' => 'child_information',
-                'title' => 'Informasi untuk '.$child->name,
+                'title' => TransKey::t('notif.child_information.db_title', ['child_name' => $child->name ?? ''], 'Informasi untuk '.($child->name ?? '')),
                 'message' => $validated['title'],
                 'link' => '/parent/children/'.$child->id.'/information',
                 'data' => [
@@ -77,8 +78,8 @@ class ChildInformationController extends Controller
                     'information_id' => $information->id,
                 ],
             ],
-            'Informasi Anak',
-            'Informasi baru tentang '.($child->name ?? 'anak Anda').' telah ditambahkan.',
+            TransKey::t('notif.child_information.title', [], 'Informasi Anak'),
+            TransKey::t('notif.child_information.body', ['child_name' => $child->name ?? 'anak Anda'], 'Informasi baru tentang '.($child->name ?? 'anak Anda').' telah ditambahkan.'),
             '/parent/information',
             [
                 'type' => 'child_information',

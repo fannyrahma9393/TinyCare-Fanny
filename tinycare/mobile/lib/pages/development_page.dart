@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import 'development_detail_page.dart';
 import '../l10n/app_strings.dart';
 
@@ -13,36 +16,22 @@ class DevelopmentPage extends StatefulWidget {
   State<DevelopmentPage> createState() => _DevelopmentPageState();
 }
 
-class _DevelopmentPageState extends State<DevelopmentPage> {
-  final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  bool _isLoading = true;
-  String? _error;
+class _DevelopmentPageState extends State<DevelopmentPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list used to pick whose development to view.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _children => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadChildren();
   }
 
-  Future<void> _loadChildren() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final children = await _api.getChildren();
-      setState(() {
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadChildren() => _repo.loadChildren(_res);
 
   @override
   Widget build(BuildContext context) {
@@ -51,20 +40,24 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(tr('Perkembangan Anak'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!,
-                  onRetry: _loadChildren,
-                )
-              : _children.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.trending_up,
-                      title: tr('Belum ada data anak'),
-                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
-                    )
-                  : RefreshIndicator(
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadChildren),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadChildren,
+                      )
+                    : _children.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.trending_up,
+                            title: tr('Belum ada data anak'),
+                            subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
+                          )
+                        : RefreshIndicator(
                       onRefresh: _loadChildren,
                       color: AppColors.primary,
                       child: Column(
@@ -194,6 +187,9 @@ class _DevelopmentPageState extends State<DevelopmentPage> {
                         ],
                       ),
                     ),
+          ),
+        ],
+      ),
     );
   }
 }

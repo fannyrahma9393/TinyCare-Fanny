@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\TransKey;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\FcmNotificationService;
@@ -323,8 +324,8 @@ class PaymentController extends Controller
         $fcm->notifyAdmins(
             [
                 'type' => 'payment_submitted',
-                'title' => 'Pembayaran Baru',
-                'message' => "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}",
+                'title' => TransKey::t('notif.payment.submitted.title', [], 'Pembayaran Baru'),
+                'message' => TransKey::t('notif.payment.submitted', ['invoice_number' => $invoice->invoice_number], "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}"),
                 'link' => '/payments',
                 'data' => [
                     'type' => 'payment_submitted',
@@ -332,8 +333,8 @@ class PaymentController extends Controller
                     'invoice_id' => (string) $invoice->id,
                 ],
             ],
-            'Pembayaran Baru',
-            "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}",
+            TransKey::t('notif.payment.submitted.title', [], 'Pembayaran Baru'),
+            TransKey::t('notif.payment.submitted', ['invoice_number' => $invoice->invoice_number], "Pembayaran menunggu verifikasi untuk tagihan {$invoice->invoice_number}"),
             '/payments',
             [
                 'type' => 'payment_submitted',

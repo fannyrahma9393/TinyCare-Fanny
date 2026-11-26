@@ -1,0 +1,5715 @@
+{
+  "generated_at": "2026-09-21T04:22:18.013Z",
+  "rows": [
+    {
+      "key": " · {{birthDate}}",
+      "id": " · {{birthDate}}",
+      "en": " · {{birthDate}}"
+    },
+    {
+      "key": " · oleh {{name}}",
+      "id": " · oleh {{name}}",
+      "en": " · by {{name}}"
+    },
+    {
+      "key": "-- Pilih Aktivitas --",
+      "id": "-- Pilih Aktivitas --",
+      "en": "-- Select Activity --"
+    },
+    {
+      "key": "-- Pilih Anak --",
+      "id": "-- Pilih Anak --",
+      "en": "-- Select Child --"
+    },
+    {
+      "key": "-- Pilih Anak terlebih dahulu --",
+      "id": "-- Pilih Anak terlebih dahulu --",
+      "en": "-- Select Child first --"
+    },
+    {
+      "key": "-- Pilih Kategori --",
+      "id": "-- Pilih Kategori --",
+      "en": "-- Select Category --"
+    },
+    {
+      "key": "-- Pilih Paket --",
+      "id": "-- Pilih Paket --",
+      "en": "-- Select Package --"
+    },
+    {
+      "key": "-- Tidak ada paket --",
+      "id": "-- Tidak ada paket --",
+      "en": "-- No package --"
+    },
+    {
+      "key": ". Anda akan dapat login setelah akun disetujui.",
+      "id": ". Anda akan dapat login setelah akun disetujui.",
+      "en": ". You will be able to log in once your account is approved."
+    },
+    {
+      "key": "{{count}} aktivitas",
+      "id": "{{count}} aktivitas",
+      "en": "{{count}} activities"
+    },
+    {
+      "key": "{{count}} anak terdaftar",
+      "id": "{{count}} anak terdaftar",
+      "en": "{{count}} children registered"
+    },
+    {
+      "key": "{{count}} Event Terjadwal",
+      "id": "{{count}} Event Terjadwal",
+      "en": "{{count}} Scheduled Events"
+    },
+    {
+      "key": "{{count}} kegiatan aktif tersedia untuk tumbuh kembang anak Anda.",
+      "id": "{{count}} kegiatan aktif tersedia untuk tumbuh kembang anak Anda.",
+      "en": "{{count}} active activities available for your child's growth and development."
+    },
+    {
+      "key": "{{count}} Paket Aktif",
+      "id": "{{count}} Paket Aktif",
+      "en": "{{count}} Active Packages"
+    },
+    {
+      "key": "{{count}} Pengumuman Aktif",
+      "id": "{{count}} Pengumuman Aktif",
+      "en": "{{count}} Active Announcements"
+    },
+    {
+      "key": "{{count}} penilaian",
+      "id": "{{count}} penilaian",
+      "en": "{{count}} assessments"
+    },
+    {
+      "key": "{{count}} Ulasan dari Orang Tua",
+      "id": "{{count}} Ulasan dari Orang Tua",
+      "en": "{{count}} Reviews from Parents"
+    },
+    {
+      "key": "{{days}} hari",
+      "id": "{{days}} hari",
+      "en": "{{days}} days"
+    },
+    {
+      "key": "{{hari}} hari",
+      "id": "{{hari}} hari",
+      "en": "{{hari}} days"
+    },
+    {
+      "key": "{{hours}} jam lalu",
+      "id": "{{hours}} jam lalu",
+      "en": "{{hours}} h ago"
+    },
+    {
+      "key": "{{minutes}} mnt lalu",
+      "id": "{{minutes}} mnt lalu",
+      "en": "{{minutes}} min ago"
+    },
+    {
+      "key": "{{name}} · Jatuh tempo: {{due}}",
+      "id": "{{name}} · Jatuh tempo: {{due}}",
+      "en": "{{name}} · Due: {{due}}"
+    },
+    {
+      "key": "{{name}} belum memiliki paket aktif saat ini.",
+      "id": "{{name}} belum memiliki paket aktif saat ini.",
+      "en": "{{name}} does not have an active package yet."
+    },
+    {
+      "key": "{{name}} berhasil diaktifkan.",
+      "id": "{{name}} berhasil diaktifkan.",
+      "en": "{{name}} has been activated."
+    },
+    {
+      "key": "{{name}} berhasil dinonaktifkan.",
+      "id": "{{name}} berhasil dinonaktifkan.",
+      "en": "{{name}} has been deactivated."
+    },
+    {
+      "key": "{{pkgPrice}} · {{pkgDuration}} hari",
+      "id": "{{pkgPrice}} · {{pkgDuration}} hari",
+      "en": "{{pkgPrice}} · {{pkgDuration}} days"
+    },
+    {
+      "key": "{{start}} — {{end}}",
+      "id": "{{start}} — {{end}}",
+      "en": "{{start}} — {{end}}"
+    },
+    {
+      "key": "{{total}} penilaian",
+      "id": "{{total}} penilaian",
+      "en": "{{total}} assessments"
+    },
+    {
+      "key": "{{value}}% diskon",
+      "id": "{{value}}% diskon",
+      "en": "{{value}}% discount"
+    },
+    {
+      "key": "• Anak: {{name}}",
+      "id": "• Anak: {{name}}",
+      "en": "• Child: {{name}}"
+    },
+    {
+      "key": "© {{tahun}} TinyCare — Semua hak dilindungi.",
+      "id": "© {{tahun}} TinyCare — Semua hak dilindungi.",
+      "en": "© {{tahun}} TinyCare — All rights reserved."
+    },
+    {
+      "key": "← Kembali",
+      "id": "← Kembali",
+      "en": "← Back"
+    },
+    {
+      "key": "+ Buat Invoice",
+      "id": "+ Buat Invoice",
+      "en": "+ Create Invoice"
+    },
+    {
+      "key": "+ Buat Jadwal",
+      "id": "+ Buat Jadwal",
+      "en": "+ Create Schedule"
+    },
+    {
+      "key": "+ Buat Pengumuman",
+      "id": "+ Buat Pengumuman",
+      "en": "+ Create Announcement"
+    },
+    {
+      "key": "+ Buat Story",
+      "id": "+ Buat Story",
+      "en": "+ Create Story"
+    },
+    {
+      "key": "+ Tambah Admin",
+      "id": "+ Tambah Admin",
+      "en": "+ Add Admin"
+    },
+    {
+      "key": "+ Tambah Paket",
+      "id": "+ Tambah Paket",
+      "en": "+ Add Package"
+    },
+    {
+      "key": "+ Tambah Penilaian",
+      "id": "+ Tambah Penilaian",
+      "en": "+ Add Assessment"
+    },
+    {
+      "key": "+ Tambah Voucher",
+      "id": "+ Tambah Voucher",
+      "en": "+ Add Voucher"
+    },
+    {
+      "key": "⚠ Notifikasi push gagal dikirim ke {{count}} perangkat. Notifikasi di aplikasi tetap tersimpan.",
+      "id": "⚠ Notifikasi push gagal dikirim ke {{count}} perangkat. Notifikasi di aplikasi tetap tersimpan.",
+      "en": "⚠ Push notification failed to send to {{count}} devices. The in-app notification is still saved."
+    },
+    {
+      "key": "✓ Informasi tersimpan",
+      "id": "✓ Informasi tersimpan",
+      "en": "✓ Information saved"
+    },
+    {
+      "key": "✓ Lunas",
+      "id": "✓ Lunas",
+      "en": "✓ Paid"
+    },
+    {
+      "key": "🔔 Push dikirim ke {{parents}} orang tua ({{devices}} perangkat) dan notifikasi aplikasi tersimpan.",
+      "id": "🔔 Push dikirim ke {{parents}} orang tua ({{devices}} perangkat) dan notifikasi aplikasi tersimpan.",
+      "en": "🔔 Push sent to {{parents}} parents ({{devices}} devices) and the in-app notification is saved."
+    },
+    {
+      "key": "AC, CCTV, Ruang Bermain, dll",
+      "id": "AC, CCTV, Ruang Bermain, dll",
+      "en": "AC, CCTV, Play Room, etc."
+    },
+    {
+      "key": "Admin",
+      "id": "Admin",
+      "en": "Admin"
+    },
+    {
+      "key": "Admin berhasil ditambahkan.",
+      "id": "Admin berhasil ditambahkan.",
+      "en": "Admin added successfully."
+    },
+    {
+      "key": "Admin Dashboard",
+      "id": "Admin Dashboard",
+      "en": "Admin Dashboard"
+    },
+    {
+      "key": "Admin Master",
+      "id": "Admin Master",
+      "en": "Admin Master"
+    },
+    {
+      "key": "Agu",
+      "id": "Agu",
+      "en": "Aug"
+    },
+    {
+      "key": "Agustus",
+      "id": "Agustus",
+      "en": "August"
+    },
+    {
+      "key": "Akses Cepat",
+      "id": "Akses Cepat",
+      "en": "Quick Links"
+    },
+    {
+      "key": "Akses Ditolak",
+      "id": "Akses Ditolak",
+      "en": "Access Denied"
+    },
+    {
+      "key": "Aksi",
+      "id": "Aksi",
+      "en": "Actions"
+    },
+    {
+      "key": "Aktif",
+      "id": "Aktif",
+      "en": "Active"
+    },
+    {
+      "key": "Aktifkan",
+      "id": "Aktifkan",
+      "en": "Activate"
+    },
+    {
+      "key": "Aktifkan {{name}} kembali?",
+      "id": "Aktifkan {{name}} kembali?",
+      "en": "Reactivate {{name}}?"
+    },
+    {
+      "key": "Aktifkan Akun",
+      "id": "Aktifkan Akun",
+      "en": "Activate Account"
+    },
+    {
+      "key": "Aktifkan akun {{name}}?",
+      "id": "Aktifkan akun {{name}}?",
+      "en": "Activate {{name}}?"
+    },
+    {
+      "key": "Aktifkan Anak",
+      "id": "Aktifkan Anak",
+      "en": "Activate Child"
+    },
+    {
+      "key": "Aktifkan kembali akun ini?",
+      "id": "Aktifkan kembali akun ini?",
+      "en": "Reactivate this account?"
+    },
+    {
+      "key": "Aktifkan/nonaktifkan admin",
+      "id": "Aktifkan/nonaktifkan admin",
+      "en": "Activate/deactivate admins"
+    },
+    {
+      "key": "Aktivitas",
+      "id": "Aktivitas",
+      "en": "Activities"
+    },
+    {
+      "key": "Aktivitas *",
+      "id": "Aktivitas *",
+      "en": "Activity *"
+    },
+    {
+      "key": "Aktivitas akan muncul ketika ada kegiatan terbaru.",
+      "id": "Aktivitas akan muncul ketika ada kegiatan terbaru.",
+      "en": "Activities will appear when there are recent activities."
+    },
+    {
+      "key": "Aktivitas Anak",
+      "id": "Aktivitas Anak",
+      "en": "Child Activities"
+    },
+    {
+      "key": "Aktivitas anak berhasil dicatat!",
+      "id": "Aktivitas anak berhasil dicatat!",
+      "en": "Child activity recorded successfully!"
+    },
+    {
+      "key": "Aktivitas berhasil dihapus.",
+      "id": "Aktivitas berhasil dihapus.",
+      "en": "Activity deleted successfully."
+    },
+    {
+      "key": "Aktivitas di Daycare Kami",
+      "id": "Aktivitas di Daycare Kami",
+      "en": "Activities at Our Daycare"
+    },
+    {
+      "key": "Aktivitas diperbarui.",
+      "id": "Aktivitas diperbarui.",
+      "en": "Activity updated."
+    },
+    {
+      "key": "Aktivitas ditambahkan.",
+      "id": "Aktivitas ditambahkan.",
+      "en": "Activity added."
+    },
+    {
+      "key": "Aktivitas yang diikuti anak Anda.",
+      "id": "Aktivitas yang diikuti anak Anda.",
+      "en": "Activities your child is participating in."
+    },
+    {
+      "key": "Akun Anda",
+      "id": "Akun Anda",
+      "en": "Your Account"
+    },
+    {
+      "key": "Akun Anda telah dibuat dan ",
+      "id": "Akun Anda telah dibuat dan ",
+      "en": "Your account has been created and "
+    },
+    {
+      "key": "Akun Anda telah dibuat dan menunggu persetujuan admin. Anda akan dapat login setelah akun disetujui.",
+      "id": "Akun Anda telah dibuat dan menunggu persetujuan admin. Anda akan dapat login setelah akun disetujui.",
+      "en": "Your account has been created and is awaiting admin approval. You will be able to log in once it is approved."
+    },
+    {
+      "key": "Akun berhasil diaktifkan.",
+      "id": "Akun berhasil diaktifkan.",
+      "en": "Account activated successfully."
+    },
+    {
+      "key": "Akun berhasil dinonaktifkan.",
+      "id": "Akun berhasil dinonaktifkan.",
+      "en": "Account deactivated successfully."
+    },
+    {
+      "key": "Akun berhasil disetujui.",
+      "id": "Akun berhasil disetujui.",
+      "en": "Account approved successfully."
+    },
+    {
+      "key": "Akun berhasil ditolak.",
+      "id": "Akun berhasil ditolak.",
+      "en": "Account rejected."
+    },
+    {
+      "key": "Akun orang tua berhasil disetujui.",
+      "id": "Akun orang tua berhasil disetujui.",
+      "en": "Parent account approved successfully."
+    },
+    {
+      "key": "Akun orang tua ditolak.",
+      "id": "Akun orang tua ditolak.",
+      "en": "Parent account rejected."
+    },
+    {
+      "key": "Alamat",
+      "id": "Alamat",
+      "en": "Address"
+    },
+    {
+      "key": "Alamat (opsional)",
+      "id": "Alamat (opsional)",
+      "en": "Address (optional)"
+    },
+    {
+      "key": "Alasan Penolakan",
+      "id": "Alasan Penolakan",
+      "en": "Rejection Reason"
+    },
+    {
+      "key": "ALASAN PENOLAKAN",
+      "id": "ALASAN PENOLAKAN",
+      "en": "REJECTION REASON"
+    },
+    {
+      "key": "Alasan penolakan (opsional)",
+      "id": "Alasan penolakan (opsional)",
+      "en": "Reason for rejection (optional)"
+    },
+    {
+      "key": "Alasan penolakan:",
+      "id": "Alasan penolakan:",
+      "en": "Rejection reason:"
+    },
+    {
+      "key": "Anak",
+      "id": "Anak",
+      "en": "Child"
+    },
+    {
+      "key": "Anak *",
+      "id": "Anak *",
+      "en": "Child *"
+    },
+    {
+      "key": "Anak Anda,",
+      "id": "Anak Anda,",
+      "en": "For Your Child,"
+    },
+    {
+      "key": "Anak berhasil {{action}}.",
+      "id": "Anak berhasil {{action}}.",
+      "en": "Child {{action}} successfully."
+    },
+    {
+      "key": "Anak berhasil dihapus.",
+      "id": "Anak berhasil dihapus.",
+      "en": "Child deleted successfully."
+    },
+    {
+      "key": "Anak berhasil diperbarui.",
+      "id": "Anak berhasil diperbarui.",
+      "en": "Child updated successfully."
+    },
+    {
+      "key": "Anak berhasil ditambahkan, namun gagal menetapkan paket: {{message}}",
+      "id": "Anak berhasil ditambahkan, namun gagal menetapkan paket: {{message}}",
+      "en": "Child was added, but the package could not be assigned: {{message}}"
+    },
+    {
+      "key": "Anak berhasil ditambahkan.",
+      "id": "Anak berhasil ditambahkan.",
+      "en": "Child added successfully."
+    },
+    {
+      "key": "anak ini",
+      "id": "anak ini",
+      "en": "this child"
+    },
+    {
+      "key": "Anak Saya",
+      "id": "Anak Saya",
+      "en": "My Children"
+    },
+    {
+      "key": "Anak Terdaftar",
+      "id": "Anak Terdaftar",
+      "en": "Registered Children"
+    },
+    {
+      "key": "Anak Terlayani",
+      "id": "Anak Terlayani",
+      "en": "Children Served"
+    },
+    {
+      "key": "Anak tertentu",
+      "id": "Anak tertentu",
+      "en": "Specific children"
+    },
+    {
+      "key": "Anak tidak ditemukan",
+      "id": "Anak tidak ditemukan",
+      "en": "Child not found"
+    },
+    {
+      "key": "Anak tidak ditemukan.",
+      "id": "Anak tidak ditemukan.",
+      "en": "Child not found."
+    },
+    {
+      "key": "Anak-anak",
+      "id": "Anak-anak",
+      "en": "Children"
+    },
+    {
+      "key": "Anda belum memiliki data anak yang terdaftar.",
+      "id": "Anda belum memiliki data anak yang terdaftar.",
+      "en": "You don't have any registered children yet."
+    },
+    {
+      "key": "Anda tidak memiliki akses.",
+      "id": "Anda tidak memiliki akses.",
+      "en": "You do not have access."
+    },
+    {
+      "key": "Angka yang Bicara",
+      "id": "Angka yang Bicara",
+      "en": "Numbers That Speak"
+    },
+    {
+      "key": "Apakah Anda yakin ingin {{action}} {{name}}?",
+      "id": "Apakah Anda yakin ingin {{action}} {{name}}?",
+      "en": "Are you sure you want to {{action}} {{name}}?"
+    },
+    {
+      "key": "Apakah Anda yakin ingin keluar?",
+      "id": "Apakah Anda yakin ingin keluar?",
+      "en": "Are you sure you want to log out?"
+    },
+    {
+      "key": "Apakah Anda yakin ingin menghapus {{name}}?",
+      "id": "Apakah Anda yakin ingin menghapus {{name}}?",
+      "en": "Are you sure you want to delete {{name}}?"
+    },
+    {
+      "key": "Apakah Anda yakin ingin menolak akun",
+      "id": "Apakah Anda yakin ingin menolak akun",
+      "en": "Are you sure you want to reject the account"
+    },
+    {
+      "key": "Apakah Anda yakin ingin menolak akun ini?",
+      "id": "Apakah Anda yakin ingin menolak akun ini?",
+      "en": "Are you sure you want to reject this account?"
+    },
+    {
+      "key": "Apakah Anda yakin ingin menolak pembayaran ini?",
+      "id": "Apakah Anda yakin ingin menolak pembayaran ini?",
+      "en": "Are you sure you want to reject this payment?"
+    },
+    {
+      "key": "Aplikasi",
+      "id": "Aplikasi",
+      "en": "Application"
+    },
+    {
+      "key": "Apr",
+      "id": "Apr",
+      "en": "Apr"
+    },
+    {
+      "key": "April",
+      "id": "April",
+      "en": "April"
+    },
+    {
+      "key": "Baca Semua",
+      "id": "Baca Semua",
+      "en": "Mark All Read"
+    },
+    {
+      "key": "Bahagia",
+      "id": "Bahagia",
+      "en": "Happy"
+    },
+    {
+      "key": "Bahasa",
+      "id": "Bahasa",
+      "en": "Language"
+    },
+    {
+      "key": "Baik",
+      "id": "Baik",
+      "en": "Good"
+    },
+    {
+      "key": "Balas",
+      "id": "Balas",
+      "en": "Reply"
+    },
+    {
+      "key": "Balas Feedback",
+      "id": "Balas Feedback",
+      "en": "Reply to Feedback"
+    },
+    {
+      "key": "Balasan Admin",
+      "id": "Balasan Admin",
+      "en": "Admin Reply"
+    },
+    {
+      "key": "Balasan Admin:",
+      "id": "Balasan Admin:",
+      "en": "Admin reply:"
+    },
+    {
+      "key": "Balasan berhasil dikirim.",
+      "id": "Balasan berhasil dikirim.",
+      "en": "Reply sent successfully."
+    },
+    {
+      "key": "Bank Transfer",
+      "id": "Bank Transfer",
+      "en": "Bank Transfer"
+    },
+    {
+      "key": "Baru saja",
+      "id": "Baru saja",
+      "en": "Just now"
+    },
+    {
+      "key": "Batal",
+      "id": "Batal",
+      "en": "Cancel"
+    },
+    {
+      "key": "Batalkan",
+      "id": "Batalkan",
+      "en": "Cancel"
+    },
+    {
+      "key": "Bayar",
+      "id": "Bayar",
+      "en": "Pay"
+    },
+    {
+      "key": "Bayar Sekarang",
+      "id": "Bayar Sekarang",
+      "en": "Pay Now"
+    },
+    {
+      "key": "Belum",
+      "id": "Belum",
+      "en": "Not Yet"
+    },
+    {
+      "key": "Belum ada admin",
+      "id": "Belum ada admin",
+      "en": "No admins yet"
+    },
+    {
+      "key": "Belum ada aktivitas",
+      "id": "Belum ada aktivitas",
+      "en": "No activities yet"
+    },
+    {
+      "key": "Belum ada aktivitas.",
+      "id": "Belum ada aktivitas.",
+      "en": "No activities yet."
+    },
+    {
+      "key": "Belum ada anak",
+      "id": "Belum ada anak",
+      "en": "No children yet"
+    },
+    {
+      "key": "Belum ada anak terdaftar",
+      "id": "Belum ada anak terdaftar",
+      "en": "No children registered yet"
+    },
+    {
+      "key": "Belum ada anak terdaftar.",
+      "id": "Belum ada anak terdaftar.",
+      "en": "No children registered."
+    },
+    {
+      "key": "Belum ada catatan kehadiran",
+      "id": "Belum ada catatan kehadiran",
+      "en": "No attendance records yet"
+    },
+    {
+      "key": "Belum ada catatan kehadiran.",
+      "id": "Belum ada catatan kehadiran.",
+      "en": "No attendance records yet."
+    },
+    {
+      "key": "Belum ada cerita hari ini.",
+      "id": "Belum ada cerita hari ini.",
+      "en": "No stories today yet."
+    },
+    {
+      "key": "Belum ada Daily Story",
+      "id": "Belum ada Daily Story",
+      "en": "No Daily Story yet"
+    },
+    {
+      "key": "Belum ada data",
+      "id": "Belum ada data",
+      "en": "No data yet"
+    },
+    {
+      "key": "Belum ada data anak",
+      "id": "Belum ada data anak",
+      "en": "No child data yet"
+    },
+    {
+      "key": "Belum ada data perkembangan",
+      "id": "Belum ada data perkembangan",
+      "en": "No development data yet"
+    },
+    {
+      "key": "Belum ada feedback",
+      "id": "Belum ada feedback",
+      "en": "No feedback yet"
+    },
+    {
+      "key": "Belum ada feedback.",
+      "id": "Belum ada feedback.",
+      "en": "No feedback yet."
+    },
+    {
+      "key": "Belum ada informasi",
+      "id": "Belum ada informasi",
+      "en": "No information yet"
+    },
+    {
+      "key": "Belum ada informasi anak.",
+      "id": "Belum ada informasi anak.",
+      "en": "No child information yet."
+    },
+    {
+      "key": "Belum ada informasi untuk {{name}}.",
+      "id": "Belum ada informasi untuk {{name}}.",
+      "en": "No information for {{name}} yet."
+    },
+    {
+      "key": "Belum ada informasi untuk {{selectedName}}.",
+      "id": "Belum ada informasi untuk {{selectedName}}.",
+      "en": "No information for {{selectedName}} yet."
+    },
+    {
+      "key": "Belum ada invoice",
+      "id": "Belum ada invoice",
+      "en": "No invoices yet"
+    },
+    {
+      "key": "Belum ada jadwal",
+      "id": "Belum ada jadwal",
+      "en": "No schedules yet"
+    },
+    {
+      "key": "Belum ada kegiatan yang terdaftar.",
+      "id": "Belum ada kegiatan yang terdaftar.",
+      "en": "No activities have been registered yet."
+    },
+    {
+      "key": "Belum ada laporan {{jenis}}. Klik Generate untuk membuat.",
+      "id": "Belum ada laporan {{jenis}}. Klik Generate untuk membuat.",
+      "en": "No {{jenis}} reports yet. Click Generate to create one."
+    },
+    {
+      "key": "Belum ada laporan {{type}}",
+      "id": "Belum ada laporan {{type}}",
+      "en": "No {{type}} report yet"
+    },
+    {
+      "key": "Belum ada laporan {{type}}. Klik Generate untuk membuat.",
+      "id": "Belum ada laporan {{type}}. Klik Generate untuk membuat.",
+      "en": "No {{type}} report yet. Click Generate to create one."
+    },
+    {
+      "key": "Belum ada laporan bulanan",
+      "id": "Belum ada laporan bulanan",
+      "en": "No monthly reports yet"
+    },
+    {
+      "key": "Belum ada laporan mingguan",
+      "id": "Belum ada laporan mingguan",
+      "en": "No weekly reports yet"
+    },
+    {
+      "key": "Belum ada notifikasi",
+      "id": "Belum ada notifikasi",
+      "en": "No notifications yet"
+    },
+    {
+      "key": "Belum ada orang tua terdaftar",
+      "id": "Belum ada orang tua terdaftar",
+      "en": "No parents registered yet"
+    },
+    {
+      "key": "Belum ada paket",
+      "id": "Belum ada paket",
+      "en": "No packages yet"
+    },
+    {
+      "key": "Belum ada paket aktif",
+      "id": "Belum ada paket aktif",
+      "en": "No active package"
+    },
+    {
+      "key": "Belum ada paket aktif.",
+      "id": "Belum ada paket aktif.",
+      "en": "No active packages yet."
+    },
+    {
+      "key": "Belum ada paket aktif. Tambahkan paket terlebih dahulu.",
+      "id": "Belum ada paket aktif. Tambahkan paket terlebih dahulu.",
+      "en": "No active package yet. Add a package first."
+    },
+    {
+      "key": "Belum ada paket yang tersedia.",
+      "id": "Belum ada paket yang tersedia.",
+      "en": "No packages are available yet."
+    },
+    {
+      "key": "Belum ada pembayaran",
+      "id": "Belum ada pembayaran",
+      "en": "No payments yet"
+    },
+    {
+      "key": "Belum ada pengumuman",
+      "id": "Belum ada pengumuman",
+      "en": "No announcements yet"
+    },
+    {
+      "key": "Belum ada penilaian",
+      "id": "Belum ada penilaian",
+      "en": "No assessments yet"
+    },
+    {
+      "key": "Belum ada penilaian.",
+      "id": "Belum ada penilaian.",
+      "en": "No assessments yet."
+    },
+    {
+      "key": "Belum ada penjemput terdaftar",
+      "id": "Belum ada penjemput terdaftar",
+      "en": "No authorized pickups registered yet"
+    },
+    {
+      "key": "Belum ada riwayat paket",
+      "id": "Belum ada riwayat paket",
+      "en": "No package history yet"
+    },
+    {
+      "key": "Belum ada riwayat penilaian.",
+      "id": "Belum ada riwayat penilaian.",
+      "en": "No assessment history yet."
+    },
+    {
+      "key": "Belum ada tagihan",
+      "id": "Belum ada tagihan",
+      "en": "No invoices yet"
+    },
+    {
+      "key": "Belum ada testimoni dari orang tua.",
+      "id": "Belum ada testimoni dari orang tua.",
+      "en": "No testimonials from parents yet."
+    },
+    {
+      "key": "Belum ada voucher",
+      "id": "Belum ada voucher",
+      "en": "No vouchers yet"
+    },
+    {
+      "key": "Belum punya akun?",
+      "id": "Belum punya akun?",
+      "en": "Don't have an account?"
+    },
+    {
+      "key": "Belum punya akun? ",
+      "id": "Belum punya akun? ",
+      "en": "Don't have an account? "
+    },
+    {
+      "key": "Berakhir",
+      "id": "Berakhir",
+      "en": "Ended"
+    },
+    {
+      "key": "Berakhir: {{date}}",
+      "id": "Berakhir: {{date}}",
+      "en": "Ends: {{date}}"
+    },
+    {
+      "key": "Beranda",
+      "id": "Beranda",
+      "en": "Home"
+    },
+    {
+      "key": "Bergabunglah hari ini dan rasakan kemudahan mengelola daycare serta ketenangan sebagai orang tua.",
+      "id": "Bergabunglah hari ini dan rasakan kemudahan mengelola daycare serta ketenangan sebagai orang tua.",
+      "en": "Join today and experience the ease of managing a daycare and the peace of mind of being a parent."
+    },
+    {
+      "key": "Berikut ringkasan TinyCare hari ini.",
+      "id": "Berikut ringkasan TinyCare hari ini.",
+      "en": "Here is TinyCare's summary for today."
+    },
+    {
+      "key": "Berkembang",
+      "id": "Berkembang",
+      "en": "Developing"
+    },
+    {
+      "key": "Berlaku",
+      "id": "Berlaku",
+      "en": "Valid Period"
+    },
+    {
+      "key": "Berlaku hingga {{date}}",
+      "id": "Berlaku hingga {{date}}",
+      "en": "Valid until {{date}}"
+    },
+    {
+      "key": "Berlaku hingga: {{date}}",
+      "id": "Berlaku hingga: {{date}}",
+      "en": "Valid until: {{date}}"
+    },
+    {
+      "key": "Berlaku s/d {{date}}",
+      "id": "Berlaku s/d {{date}}",
+      "en": "Valid until {{date}}"
+    },
+    {
+      "key": "Berlangsung",
+      "id": "Berlangsung",
+      "en": "Ongoing"
+    },
+    {
+      "key": "Bermain",
+      "id": "Bermain",
+      "en": "Play"
+    },
+    {
+      "key": "Biasa",
+      "id": "Biasa",
+      "en": "Neutral"
+    },
+    {
+      "key": "Buat akun untuk memantau si kecil",
+      "id": "Buat akun untuk memantau si kecil",
+      "en": "Create an account to monitor your little one"
+    },
+    {
+      "key": "Buat Daily Story",
+      "id": "Buat Daily Story",
+      "en": "Create Daily Story"
+    },
+    {
+      "key": "Buat dan kelola pengumuman untuk orang tua",
+      "id": "Buat dan kelola pengumuman untuk orang tua",
+      "en": "Create and manage announcements for parents"
+    },
+    {
+      "key": "Buat Invoice",
+      "id": "Buat Invoice",
+      "en": "Create Invoice"
+    },
+    {
+      "key": "Buat Invoice Baru",
+      "id": "Buat Invoice Baru",
+      "en": "Create New Invoice"
+    },
+    {
+      "key": "Buat Jadwal Baru",
+      "id": "Buat Jadwal Baru",
+      "en": "Create New Schedule"
+    },
+    {
+      "key": "Buat Pengumuman",
+      "id": "Buat Pengumuman",
+      "en": "Create Announcement"
+    },
+    {
+      "key": "Buat Pengumuman Baru",
+      "id": "Buat Pengumuman Baru",
+      "en": "Create New Announcement"
+    },
+    {
+      "key": "Buat Sekarang",
+      "id": "Buat Sekarang",
+      "en": "Create Now"
+    },
+    {
+      "key": "Buat Story",
+      "id": "Buat Story",
+      "en": "Create Story"
+    },
+    {
+      "key": "Buka {{label}}",
+      "id": "Buka {{label}}",
+      "en": "Open {{label}}"
+    },
+    {
+      "key": "Buka Aplikasi",
+      "id": "Buka Aplikasi",
+      "en": "Open App"
+    },
+    {
+      "key": "Buka Bukti (PDF)",
+      "id": "Buka Bukti (PDF)",
+      "en": "Open Proof (PDF)"
+    },
+    {
+      "key": "Buka Halaman",
+      "id": "Buka Halaman",
+      "en": "Open Page"
+    },
+    {
+      "key": "Bukti pembayaran",
+      "id": "Bukti pembayaran",
+      "en": "payment proof"
+    },
+    {
+      "key": "Bukti Pembayaran",
+      "id": "Bukti Pembayaran",
+      "en": "Payment Proof"
+    },
+    {
+      "key": "BUKTI PEMBAYARAN",
+      "id": "BUKTI PEMBAYARAN",
+      "en": "PAYMENT PROOF"
+    },
+    {
+      "key": "Bukti Pembayaran *",
+      "id": "Bukti Pembayaran *",
+      "en": "Payment Proof *"
+    },
+    {
+      "key": "Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.",
+      "id": "Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.",
+      "en": "Payment proof sent successfully! Waiting for admin verification."
+    },
+    {
+      "key": "Bukti Pembayaran:",
+      "id": "Bukti Pembayaran:",
+      "en": "Payment Proof:"
+    },
+    {
+      "key": "Bukti sedang dimuat...",
+      "id": "Bukti sedang dimuat...",
+      "en": "Loading proof..."
+    },
+    {
+      "key": "bulanan",
+      "id": "bulanan",
+      "en": "monthly"
+    },
+    {
+      "key": "Bulanan",
+      "id": "Bulanan",
+      "en": "Monthly"
+    },
+    {
+      "key": "Cara Kerja",
+      "id": "Cara Kerja",
+      "en": "How It Works"
+    },
+    {
+      "key": "Cara Pembayaran:",
+      "id": "Cara Pembayaran:",
+      "en": "How to Pay:"
+    },
+    {
+      "key": "Cari",
+      "id": "Cari",
+      "en": "Search"
+    },
+    {
+      "key": "Cari aktivitas...",
+      "id": "Cari aktivitas...",
+      "en": "Search activities..."
+    },
+    {
+      "key": "Cari nama anak...",
+      "id": "Cari nama anak...",
+      "en": "Search child name..."
+    },
+    {
+      "key": "Cari nama atau email...",
+      "id": "Cari nama atau email...",
+      "en": "Search by name or email..."
+    },
+    {
+      "key": "Catat Aktivitas Anak",
+      "id": "Catat Aktivitas Anak",
+      "en": "Record Child Activity"
+    },
+    {
+      "key": "Catatan",
+      "id": "Catatan",
+      "en": "Notes"
+    },
+    {
+      "key": "Catatan (opsional)",
+      "id": "Catatan (opsional)",
+      "en": "Note (optional)"
+    },
+    {
+      "key": "Catatan Admin (internal)",
+      "id": "Catatan Admin (internal)",
+      "en": "Admin Notes (internal)"
+    },
+    {
+      "key": "Catatan Makan",
+      "id": "Catatan Makan",
+      "en": "Meal Notes"
+    },
+    {
+      "key": "Catatan observasi (opsional)",
+      "id": "Catatan observasi (opsional)",
+      "en": "Observation notes (optional)"
+    },
+    {
+      "key": "Catatan Tidur",
+      "id": "Catatan Tidur",
+      "en": "Sleep Notes"
+    },
+    {
+      "key": "Catatan: {{notes}}",
+      "id": "Catatan: {{notes}}",
+      "en": "Note: {{notes}}"
+    },
+    {
+      "key": "Catatan/informasi khusus",
+      "id": "Catatan/informasi khusus",
+      "en": "Special notes/information"
+    },
+    {
+      "key": "Cerita berhasil dibuat.",
+      "id": "Cerita berhasil dibuat.",
+      "en": "Story created successfully."
+    },
+    {
+      "key": "Cerita Hari Ini",
+      "id": "Cerita Hari Ini",
+      "en": "Today's Stories"
+    },
+    {
+      "key": "Cerita hari ini ditambahkan.",
+      "id": "Cerita hari ini ditambahkan.",
+      "en": "Today's story added."
+    },
+    {
+      "key": "Cerita harian",
+      "id": "Cerita harian",
+      "en": "Daily Stories"
+    },
+    {
+      "key": "Cerita harian + dokumentasi foto kegiatan",
+      "id": "Cerita harian + dokumentasi foto kegiatan",
+      "en": "Daily stories + photo documentation of activities"
+    },
+    {
+      "key": "Ceritakan aktivitas anak hari ini...",
+      "id": "Ceritakan aktivitas anak hari ini...",
+      "en": "Describe the child's activities today..."
+    },
+    {
+      "key": "Coba kata kunci lain.",
+      "id": "Coba kata kunci lain.",
+      "en": "Try another keyword."
+    },
+    {
+      "key": "Coba Lagi",
+      "id": "Coba Lagi",
+      "en": "Try Again"
+    },
+    {
+      "key": "contoh: 30",
+      "id": "contoh: 30",
+      "en": "e.g. 30"
+    },
+    {
+      "key": "Contoh: Alergi makanan",
+      "id": "Contoh: Alergi makanan",
+      "en": "Example: Food allergy"
+    },
+    {
+      "key": "Contoh: Berjalan dengan stabil",
+      "id": "Contoh: Berjalan dengan stabil",
+      "en": "Example: Walking steadily"
+    },
+    {
+      "key": "Contoh: Transfer via BCA mobile",
+      "id": "Contoh: Transfer via BCA mobile",
+      "en": "Example: Transfer via BCA mobile"
+    },
+    {
+      "key": "Daftar",
+      "id": "Daftar",
+      "en": "Register"
+    },
+    {
+      "key": "Daftar Akun Orang Tua",
+      "id": "Daftar Akun Orang Tua",
+      "en": "Register a Parent Account"
+    },
+    {
+      "key": "Daftar anak yang terdaftar di daycare.",
+      "id": "Daftar anak yang terdaftar di daycare.",
+      "en": "List of children registered at the daycare."
+    },
+    {
+      "key": "Daftar Informasi",
+      "id": "Daftar Informasi",
+      "en": "Information List"
+    },
+    {
+      "key": "Daily Stories",
+      "id": "Daily Stories",
+      "en": "Daily Stories"
+    },
+    {
+      "key": "Daily Story harian anak",
+      "id": "Daily Story harian anak",
+      "en": "Daily story for the child"
+    },
+    {
+      "key": "Dari: {{name}}",
+      "id": "Dari: {{name}}",
+      "en": "From: {{name}}"
+    },
+    {
+      "key": "Dashboard",
+      "id": "Dashboard",
+      "en": "Dashboard"
+    },
+    {
+      "key": "Data",
+      "id": "Data",
+      "en": "Data"
+    },
+    {
+      "key": "Data akan muncul ketika anak sudah terdaftar di daycare.",
+      "id": "Data akan muncul ketika anak sudah terdaftar di daycare.",
+      "en": "Data will appear once a child is registered at the daycare."
+    },
+    {
+      "key": "Data akan muncul ketika sudah tersedia di sistem.",
+      "id": "Data akan muncul ketika sudah tersedia di sistem.",
+      "en": "Data will appear once it is available in the system."
+    },
+    {
+      "key": "Data anak terdaftar",
+      "id": "Data anak terdaftar",
+      "en": "Registered children data"
+    },
+    {
+      "key": "Data orang tua",
+      "id": "Data orang tua",
+      "en": "Parent data"
+    },
+    {
+      "key": "Data orang tua akan muncul ketika sudah terdaftar.",
+      "id": "Data orang tua akan muncul ketika sudah terdaftar.",
+      "en": "Parent data will appear once it is registered."
+    },
+    {
+      "key": "Data perkembangan",
+      "id": "Data perkembangan",
+      "en": "Development data"
+    },
+    {
+      "key": "Data perkembangan akan muncul setelah penilaian dilakukan.",
+      "id": "Data perkembangan akan muncul setelah penilaian dilakukan.",
+      "en": "Development data will appear after assessments are completed."
+    },
+    {
+      "key": "Data Pribadi",
+      "id": "Data Pribadi",
+      "en": "Personal Data"
+    },
+    {
+      "key": "Data profil tidak tersedia",
+      "id": "Data profil tidak tersedia",
+      "en": "Profile data unavailable"
+    },
+    {
+      "key": "Data tidak tersedia.",
+      "id": "Data tidak tersedia.",
+      "en": "Data not available."
+    },
+    {
+      "key": "Data tidak valid.",
+      "id": "Data tidak valid.",
+      "en": "Invalid data."
+    },
+    {
+      "key": "Des",
+      "id": "Des",
+      "en": "Dec"
+    },
+    {
+      "key": "Desember",
+      "id": "Desember",
+      "en": "December"
+    },
+    {
+      "key": "Deskripsi",
+      "id": "Deskripsi",
+      "en": "Description"
+    },
+    {
+      "key": "Detail",
+      "id": "Detail",
+      "en": "Details"
+    },
+    {
+      "key": "Detail Anak",
+      "id": "Detail Anak",
+      "en": "Child Details"
+    },
+    {
+      "key": "Detail informasi",
+      "id": "Detail informasi",
+      "en": "Information details"
+    },
+    {
+      "key": "Detail Invoice",
+      "id": "Detail Invoice",
+      "en": "Invoice Details"
+    },
+    {
+      "key": "Detail Pembayaran",
+      "id": "Detail Pembayaran",
+      "en": "Payment Details"
+    },
+    {
+      "key": "Detail Tagihan",
+      "id": "Detail Tagihan",
+      "en": "Invoice Details"
+    },
+    {
+      "key": "diaktifkan",
+      "id": "diaktifkan",
+      "en": "activated"
+    },
+    {
+      "key": "Dibalas",
+      "id": "Dibalas",
+      "en": "Replied"
+    },
+    {
+      "key": "Dibatalkan",
+      "id": "Dibatalkan",
+      "en": "Cancelled"
+    },
+    {
+      "key": "Dibayar",
+      "id": "Dibayar",
+      "en": "Paid"
+    },
+    {
+      "key": "Dibayar pada: {{date}}",
+      "id": "Dibayar pada: {{date}}",
+      "en": "Paid on: {{date}}"
+    },
+    {
+      "key": "Dibayar pada: {{paidAt}}",
+      "id": "Dibayar pada: {{paidAt}}",
+      "en": "Paid on: {{paidAt}}"
+    },
+    {
+      "key": "Dibuat",
+      "id": "Dibuat",
+      "en": "Created"
+    },
+    {
+      "key": "Dibuat dengan",
+      "id": "Dibuat dengan",
+      "en": "Made with"
+    },
+    {
+      "key": "Dijawab",
+      "id": "Dijawab",
+      "en": "Answered"
+    },
+    {
+      "key": "Dikelola Cerdas",
+      "id": "Dikelola Cerdas",
+      "en": "Smartly Managed"
+    },
+    {
+      "key": "Dikirim ke seluruh orang tua",
+      "id": "Dikirim ke seluruh orang tua",
+      "en": "Sent to all parents"
+    },
+    {
+      "key": "dinonaktifkan",
+      "id": "dinonaktifkan",
+      "en": "deactivated"
+    },
+    {
+      "key": "Diperbarui",
+      "id": "Diperbarui",
+      "en": "Updated"
+    },
+    {
+      "key": "Dipercaya Ribuan Keluarga",
+      "id": "Dipercaya Ribuan Keluarga",
+      "en": "Trusted by Thousands of Families"
+    },
+    {
+      "key": "Diskon",
+      "id": "Diskon",
+      "en": "Discount"
+    },
+    {
+      "key": "Ditinjau",
+      "id": "Ditinjau",
+      "en": "Reviewed"
+    },
+    {
+      "key": "Ditolak",
+      "id": "Ditolak",
+      "en": "Rejected"
+    },
+    {
+      "key": "Dokumentasi",
+      "id": "Dokumentasi",
+      "en": "Documentation"
+    },
+    {
+      "key": "Dokumentasi Foto",
+      "id": "Dokumentasi Foto",
+      "en": "Photo Documentation"
+    },
+    {
+      "key": "Draft",
+      "id": "Draft",
+      "en": "Draft"
+    },
+    {
+      "key": "Durasi",
+      "id": "Durasi",
+      "en": "Duration"
+    },
+    {
+      "key": "Durasi (hari) *",
+      "id": "Durasi (hari) *",
+      "en": "Duration (days) *"
+    },
+    {
+      "key": "Durasi minimal 1 hari",
+      "id": "Durasi minimal 1 hari",
+      "en": "Duration must be at least 1 day"
+    },
+    {
+      "key": "Durasi tidak boleh kosong",
+      "id": "Durasi tidak boleh kosong",
+      "en": "Duration cannot be empty"
+    },
+    {
+      "key": "E-Wallet",
+      "id": "E-Wallet",
+      "en": "E-Wallet"
+    },
+    {
+      "key": "Edit",
+      "id": "Edit",
+      "en": "Edit"
+    },
+    {
+      "key": "Edit Aktivitas",
+      "id": "Edit Aktivitas",
+      "en": "Edit Activity"
+    },
+    {
+      "key": "Edit Anak",
+      "id": "Edit Anak",
+      "en": "Edit Child"
+    },
+    {
+      "key": "Edit Data Anak",
+      "id": "Edit Data Anak",
+      "en": "Edit Child Data"
+    },
+    {
+      "key": "Edit Informasi",
+      "id": "Edit Informasi",
+      "en": "Edit Information"
+    },
+    {
+      "key": "Edit Paket",
+      "id": "Edit Paket",
+      "en": "Edit Package"
+    },
+    {
+      "key": "Edit Pengumuman",
+      "id": "Edit Pengumuman",
+      "en": "Edit Announcement"
+    },
+    {
+      "key": "Edit Penjemput",
+      "id": "Edit Penjemput",
+      "en": "Edit Authorized Pickup"
+    },
+    {
+      "key": "Edit Voucher",
+      "id": "Edit Voucher",
+      "en": "Edit Voucher"
+    },
+    {
+      "key": "Edukasi",
+      "id": "Edukasi",
+      "en": "Education"
+    },
+    {
+      "key": "Email",
+      "id": "Email",
+      "en": "Email"
+    },
+    {
+      "key": "Email *",
+      "id": "Email *",
+      "en": "Email *"
+    },
+    {
+      "key": "Email atau password salah.",
+      "id": "Email atau password salah.",
+      "en": "Incorrect email or password."
+    },
+    {
+      "key": "Email tidak boleh kosong",
+      "id": "Email tidak boleh kosong",
+      "en": "Email cannot be empty"
+    },
+    {
+      "key": "Email tidak valid",
+      "id": "Email tidak valid",
+      "en": "Invalid email"
+    },
+    {
+      "key": "English",
+      "id": "English",
+      "en": "English"
+    },
+    {
+      "key": "Event Mendatang",
+      "id": "Event Mendatang",
+      "en": "Upcoming Events"
+    },
+    {
+      "key": "Expired",
+      "id": "Expired",
+      "en": "Expired"
+    },
+    {
+      "key": "Fasilitas",
+      "id": "Fasilitas",
+      "en": "Facilities"
+    },
+    {
+      "key": "Fasilitas:",
+      "id": "Fasilitas:",
+      "en": "Facilities:"
+    },
+    {
+      "key": "Feb",
+      "id": "Feb",
+      "en": "Feb"
+    },
+    {
+      "key": "Februari",
+      "id": "Februari",
+      "en": "February"
+    },
+    {
+      "key": "Feedback",
+      "id": "Feedback",
+      "en": "Feedback"
+    },
+    {
+      "key": "Feedback berhasil dikirim!",
+      "id": "Feedback berhasil dikirim!",
+      "en": "Feedback sent successfully!"
+    },
+    {
+      "key": "Feedback Terbaru",
+      "id": "Feedback Terbaru",
+      "en": "Recent Feedback"
+    },
+    {
+      "key": "Fitur",
+      "id": "Fitur",
+      "en": "Features"
+    },
+    {
+      "key": "Format foto harus JPG, PNG, atau GIF.",
+      "id": "Format foto harus JPG, PNG, atau GIF.",
+      "en": "Photo format must be JPG, PNG, or GIF."
+    },
+    {
+      "key": "Format: JPG, PNG, atau PDF. Maks 5MB.",
+      "id": "Format: JPG, PNG, atau PDF. Maks 5MB.",
+      "en": "Format: JPG, PNG, or PDF. Max 5MB."
+    },
+    {
+      "key": "Foto",
+      "id": "Foto",
+      "en": "Photo"
+    },
+    {
+      "key": "Foto anak",
+      "id": "Foto anak",
+      "en": "Child photo"
+    },
+    {
+      "key": "Foto dikompres otomatis agar ukurannya kecil.",
+      "id": "Foto dikompres otomatis agar ukurannya kecil.",
+      "en": "Photo is automatically compressed to keep the file small."
+    },
+    {
+      "key": "Foto Profil Anak",
+      "id": "Foto Profil Anak",
+      "en": "Child Profile Photo"
+    },
+    {
+      "key": "Gagal",
+      "id": "Gagal",
+      "en": "Failed"
+    },
+    {
+      "key": "Gagal {{action}} anak.",
+      "id": "Gagal {{action}} anak.",
+      "en": "Failed to {{action}} child."
+    },
+    {
+      "key": "Gagal {{action}} anak. Silakan coba lagi.",
+      "id": "Gagal {{action}} anak. Silakan coba lagi.",
+      "en": "Failed to {{action}} child. Please try again."
+    },
+    {
+      "key": "Gagal dimuat",
+      "id": "Gagal dimuat",
+      "en": "Failed to load"
+    },
+    {
+      "key": "Gagal membuat Daily Story.",
+      "id": "Gagal membuat Daily Story.",
+      "en": "Failed to create Daily Story."
+    },
+    {
+      "key": "Gagal membuat event.",
+      "id": "Gagal membuat event.",
+      "en": "Failed to create event."
+    },
+    {
+      "key": "Gagal membuat invoice.",
+      "id": "Gagal membuat invoice.",
+      "en": "Failed to create invoice."
+    },
+    {
+      "key": "Gagal membuat laporan bulanan.",
+      "id": "Gagal membuat laporan bulanan.",
+      "en": "Failed to generate monthly report."
+    },
+    {
+      "key": "Gagal membuat laporan mingguan.",
+      "id": "Gagal membuat laporan mingguan.",
+      "en": "Failed to generate weekly report."
+    },
+    {
+      "key": "Gagal membuat laporan.",
+      "id": "Gagal membuat laporan.",
+      "en": "Failed to create the report."
+    },
+    {
+      "key": "Gagal membuat pengumuman.",
+      "id": "Gagal membuat pengumuman.",
+      "en": "Failed to create announcement."
+    },
+    {
+      "key": "Gagal memperbarui notifikasi.",
+      "id": "Gagal memperbarui notifikasi.",
+      "en": "Failed to update notification."
+    },
+    {
+      "key": "Gagal memperbarui status.",
+      "id": "Gagal memperbarui status.",
+      "en": "Failed to update status."
+    },
+    {
+      "key": "Gagal memuat bukti",
+      "id": "Gagal memuat bukti",
+      "en": "Failed to load proof"
+    },
+    {
+      "key": "Gagal memuat daftar invoice.",
+      "id": "Gagal memuat daftar invoice.",
+      "en": "Failed to load invoice list."
+    },
+    {
+      "key": "Gagal memuat daftar penjemput.",
+      "id": "Gagal memuat daftar penjemput.",
+      "en": "Failed to load the authorized pickup list."
+    },
+    {
+      "key": "Gagal memuat Daily Stories.",
+      "id": "Gagal memuat Daily Stories.",
+      "en": "Failed to load Daily Stories."
+    },
+    {
+      "key": "Gagal memuat dashboard",
+      "id": "Gagal memuat dashboard",
+      "en": "Failed to load dashboard"
+    },
+    {
+      "key": "Gagal memuat dashboard admin",
+      "id": "Gagal memuat dashboard admin",
+      "en": "Failed to load the admin dashboard"
+    },
+    {
+      "key": "Gagal memuat dashboard.",
+      "id": "Gagal memuat dashboard.",
+      "en": "Failed to load dashboard."
+    },
+    {
+      "key": "Gagal memuat data admin.",
+      "id": "Gagal memuat data admin.",
+      "en": "Failed to load admin data."
+    },
+    {
+      "key": "Gagal memuat data admin. Silakan coba lagi.",
+      "id": "Gagal memuat data admin. Silakan coba lagi.",
+      "en": "Failed to load admin data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data aktivitas.",
+      "id": "Gagal memuat data aktivitas.",
+      "en": "Failed to load activities data."
+    },
+    {
+      "key": "Gagal memuat data aktivitas. Silakan coba lagi.",
+      "id": "Gagal memuat data aktivitas. Silakan coba lagi.",
+      "en": "Failed to load activity data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data anak.",
+      "id": "Gagal memuat data anak.",
+      "en": "Failed to load children data."
+    },
+    {
+      "key": "Gagal memuat data anak. Silakan coba lagi.",
+      "id": "Gagal memuat data anak. Silakan coba lagi.",
+      "en": "Failed to load child data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data feedback.",
+      "id": "Gagal memuat data feedback.",
+      "en": "Failed to load feedback data."
+    },
+    {
+      "key": "Gagal memuat data jadwal.",
+      "id": "Gagal memuat data jadwal.",
+      "en": "Failed to load schedule data."
+    },
+    {
+      "key": "Gagal memuat data kategori.",
+      "id": "Gagal memuat data kategori.",
+      "en": "Failed to load category data."
+    },
+    {
+      "key": "Gagal memuat data laporan.",
+      "id": "Gagal memuat data laporan.",
+      "en": "Failed to load report data."
+    },
+    {
+      "key": "Gagal memuat data orang tua.",
+      "id": "Gagal memuat data orang tua.",
+      "en": "Failed to load parent data."
+    },
+    {
+      "key": "Gagal memuat data orang tua. Silakan coba lagi.",
+      "id": "Gagal memuat data orang tua. Silakan coba lagi.",
+      "en": "Failed to load parent data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data paket.",
+      "id": "Gagal memuat data paket.",
+      "en": "Failed to load package data."
+    },
+    {
+      "key": "Gagal memuat data pembayaran.",
+      "id": "Gagal memuat data pembayaran.",
+      "en": "Failed to load payment data."
+    },
+    {
+      "key": "Gagal memuat data pembayaran. Silakan coba lagi.",
+      "id": "Gagal memuat data pembayaran. Silakan coba lagi.",
+      "en": "Failed to load payment data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data pengguna.",
+      "id": "Gagal memuat data pengguna.",
+      "en": "Failed to load user data."
+    },
+    {
+      "key": "Gagal memuat data pengguna. Silakan coba lagi.",
+      "id": "Gagal memuat data pengguna. Silakan coba lagi.",
+      "en": "Failed to load user data. Please try again."
+    },
+    {
+      "key": "Gagal memuat data pengumuman.",
+      "id": "Gagal memuat data pengumuman.",
+      "en": "Failed to load announcement data."
+    },
+    {
+      "key": "Gagal memuat data perkembangan.",
+      "id": "Gagal memuat data perkembangan.",
+      "en": "Failed to load development data."
+    },
+    {
+      "key": "Gagal memuat data voucher.",
+      "id": "Gagal memuat data voucher.",
+      "en": "Failed to load voucher data."
+    },
+    {
+      "key": "Gagal memuat data.",
+      "id": "Gagal memuat data.",
+      "en": "Failed to load data."
+    },
+    {
+      "key": "Gagal memuat detail invoice.",
+      "id": "Gagal memuat detail invoice.",
+      "en": "Failed to load invoice details."
+    },
+    {
+      "key": "Gagal memuat feedback.",
+      "id": "Gagal memuat feedback.",
+      "en": "Failed to load feedback."
+    },
+    {
+      "key": "Gagal memuat informasi.",
+      "id": "Gagal memuat informasi.",
+      "en": "Failed to load information."
+    },
+    {
+      "key": "Gagal memuat invoice.",
+      "id": "Gagal memuat invoice.",
+      "en": "Failed to load invoices."
+    },
+    {
+      "key": "Gagal memuat notifikasi.",
+      "id": "Gagal memuat notifikasi.",
+      "en": "Failed to load notifications."
+    },
+    {
+      "key": "Gagal memuat paket.",
+      "id": "Gagal memuat paket.",
+      "en": "Failed to load packages."
+    },
+    {
+      "key": "Gagal memuat paket. Silakan coba lagi.",
+      "id": "Gagal memuat paket. Silakan coba lagi.",
+      "en": "Failed to load packages. Please try again."
+    },
+    {
+      "key": "Gagal memuat pengumuman.",
+      "id": "Gagal memuat pengumuman.",
+      "en": "Failed to load announcements."
+    },
+    {
+      "key": "Gagal memuat profil.",
+      "id": "Gagal memuat profil.",
+      "en": "Failed to load profile."
+    },
+    {
+      "key": "Gagal memuat tagihan. Silakan coba lagi.",
+      "id": "Gagal memuat tagihan. Silakan coba lagi.",
+      "en": "Failed to load invoices. Please try again."
+    },
+    {
+      "key": "Gagal memulai pembayaran.",
+      "id": "Gagal memulai pembayaran.",
+      "en": "Failed to start payment."
+    },
+    {
+      "key": "Gagal memverifikasi pembayaran. Silakan coba lagi.",
+      "id": "Gagal memverifikasi pembayaran. Silakan coba lagi.",
+      "en": "Failed to verify payment. Please try again."
+    },
+    {
+      "key": "Gagal memverifikasi.",
+      "id": "Gagal memverifikasi.",
+      "en": "Failed to verify."
+    },
+    {
+      "key": "Gagal menambahkan admin.",
+      "id": "Gagal menambahkan admin.",
+      "en": "Failed to add admin."
+    },
+    {
+      "key": "Gagal menambahkan admin. Silakan coba lagi.",
+      "id": "Gagal menambahkan admin. Silakan coba lagi.",
+      "en": "Failed to add admin. Please try again."
+    },
+    {
+      "key": "Gagal menambahkan aktivitas.",
+      "id": "Gagal menambahkan aktivitas.",
+      "en": "Failed to add activity."
+    },
+    {
+      "key": "Gagal menambahkan anak.",
+      "id": "Gagal menambahkan anak.",
+      "en": "Failed to add child."
+    },
+    {
+      "key": "Gagal menambahkan informasi.",
+      "id": "Gagal menambahkan informasi.",
+      "en": "Failed to add information."
+    },
+    {
+      "key": "Gagal menambahkan orang tua.",
+      "id": "Gagal menambahkan orang tua.",
+      "en": "Failed to add parent."
+    },
+    {
+      "key": "Gagal menambahkan paket.",
+      "id": "Gagal menambahkan paket.",
+      "en": "Failed to add package."
+    },
+    {
+      "key": "Gagal menambahkan voucher.",
+      "id": "Gagal menambahkan voucher.",
+      "en": "Failed to add voucher."
+    },
+    {
+      "key": "Gagal menandai notifikasi.",
+      "id": "Gagal menandai notifikasi.",
+      "en": "Failed to mark notification."
+    },
+    {
+      "key": "Gagal mencatat aktivitas anak.",
+      "id": "Gagal mencatat aktivitas anak.",
+      "en": "Failed to record child activity."
+    },
+    {
+      "key": "Gagal mencatat kehadiran.",
+      "id": "Gagal mencatat kehadiran.",
+      "en": "Failed to record attendance."
+    },
+    {
+      "key": "Gagal menghapus aktivitas.",
+      "id": "Gagal menghapus aktivitas.",
+      "en": "Failed to delete activity."
+    },
+    {
+      "key": "Gagal menghapus anak.",
+      "id": "Gagal menghapus anak.",
+      "en": "Failed to delete child."
+    },
+    {
+      "key": "Gagal menghapus anak. Silakan coba lagi.",
+      "id": "Gagal menghapus anak. Silakan coba lagi.",
+      "en": "Failed to delete child. Please try again."
+    },
+    {
+      "key": "Gagal menghapus event.",
+      "id": "Gagal menghapus event.",
+      "en": "Failed to delete event."
+    },
+    {
+      "key": "Gagal menghapus orang tua.",
+      "id": "Gagal menghapus orang tua.",
+      "en": "Failed to delete parent."
+    },
+    {
+      "key": "Gagal menghapus paket.",
+      "id": "Gagal menghapus paket.",
+      "en": "Failed to delete package."
+    },
+    {
+      "key": "Gagal menghapus pengumuman.",
+      "id": "Gagal menghapus pengumuman.",
+      "en": "Failed to delete announcement."
+    },
+    {
+      "key": "Gagal menghapus penjemput.",
+      "id": "Gagal menghapus penjemput.",
+      "en": "Failed to delete authorized pickup."
+    },
+    {
+      "key": "Gagal menghapus voucher.",
+      "id": "Gagal menghapus voucher.",
+      "en": "Failed to delete voucher."
+    },
+    {
+      "key": "Gagal menghapus.",
+      "id": "Gagal menghapus.",
+      "en": "Failed to delete."
+    },
+    {
+      "key": "Gagal mengirim balasan.",
+      "id": "Gagal mengirim balasan.",
+      "en": "Failed to send reply."
+    },
+    {
+      "key": "Gagal mengirim bukti pembayaran.",
+      "id": "Gagal mengirim bukti pembayaran.",
+      "en": "Failed to send payment proof."
+    },
+    {
+      "key": "Gagal mengirim feedback.",
+      "id": "Gagal mengirim feedback.",
+      "en": "Failed to send feedback."
+    },
+    {
+      "key": "Gagal mengirim jawaban.",
+      "id": "Gagal mengirim jawaban.",
+      "en": "Failed to send response."
+    },
+    {
+      "key": "Gagal mengirim. Silakan coba lagi.",
+      "id": "Gagal mengirim. Silakan coba lagi.",
+      "en": "Failed to send. Please try again."
+    },
+    {
+      "key": "Gagal mengubah password.",
+      "id": "Gagal mengubah password.",
+      "en": "Failed to change password."
+    },
+    {
+      "key": "Gagal mengubah status akun.",
+      "id": "Gagal mengubah status akun.",
+      "en": "Failed to change account status."
+    },
+    {
+      "key": "Gagal mengubah status anak.",
+      "id": "Gagal mengubah status anak.",
+      "en": "Failed to change the child status."
+    },
+    {
+      "key": "Gagal mengubah status.",
+      "id": "Gagal mengubah status.",
+      "en": "Failed to update status."
+    },
+    {
+      "key": "Gagal mengubah status. Silakan coba lagi.",
+      "id": "Gagal mengubah status. Silakan coba lagi.",
+      "en": "Failed to change status. Please try again."
+    },
+    {
+      "key": "Gagal menolak akun.",
+      "id": "Gagal menolak akun.",
+      "en": "Failed to reject account."
+    },
+    {
+      "key": "Gagal menolak akun. Silakan coba lagi.",
+      "id": "Gagal menolak akun. Silakan coba lagi.",
+      "en": "Failed to reject account. Please try again."
+    },
+    {
+      "key": "Gagal menolak pembayaran.",
+      "id": "Gagal menolak pembayaran.",
+      "en": "Failed to reject payment."
+    },
+    {
+      "key": "Gagal menolak pembayaran. Silakan coba lagi.",
+      "id": "Gagal menolak pembayaran. Silakan coba lagi.",
+      "en": "Failed to reject payment. Please try again."
+    },
+    {
+      "key": "Gagal menolak.",
+      "id": "Gagal menolak.",
+      "en": "Failed to reject."
+    },
+    {
+      "key": "Gagal menyetujui akun.",
+      "id": "Gagal menyetujui akun.",
+      "en": "Failed to approve account."
+    },
+    {
+      "key": "Gagal menyetujui akun. Silakan coba lagi.",
+      "id": "Gagal menyetujui akun. Silakan coba lagi.",
+      "en": "Failed to approve account. Please try again."
+    },
+    {
+      "key": "Gagal menyimpan data anak.",
+      "id": "Gagal menyimpan data anak.",
+      "en": "Failed to save child data."
+    },
+    {
+      "key": "Gagal menyimpan data.",
+      "id": "Gagal menyimpan data.",
+      "en": "Failed to save data."
+    },
+    {
+      "key": "Gagal menyimpan paket.",
+      "id": "Gagal menyimpan paket.",
+      "en": "Failed to save package."
+    },
+    {
+      "key": "Gagal menyimpan paket. Silakan coba lagi.",
+      "id": "Gagal menyimpan paket. Silakan coba lagi.",
+      "en": "Failed to save package. Please try again."
+    },
+    {
+      "key": "Gagal menyimpan perubahan.",
+      "id": "Gagal menyimpan perubahan.",
+      "en": "Failed to save changes."
+    },
+    {
+      "key": "Gagal menyimpan voucher.",
+      "id": "Gagal menyimpan voucher.",
+      "en": "Failed to save voucher."
+    },
+    {
+      "key": "Gagal menyimpan voucher. Silakan coba lagi.",
+      "id": "Gagal menyimpan voucher. Silakan coba lagi.",
+      "en": "Failed to save voucher. Please try again."
+    },
+    {
+      "key": "Gagal menyimpan.",
+      "id": "Gagal menyimpan.",
+      "en": "Failed to save."
+    },
+    {
+      "key": "Gagal menyimpan. Silakan coba lagi.",
+      "id": "Gagal menyimpan. Silakan coba lagi.",
+      "en": "Failed to save. Please try again."
+    },
+    {
+      "key": "Galeri Dokumentasi",
+      "id": "Galeri Dokumentasi",
+      "en": "Photo Documentation Gallery"
+    },
+    {
+      "key": "Ganti Foto",
+      "id": "Ganti Foto",
+      "en": "Change Photo"
+    },
+    {
+      "key": "Ganti kata sandi akun Anda",
+      "id": "Ganti kata sandi akun Anda",
+      "en": "Change your account password"
+    },
+    {
+      "key": "Ganti password untuk mengamankan akun Anda.",
+      "id": "Ganti password untuk mengamankan akun Anda.",
+      "en": "Change your password to keep your account secure."
+    },
+    {
+      "key": "Gender",
+      "id": "Gender",
+      "en": "Gender"
+    },
+    {
+      "key": "Gender *",
+      "id": "Gender *",
+      "en": "Gender *"
+    },
+    {
+      "key": "Generate",
+      "id": "Generate",
+      "en": "Generate"
+    },
+    {
+      "key": "Generate Laporan {{type}}",
+      "id": "Generate Laporan {{type}}",
+      "en": "Generate {{type}} Report"
+    },
+    {
+      "key": "Generated",
+      "id": "Generated",
+      "en": "Generated"
+    },
+    {
+      "key": "Generating...",
+      "id": "Generating...",
+      "en": "Generating..."
+    },
+    {
+      "key": "Gunakan minimal 8 karakter untuk password baru.",
+      "id": "Gunakan minimal 8 karakter untuk password baru.",
+      "en": "Use at least 8 characters for the new password."
+    },
+    {
+      "key": "Hadir",
+      "id": "Hadir",
+      "en": "Present"
+    },
+    {
+      "key": "Halo, {{name}}",
+      "id": "Halo, {{name}}",
+      "en": "Hello, {{name}}"
+    },
+    {
+      "key": "Halo, {{name}} 👋",
+      "id": "Halo, {{name}} 👋",
+      "en": "Hi, {{name}} 👋"
+    },
+    {
+      "key": "Halo, Admin {{name}} 👋",
+      "id": "Halo, Admin {{name}} 👋",
+      "en": "Hi, Admin {{name}} 👋"
+    },
+    {
+      "key": "Hanya admin_master yang dapat mengelola admin.",
+      "id": "Hanya admin_master yang dapat mengelola admin.",
+      "en": "Only admin_master can manage admins."
+    },
+    {
+      "key": "hanya menyimpan sebagai draft tanpa mengirim apa pun.",
+      "id": "hanya menyimpan sebagai draft tanpa mengirim apa pun.",
+      "en": "only saves as a draft without sending anything."
+    },
+    {
+      "key": "Hanya orang tua yang dipilih yang menerima pengumuman, notifikasi, dan push.",
+      "id": "Hanya orang tua yang dipilih yang menerima pengumuman, notifikasi, dan push.",
+      "en": "Only selected parents receive the announcement, notifications, and push."
+    },
+    {
+      "key": "Hapus",
+      "id": "Hapus",
+      "en": "Delete"
+    },
+    {
+      "key": "Hapus \"{{title}}\"?",
+      "id": "Hapus \"{{title}}\"?",
+      "en": "Delete \"{{title}}\"?"
+    },
+    {
+      "key": "Hapus Aktivitas",
+      "id": "Hapus Aktivitas",
+      "en": "Delete Activity"
+    },
+    {
+      "key": "Hapus aktivitas \"{{name}}\"?",
+      "id": "Hapus aktivitas \"{{name}}\"?",
+      "en": "Delete activity \"{{name}}\"?"
+    },
+    {
+      "key": "Hapus Anak",
+      "id": "Hapus Anak",
+      "en": "Delete Child"
+    },
+    {
+      "key": "Hapus Foto",
+      "id": "Hapus Foto",
+      "en": "Remove Photo"
+    },
+    {
+      "key": "Hapus Foto Baru",
+      "id": "Hapus Foto Baru",
+      "en": "Remove New Photo"
+    },
+    {
+      "key": "Hapus Informasi",
+      "id": "Hapus Informasi",
+      "en": "Delete Information"
+    },
+    {
+      "key": "Hapus informasi \"{{title}}\"?",
+      "id": "Hapus informasi \"{{title}}\"?",
+      "en": "Delete information \"{{title}}\"?"
+    },
+    {
+      "key": "Hapus Paket",
+      "id": "Hapus Paket",
+      "en": "Delete Package"
+    },
+    {
+      "key": "Hapus Pengumuman",
+      "id": "Hapus Pengumuman",
+      "en": "Delete Announcement"
+    },
+    {
+      "key": "Hapus Penjemput",
+      "id": "Hapus Penjemput",
+      "en": "Delete Authorized Pickup"
+    },
+    {
+      "key": "Hapus Voucher",
+      "id": "Hapus Voucher",
+      "en": "Delete Voucher"
+    },
+    {
+      "key": "Harga",
+      "id": "Harga",
+      "en": "Price"
+    },
+    {
+      "key": "Harga (Rp) *",
+      "id": "Harga (Rp) *",
+      "en": "Price (Rp) *"
+    },
+    {
+      "key": "Harga harus berupa angka",
+      "id": "Harga harus berupa angka",
+      "en": "Price must be a number"
+    },
+    {
+      "key": "Harga tidak boleh kosong",
+      "id": "Harga tidak boleh kosong",
+      "en": "Price cannot be empty"
+    },
+    {
+      "key": "Hari Ini",
+      "id": "Hari Ini",
+      "en": "Today"
+    },
+    {
+      "key": "Hari Ini di Daycare",
+      "id": "Hari Ini di Daycare",
+      "en": "Today at Daycare"
+    },
+    {
+      "key": "Hubungan",
+      "id": "Hubungan",
+      "en": "Relationship"
+    },
+    {
+      "key": "Hubungan *",
+      "id": "Hubungan *",
+      "en": "Relationship *"
+    },
+    {
+      "key": "ℹ Push belum dikonfigurasi. Notifikasi di aplikasi tetap tersimpan untuk {{parents}} orang tua.",
+      "id": "ℹ Push belum dikonfigurasi. Notifikasi di aplikasi tetap tersimpan untuk {{parents}} orang tua.",
+      "en": "ℹ Push is not configured. The in-app notification is saved for {{parents}} parents."
+    },
+    {
+      "key": "Identitas",
+      "id": "Identitas",
+      "en": "Identity"
+    },
+    {
+      "key": "Indikator *",
+      "id": "Indikator *",
+      "en": "Indicator *"
+    },
+    {
+      "key": "Indikator tidak boleh kosong",
+      "id": "Indikator tidak boleh kosong",
+      "en": "Indicator cannot be empty"
+    },
+    {
+      "key": "Indonesia",
+      "id": "Indonesia",
+      "en": "Indonesian"
+    },
+    {
+      "key": "Info Kesehatan",
+      "id": "Info Kesehatan",
+      "en": "Health Info"
+    },
+    {
+      "key": "Informasi",
+      "id": "Informasi",
+      "en": "Information"
+    },
+    {
+      "key": "Informasi Akun",
+      "id": "Informasi Akun",
+      "en": "Account Information"
+    },
+    {
+      "key": "Informasi akun Anda",
+      "id": "Informasi akun Anda",
+      "en": "Your account information"
+    },
+    {
+      "key": "Informasi akun dan keamanan Anda",
+      "id": "Informasi akun dan keamanan Anda",
+      "en": "Your account and security information"
+    },
+    {
+      "key": "Informasi Anak",
+      "id": "Informasi Anak",
+      "en": "Child Information"
+    },
+    {
+      "key": "Informasi Anak Terbaru",
+      "id": "Informasi Anak Terbaru",
+      "en": "Recent Child Information"
+    },
+    {
+      "key": "Informasi berhasil dibuat.",
+      "id": "Informasi berhasil dibuat.",
+      "en": "Information created successfully."
+    },
+    {
+      "key": "Informasi berhasil dihapus.",
+      "id": "Informasi berhasil dihapus.",
+      "en": "Information deleted successfully."
+    },
+    {
+      "key": "Informasi diperbarui.",
+      "id": "Informasi diperbarui.",
+      "en": "Information updated."
+    },
+    {
+      "key": "Informasi Kesehatan",
+      "id": "Informasi Kesehatan",
+      "en": "Health Information"
+    },
+    {
+      "key": "Informasi Kesehatan / Alergi",
+      "id": "Informasi Kesehatan / Alergi",
+      "en": "Health Information / Allergies"
+    },
+    {
+      "key": "Informasi untuk {{name}}",
+      "id": "Informasi untuk {{name}}",
+      "en": "Information for {{name}}"
+    },
+    {
+      "key": "Ingat password?",
+      "id": "Ingat password?",
+      "en": "Remember your password?"
+    },
+    {
+      "key": "Ingat password? ",
+      "id": "Ingat password? ",
+      "en": "Remember your password? "
+    },
+    {
+      "key": "Invoice",
+      "id": "Invoice",
+      "en": "Invoice"
+    },
+    {
+      "key": "Invoice berhasil dibuat.",
+      "id": "Invoice berhasil dibuat.",
+      "en": "Invoice created successfully."
+    },
+    {
+      "key": "Invoice dan pembayaran Anda.",
+      "id": "Invoice dan pembayaran Anda.",
+      "en": "Your invoices and payments."
+    },
+    {
+      "key": "Invoice ini sudah lunas.",
+      "id": "Invoice ini sudah lunas.",
+      "en": "This invoice is already paid."
+    },
+    {
+      "key": "Invoice kedaluwarsa",
+      "id": "Invoice kedaluwarsa",
+      "en": "Invoice expired"
+    },
+    {
+      "key": "Invoice Pending",
+      "id": "Invoice Pending",
+      "en": "Pending Invoices"
+    },
+    {
+      "key": "Invoice tidak ditemukan.",
+      "id": "Invoice tidak ditemukan.",
+      "en": "Invoice not found."
+    },
+    {
+      "key": "Invoice: {{number}} · {{child}}",
+      "id": "Invoice: {{number}} · {{child}}",
+      "en": "Invoice: {{number}} · {{child}}"
+    },
+    {
+      "key": "Isi Pengumuman *",
+      "id": "Isi Pengumuman *",
+      "en": "Announcement Content *"
+    },
+    {
+      "key": "Isi pengumuman tidak boleh kosong",
+      "id": "Isi pengumuman tidak boleh kosong",
+      "en": "Announcement content cannot be empty"
+    },
+    {
+      "key": "Istirahat",
+      "id": "Istirahat",
+      "en": "Rest"
+    },
+    {
+      "key": "Jadwal",
+      "id": "Jadwal",
+      "en": "Schedule"
+    },
+    {
+      "key": "Jadwal aktivitas",
+      "id": "Jadwal aktivitas",
+      "en": "Activity schedule"
+    },
+    {
+      "key": "Jadwal Kegiatan",
+      "id": "Jadwal Kegiatan",
+      "en": "Activity Schedule"
+    },
+    {
+      "key": "Jadwal Mendatang",
+      "id": "Jadwal Mendatang",
+      "en": "Upcoming Events"
+    },
+    {
+      "key": "Jam Mulai",
+      "id": "Jam Mulai",
+      "en": "Start Time"
+    },
+    {
+      "key": "Jam Selesai",
+      "id": "Jam Selesai",
+      "en": "End Time"
+    },
+    {
+      "key": "Jam Tidur",
+      "id": "Jam Tidur",
+      "en": "Sleep Hours"
+    },
+    {
+      "key": "Jam Tidur Siang",
+      "id": "Jam Tidur Siang",
+      "en": "Nap Hours"
+    },
+    {
+      "key": "Jan",
+      "id": "Jan",
+      "en": "Jan"
+    },
+    {
+      "key": "Januari",
+      "id": "Januari",
+      "en": "January"
+    },
+    {
+      "key": "Jatuh Tempo",
+      "id": "Jatuh Tempo",
+      "en": "Due Date"
+    },
+    {
+      "key": "Jatuh Tempo *",
+      "id": "Jatuh Tempo *",
+      "en": "Due Date *"
+    },
+    {
+      "key": "Jatuh tempo terlewat",
+      "id": "Jatuh tempo terlewat",
+      "en": "Payment overdue"
+    },
+    {
+      "key": "Jatuh tempo: {{date}}",
+      "id": "Jatuh tempo: {{date}}",
+      "en": "Due: {{date}}"
+    },
+    {
+      "key": "Jawaban Admin:",
+      "id": "Jawaban Admin:",
+      "en": "Admin Response:"
+    },
+    {
+      "key": "Jenis Diskon *",
+      "id": "Jenis Diskon *",
+      "en": "Discount Type *"
+    },
+    {
+      "key": "Jenis Kelamin",
+      "id": "Jenis Kelamin",
+      "en": "Gender"
+    },
+    {
+      "key": "Jenis Kelamin *",
+      "id": "Jenis Kelamin *",
+      "en": "Gender *"
+    },
+    {
+      "key": "Judul *",
+      "id": "Judul *",
+      "en": "Title *"
+    },
+    {
+      "key": "Judul tidak boleh kosong",
+      "id": "Judul tidak boleh kosong",
+      "en": "Title cannot be empty"
+    },
+    {
+      "key": "Jul",
+      "id": "Jul",
+      "en": "Jul"
+    },
+    {
+      "key": "Juli",
+      "id": "Juli",
+      "en": "July"
+    },
+    {
+      "key": "Jumat",
+      "id": "Jumat",
+      "en": "Friday"
+    },
+    {
+      "key": "Jumlah",
+      "id": "Jumlah",
+      "en": "Amount"
+    },
+    {
+      "key": "Jumlah Anak",
+      "id": "Jumlah Anak",
+      "en": "Number of Children"
+    },
+    {
+      "key": "Jun",
+      "id": "Jun",
+      "en": "Jun"
+    },
+    {
+      "key": "Juni",
+      "id": "Juni",
+      "en": "June"
+    },
+    {
+      "key": "Kamis",
+      "id": "Kamis",
+      "en": "Thursday"
+    },
+    {
+      "key": "Kategori",
+      "id": "Kategori",
+      "en": "Category"
+    },
+    {
+      "key": "Kategori *",
+      "id": "Kategori *",
+      "en": "Category *"
+    },
+    {
+      "key": "Kategori Aktivitas",
+      "id": "Kategori Aktivitas",
+      "en": "Activity Categories"
+    },
+    {
+      "key": "Kategori Perkembangan",
+      "id": "Kategori Perkembangan",
+      "en": "Development Category"
+    },
+    {
+      "key": "Kategori: {{kategori}}",
+      "id": "Kategori: {{kategori}}",
+      "en": "Category: {{kategori}}"
+    },
+    {
+      "key": "Keamanan Berlapis",
+      "id": "Keamanan Berlapis",
+      "en": "Layered Security"
+    },
+    {
+      "key": "Kedaluwarsa",
+      "id": "Kedaluwarsa",
+      "en": "Expired"
+    },
+    {
+      "key": "Kegiatan",
+      "id": "Kegiatan",
+      "en": "Activity"
+    },
+    {
+      "key": "Kegiatan Edukatif",
+      "id": "Kegiatan Edukatif",
+      "en": "Educational Activities"
+    },
+    {
+      "key": "Kegiatan Tersedia",
+      "id": "Kegiatan Tersedia",
+      "en": "Available Activities"
+    },
+    {
+      "key": "Kehadiran",
+      "id": "Kehadiran",
+      "en": "Attendance"
+    },
+    {
+      "key": "Kehadiran & kegiatan anak hari ini real-time",
+      "id": "Kehadiran & kegiatan anak hari ini real-time",
+      "en": "Real-time attendance & activities for your child today"
+    },
+    {
+      "key": "Kehadiran Hari Ini",
+      "id": "Kehadiran Hari Ini",
+      "en": "Today's Attendance"
+    },
+    {
+      "key": "Kelas Premium?",
+      "id": "Kelas Premium?",
+      "en": "Premium Class?"
+    },
+    {
+      "key": "Kelola Admin",
+      "id": "Kelola Admin",
+      "en": "Manage Admins"
+    },
+    {
+      "key": "Kelola admin dan admin_master TinyCare",
+      "id": "Kelola admin dan admin_master TinyCare",
+      "en": "Manage TinyCare admins and admin_master"
+    },
+    {
+      "key": "Kelola aktivitas dan catatan aktivitas anak",
+      "id": "Kelola aktivitas dan catatan aktivitas anak",
+      "en": "Manage activities and child activity records"
+    },
+    {
+      "key": "Kelola akun orang tua yang terdaftar",
+      "id": "Kelola akun orang tua yang terdaftar",
+      "en": "Manage registered parent accounts"
+    },
+    {
+      "key": "Kelola data anak yang terdaftar di daycare",
+      "id": "Kelola data anak yang terdaftar di daycare",
+      "en": "Manage children registered at the daycare"
+    },
+    {
+      "key": "Kelola data anak, kehadiran, paket, voucher, tagihan, hingga pembayaran dalam satu panel elegan.",
+      "id": "Kelola data anak, kehadiran, paket, voucher, tagihan, hingga pembayaran dalam satu panel elegan.",
+      "en": "Manage child data, attendance, packages, vouchers, billing, and payments in one elegant panel."
+    },
+    {
+      "key": "Kelola informasi untuk {{name}}",
+      "id": "Kelola informasi untuk {{name}}",
+      "en": "Manage information for {{name}}"
+    },
+    {
+      "key": "Kelola jadwal dan event daycare",
+      "id": "Kelola jadwal dan event daycare",
+      "en": "Manage daycare schedules and events"
+    },
+    {
+      "key": "Kelola murid & orang tua secara terpusat",
+      "id": "Kelola murid & orang tua secara terpusat",
+      "en": "Manage students & parents centrally"
+    },
+    {
+      "key": "Kelola paket daycare yang tersedia",
+      "id": "Kelola paket daycare yang tersedia",
+      "en": "Manage available daycare packages"
+    },
+    {
+      "key": "Kelola pengguna TinyCare",
+      "id": "Kelola pengguna TinyCare",
+      "en": "Manage TinyCare users"
+    },
+    {
+      "key": "Kelola pengumuman",
+      "id": "Kelola pengumuman",
+      "en": "Manage announcements"
+    },
+    {
+      "key": "Kelola semua pengguna",
+      "id": "Kelola semua pengguna",
+      "en": "Manage all users"
+    },
+    {
+      "key": "Kelola tagihan",
+      "id": "Kelola tagihan",
+      "en": "Manage invoices"
+    },
+    {
+      "key": "Kelola tagihan dan pembayaran",
+      "id": "Kelola tagihan dan pembayaran",
+      "en": "Manage bills and payments"
+    },
+    {
+      "key": "Kelola TinyCare dengan mudah.",
+      "id": "Kelola TinyCare dengan mudah.",
+      "en": "Manage TinyCare with ease."
+    },
+    {
+      "key": "Kelola voucher diskon untuk pelanggan",
+      "id": "Kelola voucher diskon untuk pelanggan",
+      "en": "Manage customer discount vouchers"
+    },
+    {
+      "key": "Keluar",
+      "id": "Keluar",
+      "en": "Logout"
+    },
+    {
+      "key": "Kembali",
+      "id": "Kembali",
+      "en": "Back"
+    },
+    {
+      "key": "Kembali ke Aktivitas",
+      "id": "Kembali ke Aktivitas",
+      "en": "Back to Activities"
+    },
+    {
+      "key": "Kembali ke Anak Saya",
+      "id": "Kembali ke Anak Saya",
+      "en": "Back to My Children"
+    },
+    {
+      "key": "Kembali ke atas",
+      "id": "Kembali ke atas",
+      "en": "Back to top"
+    },
+    {
+      "key": "Kembali ke Daftar Anak",
+      "id": "Kembali ke Daftar Anak",
+      "en": "Back to Child List"
+    },
+    {
+      "key": "Kembali ke Daftar Orang Tua",
+      "id": "Kembali ke Daftar Orang Tua",
+      "en": "Back to Parents List"
+    },
+    {
+      "key": "Kembali ke Login",
+      "id": "Kembali ke Login",
+      "en": "Back to Login"
+    },
+    {
+      "key": "Kembali ke Perkembangan",
+      "id": "Kembali ke Perkembangan",
+      "en": "Back to Development"
+    },
+    {
+      "key": "Kembali ke Tagihan",
+      "id": "Kembali ke Tagihan",
+      "en": "Back to Invoices"
+    },
+    {
+      "key": "Kenali Fiturnya",
+      "id": "Kenali Fiturnya",
+      "en": "Explore the Features"
+    },
+    {
+      "key": "Kepuasan Orang Tua",
+      "id": "Kepuasan Orang Tua",
+      "en": "Parent Satisfaction"
+    },
+    {
+      "key": "Keterangan",
+      "id": "Keterangan",
+      "en": "Description"
+    },
+    {
+      "key": "Ketuk tombol + untuk menambahkan paket.",
+      "id": "Ketuk tombol + untuk menambahkan paket.",
+      "en": "Tap the + button to add a package."
+    },
+    {
+      "key": "Ketuk tombol + untuk menambahkan voucher.",
+      "id": "Ketuk tombol + untuk menambahkan voucher.",
+      "en": "Tap the + button to add a voucher."
+    },
+    {
+      "key": "Ketuk tombol + untuk mengirim feedback.",
+      "id": "Ketuk tombol + untuk mengirim feedback.",
+      "en": "Tap the + button to send feedback."
+    },
+    {
+      "key": "Keuangan",
+      "id": "Keuangan",
+      "en": "Finance"
+    },
+    {
+      "key": "Khusus",
+      "id": "Khusus",
+      "en": "Special"
+    },
+    {
+      "key": "Kirim",
+      "id": "Kirim",
+      "en": "Send"
+    },
+    {
+      "key": "Kirim Bukti",
+      "id": "Kirim Bukti",
+      "en": "Send Proof"
+    },
+    {
+      "key": "Kirim Bukti Pembayaran",
+      "id": "Kirim Bukti Pembayaran",
+      "en": "Send Payment Proof"
+    },
+    {
+      "key": "Kirim Feedback",
+      "id": "Kirim Feedback",
+      "en": "Send Feedback"
+    },
+    {
+      "key": "Kirim feedback pertama Anda untuk daycare.",
+      "id": "Kirim feedback pertama Anda untuk daycare.",
+      "en": "Send your first feedback to the daycare."
+    },
+    {
+      "key": "Kirim Jawaban",
+      "id": "Kirim Jawaban",
+      "en": "Send Response"
+    },
+    {
+      "key": "Kirim Kode Reset",
+      "id": "Kirim Kode Reset",
+      "en": "Send Reset Code"
+    },
+    {
+      "key": "Kirim masukan untuk daycare.",
+      "id": "Kirim masukan untuk daycare.",
+      "en": "Send feedback to the daycare."
+    },
+    {
+      "key": "Klik 'Buat Jadwal' untuk menambahkan.",
+      "id": "Klik 'Buat Jadwal' untuk menambahkan.",
+      "en": "Click 'Create Schedule' to add one."
+    },
+    {
+      "key": "Klik 'Buat Pengumuman' untuk menambahkan.",
+      "id": "Klik 'Buat Pengumuman' untuk menambahkan.",
+      "en": "Click 'Create Announcement' to add one."
+    },
+    {
+      "key": "Klik 'Tambah Aktivitas' untuk menambahkan.",
+      "id": "Klik 'Tambah Aktivitas' untuk menambahkan.",
+      "en": "Click 'Add Activity' to add one."
+    },
+    {
+      "key": "Klik 'Tambah Anak' untuk menambahkan data.",
+      "id": "Klik 'Tambah Anak' untuk menambahkan data.",
+      "en": "Click 'Add Child' to add data."
+    },
+    {
+      "key": "Klik 'Tambah Informasi' untuk menambahkan informasi untuk anak ini.",
+      "id": "Klik 'Tambah Informasi' untuk menambahkan informasi untuk anak ini.",
+      "en": "Click 'Add Information' to add information for this child."
+    },
+    {
+      "key": "Klik 'Tambah Orang Tua' untuk menambahkan.",
+      "id": "Klik 'Tambah Orang Tua' untuk menambahkan.",
+      "en": "Click 'Add Parent' to add."
+    },
+    {
+      "key": "Klik 'Tambah Paket' untuk menambahkan.",
+      "id": "Klik 'Tambah Paket' untuk menambahkan.",
+      "en": "Click 'Add Package' to add one."
+    },
+    {
+      "key": "Klik 'Tambah Voucher' untuk menambahkan.",
+      "id": "Klik 'Tambah Voucher' untuk menambahkan.",
+      "en": "Click 'Add Voucher' to add one."
+    },
+    {
+      "key": "Klik Generate untuk membuat laporan baru.",
+      "id": "Klik Generate untuk membuat laporan baru.",
+      "en": "Click Generate to create a new report."
+    },
+    {
+      "key": "Klik tombol di bawah untuk memulai pembayaran.",
+      "id": "Klik tombol di bawah untuk memulai pembayaran.",
+      "en": "Click the button below to start payment."
+    },
+    {
+      "key": "Kode",
+      "id": "Kode",
+      "en": "Code"
+    },
+    {
+      "key": "Kode diskon",
+      "id": "Kode diskon",
+      "en": "Discount code"
+    },
+    {
+      "key": "Kode Reset *",
+      "id": "Kode Reset *",
+      "en": "Reset Code *"
+    },
+    {
+      "key": "Kode reset tidak boleh kosong",
+      "id": "Kode reset tidak boleh kosong",
+      "en": "Reset code cannot be empty"
+    },
+    {
+      "key": "Kode tidak boleh kosong",
+      "id": "Kode tidak boleh kosong",
+      "en": "Code cannot be empty"
+    },
+    {
+      "key": "Kode Voucher",
+      "id": "Kode Voucher",
+      "en": "Voucher Code"
+    },
+    {
+      "key": "Kode Voucher (opsional)",
+      "id": "Kode Voucher (opsional)",
+      "en": "Voucher Code (optional)"
+    },
+    {
+      "key": "Kode Voucher *",
+      "id": "Kode Voucher *",
+      "en": "Voucher Code *"
+    },
+    {
+      "key": "Komunikasi",
+      "id": "Komunikasi",
+      "en": "Communication"
+    },
+    {
+      "key": "Konfirmasi Password *",
+      "id": "Konfirmasi Password *",
+      "en": "Confirm Password *"
+    },
+    {
+      "key": "Konfirmasi Password Baru *",
+      "id": "Konfirmasi Password Baru *",
+      "en": "Confirm New Password *"
+    },
+    {
+      "key": "Kontak Darurat",
+      "id": "Kontak Darurat",
+      "en": "Emergency Contact"
+    },
+    {
+      "key": "Kontak Darurat - Hubungan",
+      "id": "Kontak Darurat - Hubungan",
+      "en": "Emergency Contact - Relationship"
+    },
+    {
+      "key": "Kontak Darurat - Nama",
+      "id": "Kontak Darurat - Nama",
+      "en": "Emergency Contact - Name"
+    },
+    {
+      "key": "Kontak Darurat - Telepon",
+      "id": "Kontak Darurat - Telepon",
+      "en": "Emergency Contact - Phone"
+    },
+    {
+      "key": "Konten *",
+      "id": "Konten *",
+      "en": "Content *"
+    },
+    {
+      "key": "Konten tidak boleh kosong",
+      "id": "Konten tidak boleh kosong",
+      "en": "Content cannot be empty"
+    },
+    {
+      "key": "Kosongkan = unlimited",
+      "id": "Kosongkan = unlimited",
+      "en": "Leave empty = unlimited"
+    },
+    {
+      "key": "Kosongkan jika tidak ingin mengganti foto.",
+      "id": "Kosongkan jika tidak ingin mengganti foto.",
+      "en": "Leave empty if you don't want to change the photo."
+    },
+    {
+      "key": "Kosongkan jika tidak terbatas",
+      "id": "Kosongkan jika tidak terbatas",
+      "en": "Leave empty for unlimited"
+    },
+    {
+      "key": "Kuota",
+      "id": "Kuota",
+      "en": "Quota"
+    },
+    {
+      "key": "Kuota (opsional)",
+      "id": "Kuota (opsional)",
+      "en": "Quota (optional)"
+    },
+    {
+      "key": "Kuota: {{quota}} anak",
+      "id": "Kuota: {{quota}} anak",
+      "en": "Quota: {{quota}} children"
+    },
+    {
+      "key": "Lainnya",
+      "id": "Lainnya",
+      "en": "More"
+    },
+    {
+      "key": "Laki-laki",
+      "id": "Laki-laki",
+      "en": "Male"
+    },
+    {
+      "key": "langsung menampilkan pengumuman dan mengirim notifikasi + push ke target.",
+      "id": "langsung menampilkan pengumuman dan mengirim notifikasi + push ke target.",
+      "en": "immediately shows the announcement and sends notifications + push to the target."
+    },
+    {
+      "key": "Laporan",
+      "id": "Laporan",
+      "en": "Reports"
+    },
+    {
+      "key": "Laporan {{type}} belum dibuat. Tekan tombol di bawah untuk generate laporan pertama.",
+      "id": "Laporan {{type}} belum dibuat. Tekan tombol di bawah untuk generate laporan pertama.",
+      "en": "No {{type}} report yet. Press the button below to generate the first report."
+    },
+    {
+      "key": "Laporan Anak Harian",
+      "id": "Laporan Anak Harian",
+      "en": "Daily Child Reports"
+    },
+    {
+      "key": "Laporan berhasil dibuat!",
+      "id": "Laporan berhasil dibuat!",
+      "en": "Report created successfully!"
+    },
+    {
+      "key": "Laporan Bulanan",
+      "id": "Laporan Bulanan",
+      "en": "Monthly Reports"
+    },
+    {
+      "key": "Laporan bulanan berhasil dibuat.",
+      "id": "Laporan bulanan berhasil dibuat.",
+      "en": "Monthly report created successfully."
+    },
+    {
+      "key": "Laporan harian, mingguan, dan bulanan satu klik",
+      "id": "Laporan harian, mingguan, dan bulanan satu klik",
+      "en": "Daily, weekly, and monthly reports with one click"
+    },
+    {
+      "key": "Laporan Mingguan",
+      "id": "Laporan Mingguan",
+      "en": "Weekly Reports"
+    },
+    {
+      "key": "Laporan mingguan berhasil dibuat.",
+      "id": "Laporan mingguan berhasil dibuat.",
+      "en": "Weekly report created successfully."
+    },
+    {
+      "key": "Laporan Perkembangan",
+      "id": "Laporan Perkembangan",
+      "en": "Development Reports"
+    },
+    {
+      "key": "Laporan Terkirim",
+      "id": "Laporan Terkirim",
+      "en": "Reports Delivered"
+    },
+    {
+      "key": "Libur",
+      "id": "Libur",
+      "en": "Holiday"
+    },
+    {
+      "key": "Lihat",
+      "id": "Lihat",
+      "en": "View"
+    },
+    {
+      "key": "Lihat {{label}}",
+      "id": "Lihat {{label}}",
+      "en": "View {{label}}"
+    },
+    {
+      "key": "Lihat Aktivitas",
+      "id": "Lihat Aktivitas",
+      "en": "View Activities"
+    },
+    {
+      "key": "Lihat Bukti (PDF)",
+      "id": "Lihat Bukti (PDF)",
+      "en": "View Proof (PDF)"
+    },
+    {
+      "key": "Lihat Cerita",
+      "id": "Lihat Cerita",
+      "en": "View Story"
+    },
+    {
+      "key": "Lihat dan balas feedback dari orang tua",
+      "id": "Lihat dan balas feedback dari orang tua",
+      "en": "View and respond to feedback from parents"
+    },
+    {
+      "key": "Lihat Detail",
+      "id": "Lihat Detail",
+      "en": "View Details"
+    },
+    {
+      "key": "Lihat Informasi",
+      "id": "Lihat Informasi",
+      "en": "View Information"
+    },
+    {
+      "key": "Lihat Perkembangan",
+      "id": "Lihat Perkembangan",
+      "en": "View Development"
+    },
+    {
+      "key": "Lihat profil admin",
+      "id": "Lihat profil admin",
+      "en": "View admin profile"
+    },
+    {
+      "key": "Lihat Semua",
+      "id": "Lihat Semua",
+      "en": "See All"
+    },
+    {
+      "key": "Link reset password telah dikirim ke email Anda. Gunakan kode di email tersebut untuk mengatur ulang password.",
+      "id": "Link reset password telah dikirim ke email Anda. Gunakan kode di email tersebut untuk mengatur ulang password.",
+      "en": "A password reset link has been sent to your email. Use the code in that email to reset your password."
+    },
+    {
+      "key": "Link Reset Terkirim",
+      "id": "Link Reset Terkirim",
+      "en": "Reset Link Sent"
+    },
+    {
+      "key": "Login gagal. Periksa email dan password.",
+      "id": "Login gagal. Periksa email dan password.",
+      "en": "Login failed. Check your email and password."
+    },
+    {
+      "key": "Lokasi",
+      "id": "Lokasi",
+      "en": "Location"
+    },
+    {
+      "key": "Lokasi acara",
+      "id": "Lokasi acara",
+      "en": "Event location"
+    },
+    {
+      "key": "Lunas",
+      "id": "Lunas",
+      "en": "Paid"
+    },
+    {
+      "key": "Lupa Password",
+      "id": "Lupa Password",
+      "en": "Forgot Password"
+    },
+    {
+      "key": "Lupa password?",
+      "id": "Lupa password?",
+      "en": "Forgot password?"
+    },
+    {
+      "key": "Makan",
+      "id": "Makan",
+      "en": "Meal"
+    },
+    {
+      "key": "Maksimum Penggunaan *",
+      "id": "Maksimum Penggunaan *",
+      "en": "Maximum Usage *"
+    },
+    {
+      "key": "Maksimum penggunaan tidak boleh kosong",
+      "id": "Maksimum penggunaan tidak boleh kosong",
+      "en": "Maximum usage cannot be empty"
+    },
+    {
+      "key": "Manajemen",
+      "id": "Manajemen",
+      "en": "Management"
+    },
+    {
+      "key": "Manajemen Absensi",
+      "id": "Manajemen Absensi",
+      "en": "Attendance Management"
+    },
+    {
+      "key": "Manajemen Aktivitas",
+      "id": "Manajemen Aktivitas",
+      "en": "Activity Management"
+    },
+    {
+      "key": "Manajemen Anak",
+      "id": "Manajemen Anak",
+      "en": "Child Management"
+    },
+    {
+      "key": "Manajemen Data",
+      "id": "Manajemen Data",
+      "en": "Data Management"
+    },
+    {
+      "key": "Manajemen Feedback",
+      "id": "Manajemen Feedback",
+      "en": "Feedback Management"
+    },
+    {
+      "key": "Manajemen Invoice",
+      "id": "Manajemen Invoice",
+      "en": "Invoice Management"
+    },
+    {
+      "key": "Manajemen Jadwal",
+      "id": "Manajemen Jadwal",
+      "en": "Schedule Management"
+    },
+    {
+      "key": "Manajemen Orang Tua",
+      "id": "Manajemen Orang Tua",
+      "en": "Parent Management"
+    },
+    {
+      "key": "Manajemen Paket",
+      "id": "Manajemen Paket",
+      "en": "Package Management"
+    },
+    {
+      "key": "Manajemen Pembayaran",
+      "id": "Manajemen Pembayaran",
+      "en": "Payment Management"
+    },
+    {
+      "key": "Manajemen Pengumuman",
+      "id": "Manajemen Pengumuman",
+      "en": "Announcement Management"
+    },
+    {
+      "key": "Manajemen Voucher",
+      "id": "Manajemen Voucher",
+      "en": "Voucher Management"
+    },
+    {
+      "key": "Mar",
+      "id": "Mar",
+      "en": "Mar"
+    },
+    {
+      "key": "Maret",
+      "id": "Maret",
+      "en": "March"
+    },
+    {
+      "key": "Master Aktivitas",
+      "id": "Master Aktivitas",
+      "en": "Activity Master"
+    },
+    {
+      "key": "Masuk",
+      "id": "Masuk",
+      "en": "Check In"
+    },
+    {
+      "key": "Masuk Aplikasi",
+      "id": "Masuk Aplikasi",
+      "en": "Sign In to App"
+    },
+    {
+      "key": "Masuk: {{checkIn}} · Keluar: {{checkOut}}",
+      "id": "Masuk: {{checkIn}} · Keluar: {{checkOut}}",
+      "en": "Check-in: {{checkIn}} · Check-out: {{checkOut}}"
+    },
+    {
+      "key": "Masuk: {{time}}",
+      "id": "Masuk: {{time}}",
+      "en": "Check in: {{time}}"
+    },
+    {
+      "key": "Masukkan akun Anda untuk melanjutkan",
+      "id": "Masukkan akun Anda untuk melanjutkan",
+      "en": "Enter your account to continue"
+    },
+    {
+      "key": "Masukkan email Anda",
+      "id": "Masukkan email Anda",
+      "en": "Enter your email"
+    },
+    {
+      "key": "Masukkan email terdaftar Anda. Kami akan mengirimkan kode untuk mengatur ulang password.",
+      "id": "Masukkan email terdaftar Anda. Kami akan mengirimkan kode untuk mengatur ulang password.",
+      "en": "Enter your registered email. We will send a code to reset your password."
+    },
+    {
+      "key": "Masukkan jawaban.",
+      "id": "Masukkan jawaban.",
+      "en": "Please enter a response."
+    },
+    {
+      "key": "Masukkan kata sandi",
+      "id": "Masukkan kata sandi",
+      "en": "Enter your password"
+    },
+    {
+      "key": "Masukkan kode reset dari email, email akun Anda, dan password baru.",
+      "id": "Masukkan kode reset dari email, email akun Anda, dan password baru.",
+      "en": "Enter the reset code from your email, your account email, and a new password."
+    },
+    {
+      "key": "Masukkan nama lengkap",
+      "id": "Masukkan nama lengkap",
+      "en": "Enter your full name"
+    },
+    {
+      "key": "Masukkan password Anda",
+      "id": "Masukkan password Anda",
+      "en": "Enter your password"
+    },
+    {
+      "key": "Masukkan password lama",
+      "id": "Masukkan password lama",
+      "en": "Enter current password"
+    },
+    {
+      "key": "Max. Penggunaan *",
+      "id": "Max. Penggunaan *",
+      "en": "Max. Usage *"
+    },
+    {
+      "key": "Mei",
+      "id": "Mei",
+      "en": "May"
+    },
+    {
+      "key": "Membuat...",
+      "id": "Membuat...",
+      "en": "Generating..."
+    },
+    {
+      "key": "Memproses...",
+      "id": "Memproses...",
+      "en": "Processing..."
+    },
+    {
+      "key": "Memuat",
+      "id": "Memuat",
+      "en": "Loading"
+    },
+    {
+      "key": "Memuat dashboard...",
+      "id": "Memuat dashboard...",
+      "en": "Loading dashboard..."
+    },
+    {
+      "key": "Memuat data anak...",
+      "id": "Memuat data anak...",
+      "en": "Loading children data..."
+    },
+    {
+      "key": "Memuat data orang tua...",
+      "id": "Memuat data orang tua...",
+      "en": "Loading parent data..."
+    },
+    {
+      "key": "Memuat data...",
+      "id": "Memuat data...",
+      "en": "Loading data..."
+    },
+    {
+      "key": "Memuat feedback...",
+      "id": "Memuat feedback...",
+      "en": "Loading feedback..."
+    },
+    {
+      "key": "Memuat invoice...",
+      "id": "Memuat invoice...",
+      "en": "Loading invoice..."
+    },
+    {
+      "key": "Memuat laporan...",
+      "id": "Memuat laporan...",
+      "en": "Loading reports..."
+    },
+    {
+      "key": "Memuat paket...",
+      "id": "Memuat paket...",
+      "en": "Loading packages..."
+    },
+    {
+      "key": "Memuat pengumuman...",
+      "id": "Memuat pengumuman...",
+      "en": "Loading announcements..."
+    },
+    {
+      "key": "Memuat profil...",
+      "id": "Memuat profil...",
+      "en": "Loading profile..."
+    },
+    {
+      "key": "Memuat tagihan...",
+      "id": "Memuat tagihan...",
+      "en": "Loading invoices..."
+    },
+    {
+      "key": "Memuat...",
+      "id": "Memuat...",
+      "en": "Loading..."
+    },
+    {
+      "key": "Mendaftar...",
+      "id": "Mendaftar...",
+      "en": "Registering..."
+    },
+    {
+      "key": "Mendesak",
+      "id": "Mendesak",
+      "en": "Urgent"
+    },
+    {
+      "key": "mengaktifkan",
+      "id": "mengaktifkan",
+      "en": "activate"
+    },
+    {
+      "key": "Mengirim...",
+      "id": "Mengirim...",
+      "en": "Sending..."
+    },
+    {
+      "key": "Menolak...",
+      "id": "Menolak...",
+      "en": "Rejecting..."
+    },
+    {
+      "key": "menonaktifkan",
+      "id": "menonaktifkan",
+      "en": "deactivate"
+    },
+    {
+      "key": "Menu",
+      "id": "Menu",
+      "en": "Menu"
+    },
+    {
+      "key": "Menunggu",
+      "id": "Menunggu",
+      "en": "Pending"
+    },
+    {
+      "key": "Menunggu Pembayaran",
+      "id": "Menunggu Pembayaran",
+      "en": "Awaiting Payment"
+    },
+    {
+      "key": "menunggu persetujuan admin",
+      "id": "menunggu persetujuan admin",
+      "en": "awaiting admin approval"
+    },
+    {
+      "key": "Menunggu Verifikasi",
+      "id": "Menunggu Verifikasi",
+      "en": "Awaiting Verification"
+    },
+    {
+      "key": "Menyimpan...",
+      "id": "Menyimpan...",
+      "en": "Saving..."
+    },
+    {
+      "key": "Metode",
+      "id": "Metode",
+      "en": "Method"
+    },
+    {
+      "key": "Metode Pembayaran",
+      "id": "Metode Pembayaran",
+      "en": "Payment Method"
+    },
+    {
+      "key": "Metode: {{method}}",
+      "id": "Metode: {{method}}",
+      "en": "Method: {{method}}"
+    },
+    {
+      "key": "Min. 8 karakter",
+      "id": "Min. 8 karakter",
+      "en": "Min. 8 characters"
+    },
+    {
+      "key": "Min. Transaksi",
+      "id": "Min. Transaksi",
+      "en": "Min. Transaction"
+    },
+    {
+      "key": "Minggu",
+      "id": "Minggu",
+      "en": "Sunday"
+    },
+    {
+      "key": "mingguan",
+      "id": "mingguan",
+      "en": "weekly"
+    },
+    {
+      "key": "Mingguan",
+      "id": "Mingguan",
+      "en": "Weekly"
+    },
+    {
+      "key": "Minimal 1",
+      "id": "Minimal 1",
+      "en": "At least 1"
+    },
+    {
+      "key": "Minimal 8 karakter",
+      "id": "Minimal 8 karakter",
+      "en": "At least 8 characters"
+    },
+    {
+      "key": "Minimum Transaksi",
+      "id": "Minimum Transaksi",
+      "en": "Minimum Transaction"
+    },
+    {
+      "key": "Mode Gelap",
+      "id": "Mode Gelap",
+      "en": "Dark Mode"
+    },
+    {
+      "key": "Mode Terang",
+      "id": "Mode Terang",
+      "en": "Light Mode"
+    },
+    {
+      "key": "Mood",
+      "id": "Mood",
+      "en": "Mood"
+    },
+    {
+      "key": "Mood Anak",
+      "id": "Mood Anak",
+      "en": "Child's Mood"
+    },
+    {
+      "key": "Muat Ulang",
+      "id": "Muat Ulang",
+      "en": "Reload"
+    },
+    {
+      "key": "Mulai",
+      "id": "Mulai",
+      "en": "Starting"
+    },
+    {
+      "key": "Mulai {{date}}",
+      "id": "Mulai {{date}}",
+      "en": "Start {{date}}"
+    },
+    {
+      "key": "Mulai tambahkan penilaian perkembangan untuk anak ini.",
+      "id": "Mulai tambahkan penilaian perkembangan untuk anak ini.",
+      "en": "Start adding development assessments for this child."
+    },
+    {
+      "key": "Nama",
+      "id": "Nama",
+      "en": "Name"
+    },
+    {
+      "key": "Nama *",
+      "id": "Nama *",
+      "en": "Name *"
+    },
+    {
+      "key": "Nama Aktivitas *",
+      "id": "Nama Aktivitas *",
+      "en": "Activity Name *"
+    },
+    {
+      "key": "Nama Anak *",
+      "id": "Nama Anak *",
+      "en": "Child Name *"
+    },
+    {
+      "key": "Nama Kontak Darurat",
+      "id": "Nama Kontak Darurat",
+      "en": "Emergency Contact Name"
+    },
+    {
+      "key": "Nama Lengkap",
+      "id": "Nama Lengkap",
+      "en": "Full Name"
+    },
+    {
+      "key": "Nama Lengkap *",
+      "id": "Nama Lengkap *",
+      "en": "Full Name *"
+    },
+    {
+      "key": "Nama Paket *",
+      "id": "Nama Paket *",
+      "en": "Package Name *"
+    },
+    {
+      "key": "Nama tidak boleh kosong",
+      "id": "Nama tidak boleh kosong",
+      "en": "Name cannot be empty"
+    },
+    {
+      "key": "Nilai Diskon *",
+      "id": "Nilai Diskon *",
+      "en": "Discount Value *"
+    },
+    {
+      "key": "Nilai harus lebih dari 0",
+      "id": "Nilai harus lebih dari 0",
+      "en": "Value must be greater than 0"
+    },
+    {
+      "key": "Nilai tidak boleh kosong",
+      "id": "Nilai tidak boleh kosong",
+      "en": "Value cannot be empty"
+    },
+    {
+      "key": "No. Identitas",
+      "id": "No. Identitas",
+      "en": "ID Number"
+    },
+    {
+      "key": "No. Invoice",
+      "id": "No. Invoice",
+      "en": "Invoice No."
+    },
+    {
+      "key": "Nominal (Rp)",
+      "id": "Nominal (Rp)",
+      "en": "Nominal (Rp)"
+    },
+    {
+      "key": "Nomor HP",
+      "id": "Nomor HP",
+      "en": "Phone Number"
+    },
+    {
+      "key": "Nomor HP *",
+      "id": "Nomor HP *",
+      "en": "Phone Number *"
+    },
+    {
+      "key": "Nomor HP tidak boleh kosong",
+      "id": "Nomor HP tidak boleh kosong",
+      "en": "Phone number cannot be empty"
+    },
+    {
+      "key": "Nonaktif",
+      "id": "Nonaktif",
+      "en": "Inactive"
+    },
+    {
+      "key": "Nonaktifkan",
+      "id": "Nonaktifkan",
+      "en": "Deactivate"
+    },
+    {
+      "key": "Nonaktifkan {{name}}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.",
+      "id": "Nonaktifkan {{name}}? Orang tua terkait juga akan dinonaktifkan jika ini anak satu-satunya.",
+      "en": "Deactivate {{name}}? Related parents will also be deactivated if this is their only child."
+    },
+    {
+      "key": "Nonaktifkan Akun",
+      "id": "Nonaktifkan Akun",
+      "en": "Deactivate Account"
+    },
+    {
+      "key": "Nonaktifkan akun {{name}}? Pengguna tidak dapat login selama nonaktif.",
+      "id": "Nonaktifkan akun {{name}}? Pengguna tidak dapat login selama nonaktif.",
+      "en": "Deactivate {{name}}? The user cannot log in while inactive."
+    },
+    {
+      "key": "Nonaktifkan akun ini? Pengguna tidak dapat login selama nonaktif.",
+      "id": "Nonaktifkan akun ini? Pengguna tidak dapat login selama nonaktif.",
+      "en": "Deactivate this account? The user cannot log in while it is deactivated."
+    },
+    {
+      "key": "Nonaktifkan Anak",
+      "id": "Nonaktifkan Anak",
+      "en": "Deactivate Child"
+    },
+    {
+      "key": "Normal",
+      "id": "Normal",
+      "en": "Normal"
+    },
+    {
+      "key": "notif.announcement.title",
+      "id": "Pengumuman Baru",
+      "en": "New Announcement"
+    },
+    {
+      "key": "notif.child_information.body",
+      "id": "Informasi baru tentang {child_name} telah ditambahkan.",
+      "en": "New information about {child_name} has been added."
+    },
+    {
+      "key": "notif.child_information.db_title",
+      "id": "Informasi untuk {child_name}",
+      "en": "Information for {child_name}"
+    },
+    {
+      "key": "notif.child_information.title",
+      "id": "Informasi Anak",
+      "en": "Child Information"
+    },
+    {
+      "key": "notif.daily_story.body",
+      "id": "Daily Story baru untuk {child_name}.",
+      "en": "A new daily story for {child_name} has been created."
+    },
+    {
+      "key": "notif.daily_story.db_body",
+      "id": "Daily Story untuk {child_name} telah dibuat.",
+      "en": "A daily story for {child_name} has been created."
+    },
+    {
+      "key": "notif.daily_story.db_title",
+      "id": "Daily Story {child_name}",
+      "en": "Daily Story {child_name}"
+    },
+    {
+      "key": "notif.daily_story.title",
+      "id": "Daily Story",
+      "en": "Daily Story"
+    },
+    {
+      "key": "notif.development.body",
+      "id": "Ada perkembangan baru untuk {child_name}.",
+      "en": "New development update for {child_name}."
+    },
+    {
+      "key": "notif.development.db_body",
+      "id": "Penilaian perkembangan baru: {indicator}",
+      "en": "New development assessment: {indicator}"
+    },
+    {
+      "key": "notif.development.db_title",
+      "id": "Perkembangan {child_name}",
+      "en": "Development {child_name}"
+    },
+    {
+      "key": "notif.development.title",
+      "id": "Perkembangan Anak",
+      "en": "Child Development"
+    },
+    {
+      "key": "notif.feedback.created",
+      "id": "{parent_name} mengirim feedback: {subject}",
+      "en": "{parent_name} submitted feedback: {subject}"
+    },
+    {
+      "key": "notif.feedback.created.title",
+      "id": "Feedback Baru",
+      "en": "New Feedback"
+    },
+    {
+      "key": "notif.feedback.replied",
+      "id": "Admin menjawab feedback Anda: {subject}",
+      "en": "Admin replied to your feedback: {subject}"
+    },
+    {
+      "key": "notif.feedback.replied.title",
+      "id": "Feedback Dibalas",
+      "en": "Feedback Replied"
+    },
+    {
+      "key": "notif.invoice.created",
+      "id": "Tagihan baru untuk {child_name}: {package_name}",
+      "en": "New invoice for {child_name}: {package_name}"
+    },
+    {
+      "key": "notif.invoice.created.title",
+      "id": "Tagihan Baru",
+      "en": "New Invoice"
+    },
+    {
+      "key": "notif.package.expiring",
+      "id": "Paket {child_name} akan berakhir pada {date}. Silakan lakukan perpanjangan paket jika diperlukan.",
+      "en": "The package for {child_name} will expire on {date}. Please renew the package if needed."
+    },
+    {
+      "key": "notif.package.expiring.title",
+      "id": "Paket Anak Akan Segera Berakhir",
+      "en": "Child Package Expiring Soon"
+    },
+    {
+      "key": "notif.payment.rejected",
+      "id": "Pembayaran Anda ditolak dan belum diverifikasi.{reason}",
+      "en": "Your payment was rejected and has not been verified.{reason}"
+    },
+    {
+      "key": "notif.payment.rejected.reason",
+      "id": " Alasan: {reason}",
+      "en": " Reason: {reason}"
+    },
+    {
+      "key": "notif.payment.rejected.title",
+      "id": "Pembayaran Ditolak",
+      "en": "Payment Rejected"
+    },
+    {
+      "key": "notif.payment.submitted",
+      "id": "Pembayaran menunggu verifikasi untuk tagihan {invoice_number}",
+      "en": "Payment awaiting verification for invoice {invoice_number}"
+    },
+    {
+      "key": "notif.payment.submitted.title",
+      "id": "Pembayaran Baru",
+      "en": "New Payment"
+    },
+    {
+      "key": "notif.payment.verified",
+      "id": "Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.",
+      "en": "Your payment has been verified. The invoice is fully paid."
+    },
+    {
+      "key": "notif.payment.verified.title",
+      "id": "Pembayaran Diverifikasi",
+      "en": "Payment Verified"
+    },
+    {
+      "key": "Notifikasi",
+      "id": "Notifikasi",
+      "en": "Notifications"
+    },
+    {
+      "key": "Notifikasi Real-time",
+      "id": "Notifikasi Real-time",
+      "en": "Real-time Notifications"
+    },
+    {
+      "key": "Nov",
+      "id": "Nov",
+      "en": "Nov"
+    },
+    {
+      "key": "November",
+      "id": "November",
+      "en": "November"
+    },
+    {
+      "key": "Okt",
+      "id": "Okt",
+      "en": "Oct"
+    },
+    {
+      "key": "Oktober",
+      "id": "Oktober",
+      "en": "October"
+    },
+    {
+      "key": "Olahraga",
+      "id": "Olahraga",
+      "en": "Sports"
+    },
+    {
+      "key": "oleh {{name}}",
+      "id": "oleh {{name}}",
+      "en": "by {{name}}"
+    },
+    {
+      "key": "Operasional",
+      "id": "Operasional",
+      "en": "Operations"
+    },
+    {
+      "key": "Operasional menjadi ringan",
+      "id": "Operasional menjadi ringan",
+      "en": "Operations become effortless"
+    },
+    {
+      "key": "Opsional",
+      "id": "Opsional",
+      "en": "Optional"
+    },
+    {
+      "key": "Opsional. Format: JPG, PNG, GIF. Maks {{max}}MB.",
+      "id": "Opsional. Format: JPG, PNG, GIF. Maks {{max}}MB.",
+      "en": "Optional. Format: JPG, PNG, GIF. Max {{max}}MB."
+    },
+    {
+      "key": "Orang Tua",
+      "id": "Orang Tua",
+      "en": "Parents"
+    },
+    {
+      "key": "Orang Tua *",
+      "id": "Orang Tua *",
+      "en": "Parents *"
+    },
+    {
+      "key": "Orang Tua #{{id}}",
+      "id": "Orang Tua #{{id}}",
+      "en": "Parent #{{id}}"
+    },
+    {
+      "key": "Orang Tua Aktif",
+      "id": "Orang Tua Aktif",
+      "en": "Active Parents"
+    },
+    {
+      "key": "Orang Tua tertentu",
+      "id": "Orang Tua tertentu",
+      "en": "Specific parents"
+    },
+    {
+      "key": "Orang tua tidak ditemukan.",
+      "id": "Orang tua tidak ditemukan.",
+      "en": "Parent not found."
+    },
+    {
+      "key": "Orang yang diizinkan menjemput anak Anda.",
+      "id": "Orang yang diizinkan menjemput anak Anda.",
+      "en": "People authorized to pick up your child."
+    },
+    {
+      "key": "OT",
+      "id": "OT",
+      "en": "OT"
+    },
+    {
+      "key": "Paket",
+      "id": "Paket",
+      "en": "Package"
+    },
+    {
+      "key": "Paket (Opsional)",
+      "id": "Paket (Opsional)",
+      "en": "Package (Optional)"
+    },
+    {
+      "key": "Paket *",
+      "id": "Paket *",
+      "en": "Package *"
+    },
+    {
+      "key": "Paket Aktif",
+      "id": "Paket Aktif",
+      "en": "Active Packages"
+    },
+    {
+      "key": "Paket berhasil dihapus.",
+      "id": "Paket berhasil dihapus.",
+      "en": "Package deleted successfully."
+    },
+    {
+      "key": "Paket berhasil diperbarui.",
+      "id": "Paket berhasil diperbarui.",
+      "en": "Package updated successfully."
+    },
+    {
+      "key": "Paket berhasil ditambahkan.",
+      "id": "Paket berhasil ditambahkan.",
+      "en": "Package added successfully."
+    },
+    {
+      "key": "Paket Kami",
+      "id": "Paket Kami",
+      "en": "Our Packages"
+    },
+    {
+      "key": "Paket langganan",
+      "id": "Paket langganan",
+      "en": "Subscription packages"
+    },
+    {
+      "key": "Paket premium untuk tumbuh kembang optimal.",
+      "id": "Paket premium untuk tumbuh kembang optimal.",
+      "en": "Premium package for optimal growth and development."
+    },
+    {
+      "key": "Pantau buah hati Anda secara real-time melalui ponsel — kapan pun dan di mana pun.",
+      "id": "Pantau buah hati Anda secara real-time melalui ponsel — kapan pun dan di mana pun.",
+      "en": "Monitor your little one in real-time from your phone — anytime and anywhere."
+    },
+    {
+      "key": "Pantau perkembangan anak melalui laporan mingguan dan bulanan.",
+      "id": "Pantau perkembangan anak melalui laporan mingguan dan bulanan.",
+      "en": "Track your child's development through weekly and monthly reports."
+    },
+    {
+      "key": "Pantau perkembangan si kecil dengan mudah.",
+      "id": "Pantau perkembangan si kecil dengan mudah.",
+      "en": "Easily monitor your little one's development."
+    },
+    {
+      "key": "Pantauan Pertumbuhan",
+      "id": "Pantauan Pertumbuhan",
+      "en": "Growth Tracking"
+    },
+    {
+      "key": "Parent Area",
+      "id": "Parent Area",
+      "en": "Parent Area"
+    },
+    {
+      "key": "Password",
+      "id": "Password",
+      "en": "Password"
+    },
+    {
+      "key": "Password *",
+      "id": "Password *",
+      "en": "Password *"
+    },
+    {
+      "key": "Password Baru *",
+      "id": "Password Baru *",
+      "en": "New Password *"
+    },
+    {
+      "key": "Password baru tidak boleh kosong",
+      "id": "Password baru tidak boleh kosong",
+      "en": "New password cannot be empty"
+    },
+    {
+      "key": "Password berhasil direset.",
+      "id": "Password berhasil direset.",
+      "en": "Password reset successfully."
+    },
+    {
+      "key": "Password berhasil diubah.",
+      "id": "Password berhasil diubah.",
+      "en": "Password changed successfully."
+    },
+    {
+      "key": "Password dan konfirmasi password tidak cocok.",
+      "id": "Password dan konfirmasi password tidak cocok.",
+      "en": "Password and password confirmation do not match."
+    },
+    {
+      "key": "Password dan konfirmasi tidak cocok.",
+      "id": "Password dan konfirmasi tidak cocok.",
+      "en": "Password and confirmation do not match."
+    },
+    {
+      "key": "Password Lama *",
+      "id": "Password Lama *",
+      "en": "Current Password *"
+    },
+    {
+      "key": "Password minimal 8 karakter",
+      "id": "Password minimal 8 karakter",
+      "en": "Password must be at least 8 characters"
+    },
+    {
+      "key": "Password minimal 8 karakter.",
+      "id": "Password minimal 8 karakter.",
+      "en": "Password must be at least 8 characters."
+    },
+    {
+      "key": "Password Saat Ini *",
+      "id": "Password Saat Ini *",
+      "en": "Current Password *"
+    },
+    {
+      "key": "Password saat ini tidak boleh kosong",
+      "id": "Password saat ini tidak boleh kosong",
+      "en": "Current password cannot be empty"
+    },
+    {
+      "key": "Password terlihat",
+      "id": "Password terlihat",
+      "en": "Password visible"
+    },
+    {
+      "key": "Password tersembunyi",
+      "id": "Password tersembunyi",
+      "en": "Password hidden"
+    },
+    {
+      "key": "Password tidak boleh kosong",
+      "id": "Password tidak boleh kosong",
+      "en": "Password cannot be empty"
+    },
+    {
+      "key": "Password tidak cocok",
+      "id": "Password tidak cocok",
+      "en": "Passwords do not match"
+    },
+    {
+      "key": "Pembayaran",
+      "id": "Pembayaran",
+      "en": "Payments"
+    },
+    {
+      "key": "Pembayaran akan muncul ketika ada transaksi.",
+      "id": "Pembayaran akan muncul ketika ada transaksi.",
+      "en": "Payments will appear once there is a transaction."
+    },
+    {
+      "key": "Pembayaran Berhasil",
+      "id": "Pembayaran Berhasil",
+      "en": "Payment Successful"
+    },
+    {
+      "key": "Pembayaran berhasil diverifikasi.",
+      "id": "Pembayaran berhasil diverifikasi.",
+      "en": "Payment verified successfully."
+    },
+    {
+      "key": "Pembayaran Digital",
+      "id": "Pembayaran Digital",
+      "en": "Digital Payments"
+    },
+    {
+      "key": "Pembayaran ditolak.",
+      "id": "Pembayaran ditolak.",
+      "en": "Payment rejected."
+    },
+    {
+      "key": "Pembayaran sedang menunggu verifikasi admin.",
+      "id": "Pembayaran sedang menunggu verifikasi admin.",
+      "en": "Payment is awaiting admin verification."
+    },
+    {
+      "key": "Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.",
+      "id": "Pembayaran sudah dibuat namun belum ada bukti. Silakan kirim bukti pembayaran di bawah.",
+      "en": "A payment has been created but there is no proof yet. Please send payment proof below."
+    },
+    {
+      "key": "Pembuatan tagihan & verifikasi pembayaran otomatis",
+      "id": "Pembuatan tagihan & verifikasi pembayaran otomatis",
+      "en": "Automatic invoice creation & payment verification"
+    },
+    {
+      "key": "Pending",
+      "id": "Pending",
+      "en": "Pending"
+    },
+    {
+      "key": "Pengaturan Admin",
+      "id": "Pengaturan Admin",
+      "en": "Admin Settings"
+    },
+    {
+      "key": "Pengguna",
+      "id": "Pengguna",
+      "en": "Users"
+    },
+    {
+      "key": "Pengguna & Keluarga",
+      "id": "Pengguna & Keluarga",
+      "en": "Users & Family"
+    },
+    {
+      "key": "Pengguna Menunggu",
+      "id": "Pengguna Menunggu",
+      "en": "Pending Users"
+    },
+    {
+      "key": "Penggunaan",
+      "id": "Penggunaan",
+      "en": "Usage"
+    },
+    {
+      "key": "Pengumuman",
+      "id": "Pengumuman",
+      "en": "Announcements"
+    },
+    {
+      "key": "Pengumuman akan muncul ketika ada info terbaru.",
+      "id": "Pengumuman akan muncul ketika ada info terbaru.",
+      "en": "Announcements will appear when there is new information."
+    },
+    {
+      "key": "Pengumuman berhasil dihapus.",
+      "id": "Pengumuman berhasil dihapus.",
+      "en": "Announcement deleted successfully."
+    },
+    {
+      "key": "Pengumuman dibuat.",
+      "id": "Pengumuman dibuat.",
+      "en": "Announcement created."
+    },
+    {
+      "key": "Pengumuman dikirim ke orang tua dari anak yang dipilih.",
+      "id": "Pengumuman dikirim ke orang tua dari anak yang dipilih.",
+      "en": "The announcement is sent to the parents of the selected children."
+    },
+    {
+      "key": "Pengumuman diperbarui.",
+      "id": "Pengumuman diperbarui.",
+      "en": "Announcement updated."
+    },
+    {
+      "key": "Pengumuman Terbaru",
+      "id": "Pengumuman Terbaru",
+      "en": "Latest Announcements"
+    },
+    {
+      "key": "Pengumuman terbaru dari daycare.",
+      "id": "Pengumuman terbaru dari daycare.",
+      "en": "Latest announcements from the daycare."
+    },
+    {
+      "key": "Pengumuman tidak ditemukan.",
+      "id": "Pengumuman tidak ditemukan.",
+      "en": "Announcement not found."
+    },
+    {
+      "key": "Penilaian berhasil dihapus.",
+      "id": "Penilaian berhasil dihapus.",
+      "en": "Assessment deleted successfully."
+    },
+    {
+      "key": "Penilaian berhasil disimpan.",
+      "id": "Penilaian berhasil disimpan.",
+      "en": "Assessment saved successfully."
+    },
+    {
+      "key": "Penilaian berhasil ditambahkan.",
+      "id": "Penilaian berhasil ditambahkan.",
+      "en": "Assessment added successfully."
+    },
+    {
+      "key": "Penjemput",
+      "id": "Penjemput",
+      "en": "Authorized Pickups"
+    },
+    {
+      "key": "Penjemput berhasil dihapus.",
+      "id": "Penjemput berhasil dihapus.",
+      "en": "Authorized pickup deleted successfully."
+    },
+    {
+      "key": "Penjemput diaktifkan.",
+      "id": "Penjemput diaktifkan.",
+      "en": "Authorized pickup activated."
+    },
+    {
+      "key": "Penjemput dinonaktifkan.",
+      "id": "Penjemput dinonaktifkan.",
+      "en": "Authorized pickup deactivated."
+    },
+    {
+      "key": "Penting",
+      "id": "Penting",
+      "en": "Important"
+    },
+    {
+      "key": "Peran",
+      "id": "Peran",
+      "en": "Role"
+    },
+    {
+      "key": "Perbarui",
+      "id": "Perbarui",
+      "en": "Update"
+    },
+    {
+      "key": "Perempuan",
+      "id": "Perempuan",
+      "en": "Female"
+    },
+    {
+      "key": "Perkembangan",
+      "id": "Perkembangan",
+      "en": "Development"
+    },
+    {
+      "key": "Perkembangan & penilaian anak Anda.",
+      "id": "Perkembangan & penilaian anak Anda.",
+      "en": "Your child's development & assessments."
+    },
+    {
+      "key": "Perkembangan & portofolio tumbuh kembang",
+      "id": "Perkembangan & portofolio tumbuh kembang",
+      "en": "Child development & growth portfolio"
+    },
+    {
+      "key": "Perkembangan Anak",
+      "id": "Perkembangan Anak",
+      "en": "Child Development"
+    },
+    {
+      "key": "Perlihatkan password",
+      "id": "Perlihatkan password",
+      "en": "Show password"
+    },
+    {
+      "key": "Persen (%)",
+      "id": "Persen (%)",
+      "en": "Percentage (%)"
+    },
+    {
+      "key": "Persen maksimal 100",
+      "id": "Persen maksimal 100",
+      "en": "Percentage cannot exceed 100"
+    },
+    {
+      "key": "Pesan",
+      "id": "Pesan",
+      "en": "Message"
+    },
+    {
+      "key": "Pesan *",
+      "id": "Pesan *",
+      "en": "Message *"
+    },
+    {
+      "key": "Pesan harus diisi",
+      "id": "Pesan harus diisi",
+      "en": "Message is required"
+    },
+    {
+      "key": "Phone",
+      "id": "Phone",
+      "en": "Phone"
+    },
+    {
+      "key": "Pilih",
+      "id": "Pilih",
+      "en": "Select"
+    },
+    {
+      "key": "Pilih anak",
+      "id": "Pilih anak",
+      "en": "Select child"
+    },
+    {
+      "key": "Pilih Anak",
+      "id": "Pilih Anak",
+      "en": "Select Child"
+    },
+    {
+      "key": "Pilih anak terlebih dahulu.",
+      "id": "Pilih anak terlebih dahulu.",
+      "en": "Select a child first."
+    },
+    {
+      "key": "Pilih anak untuk melihat aktivitasnya.",
+      "id": "Pilih anak untuk melihat aktivitasnya.",
+      "en": "Select a child to view their activities."
+    },
+    {
+      "key": "Pilih anak untuk melihat cerita hariannya",
+      "id": "Pilih anak untuk melihat cerita hariannya",
+      "en": "Select a child to view their daily stories"
+    },
+    {
+      "key": "Pilih anak untuk melihat dan mengelola data perkembangan",
+      "id": "Pilih anak untuk melihat dan mengelola data perkembangan",
+      "en": "Select a child to view and manage development data"
+    },
+    {
+      "key": "Pilih anak untuk melihat informasi",
+      "id": "Pilih anak untuk melihat informasi",
+      "en": "Select a child to view information"
+    },
+    {
+      "key": "Pilih anak untuk melihat perkembangan & penilaiannya.",
+      "id": "Pilih anak untuk melihat perkembangan & penilaiannya.",
+      "en": "Select a child to view their development & assessments."
+    },
+    {
+      "key": "Pilih anak untuk mengelola informasi penting",
+      "id": "Pilih anak untuk mengelola informasi penting",
+      "en": "Select a child to manage important information"
+    },
+    {
+      "key": "Pilih bukti pembayaran terlebih dahulu.",
+      "id": "Pilih bukti pembayaran terlebih dahulu.",
+      "en": "Select a payment proof first."
+    },
+    {
+      "key": "Pilih bukti pembayaran.",
+      "id": "Pilih bukti pembayaran.",
+      "en": "Please select a payment proof."
+    },
+    {
+      "key": "Pilih gambar bukti transfer",
+      "id": "Pilih gambar bukti transfer",
+      "en": "Select a transfer proof image"
+    },
+    {
+      "key": "Pilih kategori",
+      "id": "Pilih kategori",
+      "en": "Select category"
+    },
+    {
+      "key": "Pilih orang tua",
+      "id": "Pilih orang tua",
+      "en": "Select parent"
+    },
+    {
+      "key": "Pilih paket",
+      "id": "Pilih paket",
+      "en": "Select package"
+    },
+    {
+      "key": "Pilih Paket",
+      "id": "Pilih Paket",
+      "en": "Select Package"
+    },
+    {
+      "key": "Platform Manajemen Daycare Premium",
+      "id": "Platform Manajemen Daycare Premium",
+      "en": "Premium Daycare Management Platform"
+    },
+    {
+      "key": "Platform manajemen daycare premium — menghubungkan pengelola dan orang tua dalam satu ekosistem yang aman, transparan, dan mudah.",
+      "id": "Platform manajemen daycare premium — menghubungkan pengelola dan orang tua dalam satu ekosistem yang aman, transparan, dan mudah.",
+      "en": "Premium daycare management platform — connecting managers and parents in one secure, transparent, and easy ecosystem."
+    },
+    {
+      "key": "Portofolio Anak",
+      "id": "Portofolio Anak",
+      "en": "Child Portfolio"
+    },
+    {
+      "key": "Posisi",
+      "id": "Posisi",
+      "en": "Position"
+    },
+    {
+      "key": "Premium Soft Green Daycare",
+      "id": "Premium Soft Green Daycare",
+      "en": "Premium Soft Green Daycare"
+    },
+    {
+      "key": "Prioritas",
+      "id": "Prioritas",
+      "en": "Priority"
+    },
+    {
+      "key": "Prioritas *",
+      "id": "Prioritas *",
+      "en": "Priority *"
+    },
+    {
+      "key": "Produk & Promosi",
+      "id": "Produk & Promosi",
+      "en": "Products & Promotions"
+    },
+    {
+      "key": "Profil",
+      "id": "Profil",
+      "en": "Profile"
+    },
+    {
+      "key": "Progres",
+      "id": "Progres",
+      "en": "Progress"
+    },
+    {
+      "key": "Progress",
+      "id": "Progress",
+      "en": "Progress"
+    },
+    {
+      "key": "Progress *",
+      "id": "Progress *",
+      "en": "Progress *"
+    },
+    {
+      "key": "Publish + Kirim",
+      "id": "Publish + Kirim",
+      "en": "Publish & Send"
+    },
+    {
+      "key": "Publish: {{date}}",
+      "id": "Publish: {{date}}",
+      "en": "Published: {{date}}"
+    },
+    {
+      "key": "Rabu",
+      "id": "Rabu",
+      "en": "Wednesday"
+    },
+    {
+      "key": "Rating",
+      "id": "Rating",
+      "en": "Rating"
+    },
+    {
+      "key": "Rating Makan",
+      "id": "Rating Makan",
+      "en": "Meal Rating"
+    },
+    {
+      "key": "Rating Makan (1-5)",
+      "id": "Rating Makan (1-5)",
+      "en": "Meal Rating (1-5)"
+    },
+    {
+      "key": "Registrasi Berhasil!",
+      "id": "Registrasi Berhasil!",
+      "en": "Registration Successful!"
+    },
+    {
+      "key": "Registrasi gagal. Silakan coba lagi.",
+      "id": "Registrasi gagal. Silakan coba lagi.",
+      "en": "Registration failed. Please try again."
+    },
+    {
+      "key": "Rendah",
+      "id": "Rendah",
+      "en": "Low"
+    },
+    {
+      "key": "Reset Password",
+      "id": "Reset Password",
+      "en": "Reset Password"
+    },
+    {
+      "key": "Reset password gagal. Silakan coba lagi.",
+      "id": "Reset password gagal. Silakan coba lagi.",
+      "en": "Password reset failed. Please try again."
+    },
+    {
+      "key": "Respons feedback",
+      "id": "Respons feedback",
+      "en": "Feedback response"
+    },
+    {
+      "key": "Rewel",
+      "id": "Rewel",
+      "en": "Fussy"
+    },
+    {
+      "key": "Ringkasan",
+      "id": "Ringkasan",
+      "en": "Overview"
+    },
+    {
+      "key": "Ringkasan Hari Ini",
+      "id": "Ringkasan Hari Ini",
+      "en": "Today's Summary"
+    },
+    {
+      "key": "Ringkasan Kegiatan",
+      "id": "Ringkasan Kegiatan",
+      "en": "Activity Summary"
+    },
+    {
+      "key": "Riwayat kehadiran & aktivitas tiap anak terlacak",
+      "id": "Riwayat kehadiran & aktivitas tiap anak terlacak",
+      "en": "Attendance & activity history tracked for every child"
+    },
+    {
+      "key": "Riwayat Paket",
+      "id": "Riwayat Paket",
+      "en": "Package History"
+    },
+    {
+      "key": "Riwayat Pembayaran & Bukti",
+      "id": "Riwayat Pembayaran & Bukti",
+      "en": "Payment & Proof History"
+    },
+    {
+      "key": "Riwayat Penilaian",
+      "id": "Riwayat Penilaian",
+      "en": "Assessment History"
+    },
+    {
+      "key": "Riwayat Penilaian Terbaru",
+      "id": "Riwayat Penilaian Terbaru",
+      "en": "Latest Assessment History"
+    },
+    {
+      "key": "Role",
+      "id": "Role",
+      "en": "Role"
+    },
+    {
+      "key": "Role \"{{role}}\" tidak memiliki akses ke aplikasi ini.",
+      "id": "Role \"{{role}}\" tidak memiliki akses ke aplikasi ini.",
+      "en": "Role \"{{role}}\" does not have access to this application."
+    },
+    {
+      "key": "Rp",
+      "id": "Rp",
+      "en": "Rp"
+    },
+    {
+      "key": "Rp {{value}} diskon",
+      "id": "Rp {{value}} diskon",
+      "en": "Rp {{value}} discount"
+    },
+    {
+      "key": "s/d {{date}}",
+      "id": "s/d {{date}}",
+      "en": "until {{date}}"
+    },
+    {
+      "key": "Sabtu",
+      "id": "Sabtu",
+      "en": "Saturday"
+    },
+    {
+      "key": "Sakit",
+      "id": "Sakit",
+      "en": "Sick"
+    },
+    {
+      "key": "Salin",
+      "id": "Salin",
+      "en": "Copy"
+    },
+    {
+      "key": "Sampai {{date}}",
+      "id": "Sampai {{date}}",
+      "en": "Until {{date}}"
+    },
+    {
+      "key": "Sangat Baik",
+      "id": "Sangat Baik",
+      "en": "Very Good"
+    },
+    {
+      "key": "Satu Platform, Dua Dunia",
+      "id": "Satu Platform, Dua Dunia",
+      "en": "One Platform, Two Worlds"
+    },
+    {
+      "key": "Saya Punya Kode Reset",
+      "id": "Saya Punya Kode Reset",
+      "en": "I Have a Reset Code"
+    },
+    {
+      "key": "Sebelumnya",
+      "id": "Sebelumnya",
+      "en": "Previous"
+    },
+    {
+      "key": "Sedih",
+      "id": "Sedih",
+      "en": "Sad"
+    },
+    {
+      "key": "Selamat malam",
+      "id": "Selamat malam",
+      "en": "Good evening"
+    },
+    {
+      "key": "Selamat pagi",
+      "id": "Selamat pagi",
+      "en": "Good morning"
+    },
+    {
+      "key": "Selamat siang",
+      "id": "Selamat siang",
+      "en": "Good afternoon"
+    },
+    {
+      "key": "Selanjutnya",
+      "id": "Selanjutnya",
+      "en": "Next"
+    },
+    {
+      "key": "Selasa",
+      "id": "Selasa",
+      "en": "Tuesday"
+    },
+    {
+      "key": "Selesai",
+      "id": "Selesai",
+      "en": "Completed"
+    },
+    {
+      "key": "Sembunyikan password",
+      "id": "Sembunyikan password",
+      "en": "Hide password"
+    },
+    {
+      "key": "Semua",
+      "id": "Semua",
+      "en": "All"
+    },
+    {
+      "key": "Semua notifikasi ditandai sudah dibaca.",
+      "id": "Semua notifikasi ditandai sudah dibaca.",
+      "en": "All notifications marked as read."
+    },
+    {
+      "key": "Semua Orang Tua",
+      "id": "Semua Orang Tua",
+      "en": "All Parents"
+    },
+    {
+      "key": "Seni",
+      "id": "Seni",
+      "en": "Art"
+    },
+    {
+      "key": "Senin",
+      "id": "Senin",
+      "en": "Monday"
+    },
+    {
+      "key": "Sep",
+      "id": "Sep",
+      "en": "Sep"
+    },
+    {
+      "key": "September",
+      "id": "September",
+      "en": "September"
+    },
+    {
+      "key": "Server terlalu lama merespons. Silakan coba lagi.",
+      "id": "Server terlalu lama merespons. Silakan coba lagi.",
+      "en": "Server took too long to respond. Please try again."
+    },
+    {
+      "key": "Setujui",
+      "id": "Setujui",
+      "en": "Approve"
+    },
+    {
+      "key": "Siap Menata Daycare dengan",
+      "id": "Siap Menata Daycare dengan",
+      "en": "Ready to Manage Your Daycare with"
+    },
+    {
+      "key": "Silakan coba lagi",
+      "id": "Silakan coba lagi",
+      "en": "Please try again"
+    },
+    {
+      "key": "Simpan",
+      "id": "Simpan",
+      "en": "Save"
+    },
+    {
+      "key": "Simpan Anak",
+      "id": "Simpan Anak",
+      "en": "Save Child"
+    },
+    {
+      "key": "Simpan Cerita",
+      "id": "Simpan Cerita",
+      "en": "Save Story"
+    },
+    {
+      "key": "Simpan Draft",
+      "id": "Simpan Draft",
+      "en": "Save Draft"
+    },
+    {
+      "key": "Simpan Informasi",
+      "id": "Simpan Informasi",
+      "en": "Save Information"
+    },
+    {
+      "key": "Simpan Password",
+      "id": "Simpan Password",
+      "en": "Save Password"
+    },
+    {
+      "key": "Simpan Penilaian",
+      "id": "Simpan Penilaian",
+      "en": "Save Assessment"
+    },
+    {
+      "key": "Simpan Perubahan",
+      "id": "Simpan Perubahan",
+      "en": "Save Changes"
+    },
+    {
+      "key": "Sisa {{days}} hari",
+      "id": "Sisa {{days}} hari",
+      "en": "{{days}} days left"
+    },
+    {
+      "key": "Status",
+      "id": "Status",
+      "en": "Status"
+    },
+    {
+      "key": "Status Akun",
+      "id": "Status Akun",
+      "en": "Account Status"
+    },
+    {
+      "key": "Status berhasil diperbarui.",
+      "id": "Status berhasil diperbarui.",
+      "en": "Status updated successfully."
+    },
+    {
+      "key": "Status invoice diperbarui.",
+      "id": "Status invoice diperbarui.",
+      "en": "Invoice status updated."
+    },
+    {
+      "key": "Status: Aktif",
+      "id": "Status: Aktif",
+      "en": "Status: Active"
+    },
+    {
+      "key": "Status: Nonaktif",
+      "id": "Status: Nonaktif",
+      "en": "Status: Inactive"
+    },
+    {
+      "key": "Subjek",
+      "id": "Subjek",
+      "en": "Subject"
+    },
+    {
+      "key": "Subjek *",
+      "id": "Subjek *",
+      "en": "Subject *"
+    },
+    {
+      "key": "Subjek harus diisi",
+      "id": "Subjek harus diisi",
+      "en": "Subject is required"
+    },
+    {
+      "key": "Subtotal",
+      "id": "Subtotal",
+      "en": "Subtotal"
+    },
+    {
+      "key": "Sudah dibayar",
+      "id": "Sudah dibayar",
+      "en": "Paid"
+    },
+    {
+      "key": "Sudah punya akun?",
+      "id": "Sudah punya akun?",
+      "en": "Already have an account?"
+    },
+    {
+      "key": "Sudah punya akun? ",
+      "id": "Sudah punya akun? ",
+      "en": "Already have an account? "
+    },
+    {
+      "key": "T",
+      "id": "T",
+      "en": "T"
+    },
+    {
+      "key": "Tagihan",
+      "id": "Tagihan",
+      "en": "Invoices"
+    },
+    {
+      "key": "Tagihan akan muncul ketika ada invoice baru.",
+      "id": "Tagihan akan muncul ketika ada invoice baru.",
+      "en": "Invoices will appear when there is a new invoice."
+    },
+    {
+      "key": "Tagihan jelas, bayar langsung dari aplikasi",
+      "id": "Tagihan jelas, bayar langsung dari aplikasi",
+      "en": "Clear bills, pay directly from the app"
+    },
+    {
+      "key": "Tagihan Otomatis",
+      "id": "Tagihan Otomatis",
+      "en": "Automatic Billing"
+    },
+    {
+      "key": "Tagihan Pending",
+      "id": "Tagihan Pending",
+      "en": "Pending Invoices"
+    },
+    {
+      "key": "Tambah",
+      "id": "Tambah",
+      "en": "Add"
+    },
+    {
+      "key": "Tambah Admin",
+      "id": "Tambah Admin",
+      "en": "Add Admin"
+    },
+    {
+      "key": "Tambah Admin Baru",
+      "id": "Tambah Admin Baru",
+      "en": "Add New Admin"
+    },
+    {
+      "key": "Tambah Aktivitas",
+      "id": "Tambah Aktivitas",
+      "en": "Add Activity"
+    },
+    {
+      "key": "Tambah Aktivitas Baru",
+      "id": "Tambah Aktivitas Baru",
+      "en": "Add New Activity"
+    },
+    {
+      "key": "Tambah Anak",
+      "id": "Tambah Anak",
+      "en": "Add Child"
+    },
+    {
+      "key": "Tambah Anak Baru",
+      "id": "Tambah Anak Baru",
+      "en": "Add New Child"
+    },
+    {
+      "key": "Tambah Informasi",
+      "id": "Tambah Informasi",
+      "en": "Add Information"
+    },
+    {
+      "key": "Tambah Informasi Anak",
+      "id": "Tambah Informasi Anak",
+      "en": "Add Child Information"
+    },
+    {
+      "key": "Tambah Orang Tua",
+      "id": "Tambah Orang Tua",
+      "en": "Add Parent"
+    },
+    {
+      "key": "Tambah Orang Tua Baru",
+      "id": "Tambah Orang Tua Baru",
+      "en": "Add New Parent"
+    },
+    {
+      "key": "Tambah Paket",
+      "id": "Tambah Paket",
+      "en": "Add Package"
+    },
+    {
+      "key": "Tambah Paket Baru",
+      "id": "Tambah Paket Baru",
+      "en": "Add New Package"
+    },
+    {
+      "key": "Tambah Pengumuman",
+      "id": "Tambah Pengumuman",
+      "en": "Add Announcement"
+    },
+    {
+      "key": "Tambah Penilaian Perkembangan",
+      "id": "Tambah Penilaian Perkembangan",
+      "en": "Add Development Assessment"
+    },
+    {
+      "key": "Tambah Penjemput",
+      "id": "Tambah Penjemput",
+      "en": "Add Authorized Pickup"
+    },
+    {
+      "key": "Tambah Voucher",
+      "id": "Tambah Voucher",
+      "en": "Add Voucher"
+    },
+    {
+      "key": "Tambah Voucher Baru",
+      "id": "Tambah Voucher Baru",
+      "en": "Add New Voucher"
+    },
+    {
+      "key": "Tambahkan data anak Anda dengan menekan tombol \"Tambah Anak\".",
+      "id": "Tambahkan data anak Anda dengan menekan tombol \"Tambah Anak\".",
+      "en": "Add your child's data by pressing the \"Add Child\" button."
+    },
+    {
+      "key": "Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.",
+      "id": "Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.",
+      "en": "Add child data first to view Daily Stories."
+    },
+    {
+      "key": "Tambahkan data anak terlebih dahulu untuk melihat perkembangan.",
+      "id": "Tambahkan data anak terlebih dahulu untuk melihat perkembangan.",
+      "en": "Add child data first to view development."
+    },
+    {
+      "key": "Tambahkan data anak terlebih dahulu untuk mengelola informasi.",
+      "id": "Tambahkan data anak terlebih dahulu untuk mengelola informasi.",
+      "en": "Add child data first to manage information."
+    },
+    {
+      "key": "Tambahkan orang yang diizinkan menjemput {{name}}.",
+      "id": "Tambahkan orang yang diizinkan menjemput {{name}}.",
+      "en": "Add people authorized to pick up {{name}}."
+    },
+    {
+      "key": "Tampilan",
+      "id": "Tampilan",
+      "en": "Appearance"
+    },
+    {
+      "key": "Tampilkan password",
+      "id": "Tampilkan password",
+      "en": "Show password"
+    },
+    {
+      "key": "Tandai Lunas",
+      "id": "Tandai Lunas",
+      "en": "Mark as Paid"
+    },
+    {
+      "key": "Tanggal",
+      "id": "Tanggal",
+      "en": "Date"
+    },
+    {
+      "key": "Tanggal (YYYY-MM-DD)",
+      "id": "Tanggal (YYYY-MM-DD)",
+      "en": "Date (YYYY-MM-DD)"
+    },
+    {
+      "key": "Tanggal *",
+      "id": "Tanggal *",
+      "en": "Date *"
+    },
+    {
+      "key": "Tanggal Berakhir",
+      "id": "Tanggal Berakhir",
+      "en": "End Date"
+    },
+    {
+      "key": "Tanggal Berakhir *",
+      "id": "Tanggal Berakhir *",
+      "en": "End Date *"
+    },
+    {
+      "key": "Tanggal Jatuh Tempo *",
+      "id": "Tanggal Jatuh Tempo *",
+      "en": "Due Date *"
+    },
+    {
+      "key": "Tanggal jatuh tempo tidak boleh kosong",
+      "id": "Tanggal jatuh tempo tidak boleh kosong",
+      "en": "Due date cannot be empty"
+    },
+    {
+      "key": "Tanggal Lahir",
+      "id": "Tanggal Lahir",
+      "en": "Birth Date"
+    },
+    {
+      "key": "Tanggal Lahir *",
+      "id": "Tanggal Lahir *",
+      "en": "Birth Date *"
+    },
+    {
+      "key": "Tanggal lahir tidak boleh kosong",
+      "id": "Tanggal lahir tidak boleh kosong",
+      "en": "Date of birth cannot be empty"
+    },
+    {
+      "key": "Tanggal Mulai *",
+      "id": "Tanggal Mulai *",
+      "en": "Start Date *"
+    },
+    {
+      "key": "Tanggal Mulai Paket",
+      "id": "Tanggal Mulai Paket",
+      "en": "Package Start Date"
+    },
+    {
+      "key": "Tanggal Observasi *",
+      "id": "Tanggal Observasi *",
+      "en": "Observation Date *"
+    },
+    {
+      "key": "Tanggal Publikasi",
+      "id": "Tanggal Publikasi",
+      "en": "Publication Date"
+    },
+    {
+      "key": "Tanggal Publish",
+      "id": "Tanggal Publish",
+      "en": "Publish Date"
+    },
+    {
+      "key": "Tanggal tidak boleh kosong",
+      "id": "Tanggal tidak boleh kosong",
+      "en": "Date cannot be empty"
+    },
+    {
+      "key": "Tanggal: ",
+      "id": "Tanggal: ",
+      "en": "Date: "
+    },
+    {
+      "key": "Target Penerima",
+      "id": "Target Penerima",
+      "en": "Target Audience"
+    },
+    {
+      "key": "Target:",
+      "id": "Target:",
+      "en": "Target:"
+    },
+    {
+      "key": "TC",
+      "id": "TC",
+      "en": "TC"
+    },
+    {
+      "key": "Tekan tombol + untuk membuat pengumuman.",
+      "id": "Tekan tombol + untuk membuat pengumuman.",
+      "en": "Press the + button to create an announcement."
+    },
+    {
+      "key": "Tekan tombol + untuk menambah aktivitas.",
+      "id": "Tekan tombol + untuk menambah aktivitas.",
+      "en": "Press the + button to add an activity."
+    },
+    {
+      "key": "Tekan tombol + untuk menambah anak.",
+      "id": "Tekan tombol + untuk menambah anak.",
+      "en": "Press the + button to add a child."
+    },
+    {
+      "key": "Telepon",
+      "id": "Telepon",
+      "en": "Phone"
+    },
+    {
+      "key": "Telepon Kontak Darurat",
+      "id": "Telepon Kontak Darurat",
+      "en": "Emergency Contact Phone"
+    },
+    {
+      "key": "Tempat Tumbuh Kembang",
+      "id": "Tempat Tumbuh Kembang",
+      "en": "A Place to Grow"
+    },
+    {
+      "key": "Tenang dari mana saja",
+      "id": "Tenang dari mana saja",
+      "en": "Peace of mind from anywhere"
+    },
+    {
+      "key": "Tentang Aplikasi",
+      "id": "Tentang Aplikasi",
+      "en": "About App"
+    },
+    {
+      "key": "Terakhir: ",
+      "id": "Terakhir: ",
+      "en": "Latest: "
+    },
+    {
+      "key": "Terjadi kesalahan pada server. Silakan coba lagi.",
+      "id": "Terjadi kesalahan pada server. Silakan coba lagi.",
+      "en": "A server error occurred. Please try again."
+    },
+    {
+      "key": "Terjadwal",
+      "id": "Terjadwal",
+      "en": "Scheduled"
+    },
+    {
+      "key": "Termasuk digit unik: +{{code}}",
+      "id": "Termasuk digit unik: +{{code}}",
+      "en": "Includes a unique digit: +{{code}}"
+    },
+    {
+      "key": "Termasuk digit unik: +{{count}}",
+      "id": "Termasuk digit unik: +{{count}}",
+      "en": "Includes unique digits: +{{count}}"
+    },
+    {
+      "key": "Terverifikasi",
+      "id": "Terverifikasi",
+      "en": "Verified"
+    },
+    {
+      "key": "Testimoni",
+      "id": "Testimoni",
+      "en": "Testimonials"
+    },
+    {
+      "key": "Testimoni {{nomor}}",
+      "id": "Testimoni {{nomor}}",
+      "en": "Testimonial {{nomor}}"
+    },
+    {
+      "key": "Tidak ada anak — pilih 'Semua Orang Tua'.",
+      "id": "Tidak ada anak — pilih 'Semua Orang Tua'.",
+      "en": "No children — choose 'All Parents'."
+    },
+    {
+      "key": "Tidak ada cerita untuk tanggal {{date}}.",
+      "id": "Tidak ada cerita untuk tanggal {{date}}.",
+      "en": "No stories for {{date}}."
+    },
+    {
+      "key": "Tidak ada data",
+      "id": "Tidak ada data",
+      "en": "No data"
+    },
+    {
+      "key": "Tidak ada data orang tua",
+      "id": "Tidak ada data orang tua",
+      "en": "No parent data"
+    },
+    {
+      "key": "Tidak ada informasi kesehatan yang tercatat.",
+      "id": "Tidak ada informasi kesehatan yang tercatat.",
+      "en": "No health information recorded."
+    },
+    {
+      "key": "Tidak ada orang tua terdaftar.",
+      "id": "Tidak ada orang tua terdaftar.",
+      "en": "No parents registered."
+    },
+    {
+      "key": "Tidak ada pengguna ditemukan",
+      "id": "Tidak ada pengguna ditemukan",
+      "en": "No users found"
+    },
+    {
+      "key": "Tidak ada pengumuman",
+      "id": "Tidak ada pengumuman",
+      "en": "No announcements"
+    },
+    {
+      "key": "Tidak dapat membuka dokumen.",
+      "id": "Tidak dapat membuka dokumen.",
+      "en": "Unable to open the document."
+    },
+    {
+      "key": "Tidak dapat memuat dashboard admin.",
+      "id": "Tidak dapat memuat dashboard admin.",
+      "en": "Unable to load the admin dashboard."
+    },
+    {
+      "key": "Tidak dapat memuat profil. Silakan coba lagi.",
+      "id": "Tidak dapat memuat profil. Silakan coba lagi.",
+      "en": "Unable to load your profile. Please try again."
+    },
+    {
+      "key": "Tidak dapat terhubung ke server. Pastikan server berjalan.",
+      "id": "Tidak dapat terhubung ke server. Pastikan server berjalan.",
+      "en": "Unable to connect to the server. Make sure the server is running."
+    },
+    {
+      "key": "Tidak dapat terhubung ke server. Silakan coba lagi.",
+      "id": "Tidak dapat terhubung ke server. Silakan coba lagi.",
+      "en": "Unable to connect to the server. Please try again."
+    },
+    {
+      "key": "Tidak ditemukan",
+      "id": "Tidak ditemukan",
+      "en": "Not found"
+    },
+    {
+      "key": "Tinggi",
+      "id": "Tinggi",
+      "en": "High"
+    },
+    {
+      "key": "Tinjau",
+      "id": "Tinjau",
+      "en": "Review"
+    },
+    {
+      "key": "TinyCare",
+      "id": "TinyCare",
+      "en": "TinyCare"
+    },
+    {
+      "key": "TinyCare Admin",
+      "id": "TinyCare Admin",
+      "en": "TinyCare Admin"
+    },
+    {
+      "key": "TinyCare menghubungkan daycare & orang tua dalam satu ekosistem premium: kehadiran real-time, laporan harian, tagihan, hingga dokumentasi tumbuh kembang.",
+      "id": "TinyCare menghubungkan daycare & orang tua dalam satu ekosistem premium: kehadiran real-time, laporan harian, tagihan, hingga dokumentasi tumbuh kembang.",
+      "en": "TinyCare connects daycares & parents in one premium ecosystem: real-time attendance, daily reports, billing, and growth documentation."
+    },
+    {
+      "key": "TinyCare v1.0.0",
+      "id": "TinyCare v1.0.0",
+      "en": "TinyCare v1.0.0"
+    },
+    {
+      "key": "Tipe",
+      "id": "Tipe",
+      "en": "Type"
+    },
+    {
+      "key": "Tipe Diskon *",
+      "id": "Tipe Diskon *",
+      "en": "Discount Type *"
+    },
+    {
+      "key": "Tolak",
+      "id": "Tolak",
+      "en": "Reject"
+    },
+    {
+      "key": "Tolak Akun",
+      "id": "Tolak Akun",
+      "en": "Reject Account"
+    },
+    {
+      "key": "Tolak Pembayaran",
+      "id": "Tolak Pembayaran",
+      "en": "Reject Payment"
+    },
+    {
+      "key": "Total",
+      "id": "Total",
+      "en": "Total"
+    },
+    {
+      "key": "Total Anak",
+      "id": "Total Anak",
+      "en": "Total Children"
+    },
+    {
+      "key": "Total Orang Tua",
+      "id": "Total Orang Tua",
+      "en": "Total Parents"
+    },
+    {
+      "key": "Total Pendapatan",
+      "id": "Total Pendapatan",
+      "en": "Total Revenue"
+    },
+    {
+      "key": "Total Pengguna",
+      "id": "Total Pengguna",
+      "en": "Total Users"
+    },
+    {
+      "key": "Tracking perkembangan anak Anda.",
+      "id": "Tracking perkembangan anak Anda.",
+      "en": "Tracking your child's development."
+    },
+    {
+      "key": "Transfer sebesar:",
+      "id": "Transfer sebesar:",
+      "en": "Transfer amount:"
+    },
+    {
+      "key": "Tulis balasan...",
+      "id": "Tulis balasan...",
+      "en": "Write a reply..."
+    },
+    {
+      "key": "Tulis jawaban Anda...",
+      "id": "Tulis jawaban Anda...",
+      "en": "Write your response..."
+    },
+    {
+      "key": "Tulis pesan Anda...",
+      "id": "Tulis pesan Anda...",
+      "en": "Write your message..."
+    },
+    {
+      "key": "Tunai",
+      "id": "Tunai",
+      "en": "Cash"
+    },
+    {
+      "key": "Tutup",
+      "id": "Tutup",
+      "en": "Close"
+    },
+    {
+      "key": "Ubah Password",
+      "id": "Ubah Password",
+      "en": "Change Password"
+    },
+    {
+      "key": "Ukuran foto maksimal {{max}}MB.",
+      "id": "Ukuran foto maksimal {{max}}MB.",
+      "en": "Maximum photo size is {{max}}MB."
+    },
+    {
+      "key": "Ulangi kata sandi",
+      "id": "Ulangi kata sandi",
+      "en": "Repeat password"
+    },
+    {
+      "key": "Ulangi password baru",
+      "id": "Ulangi password baru",
+      "en": "Repeat new password"
+    },
+    {
+      "key": "Unggah",
+      "id": "Unggah",
+      "en": "Upload"
+    },
+    {
+      "key": "Unggah Foto",
+      "id": "Unggah Foto",
+      "en": "Upload Photo"
+    },
+    {
+      "key": "untuk anak-anak Indonesia",
+      "id": "untuk anak-anak Indonesia",
+      "en": "for Indonesian children"
+    },
+    {
+      "key": "Untuk Orang Tua",
+      "id": "Untuk Orang Tua",
+      "en": "For Parents"
+    },
+    {
+      "key": "Untuk Pengelola",
+      "id": "Untuk Pengelola",
+      "en": "For Managers"
+    },
+    {
+      "key": "Untuk: ",
+      "id": "Untuk: ",
+      "en": "For: "
+    },
+    {
+      "key": "Upload Bukti Pembayaran",
+      "id": "Upload Bukti Pembayaran",
+      "en": "Upload Payment Proof"
+    },
+    {
+      "key": "Urgent",
+      "id": "Urgent",
+      "en": "Urgent"
+    },
+    {
+      "key": "Verifikasi",
+      "id": "Verifikasi",
+      "en": "Verify"
+    },
+    {
+      "key": "Verifikasi bukti pembayaran dari orang tua",
+      "id": "Verifikasi bukti pembayaran dari orang tua",
+      "en": "Verify payment proofs from parents"
+    },
+    {
+      "key": "Verifikasi pembayaran",
+      "id": "Verifikasi pembayaran",
+      "en": "Verify payment"
+    },
+    {
+      "key": "Versi",
+      "id": "Versi",
+      "en": "Version"
+    },
+    {
+      "key": "Versi aplikasi",
+      "id": "Versi aplikasi",
+      "en": "App version"
+    },
+    {
+      "key": "Virtual Account",
+      "id": "Virtual Account",
+      "en": "Virtual Account"
+    },
+    {
+      "key": "Voucher",
+      "id": "Voucher",
+      "en": "Voucher"
+    },
+    {
+      "key": "Voucher & Promo",
+      "id": "Voucher & Promo",
+      "en": "Vouchers & Promos"
+    },
+    {
+      "key": "Voucher berhasil dihapus.",
+      "id": "Voucher berhasil dihapus.",
+      "en": "Voucher deleted successfully."
+    },
+    {
+      "key": "Voucher berhasil diperbarui.",
+      "id": "Voucher berhasil diperbarui.",
+      "en": "Voucher updated successfully."
+    },
+    {
+      "key": "Voucher berhasil ditambahkan.",
+      "id": "Voucher berhasil ditambahkan.",
+      "en": "Voucher added successfully."
+    },
+    {
+      "key": "Wajib diisi",
+      "id": "Wajib diisi",
+      "en": "Required"
+    },
+    {
+      "key": "Waktu",
+      "id": "Waktu",
+      "en": "Time"
+    },
+    {
+      "key": "Yakin ingin memverifikasi pembayaran ini?",
+      "id": "Yakin ingin memverifikasi pembayaran ini?",
+      "en": "Are you sure you want to verify this payment?"
+    },
+    {
+      "key": "Yakin ingin menghapus aktivitas ini?",
+      "id": "Yakin ingin menghapus aktivitas ini?",
+      "en": "Are you sure you want to delete this activity?"
+    },
+    {
+      "key": "Yakin ingin menghapus anak ini?",
+      "id": "Yakin ingin menghapus anak ini?",
+      "en": "Are you sure you want to delete this child?"
+    },
+    {
+      "key": "Yakin ingin menghapus event ini?",
+      "id": "Yakin ingin menghapus event ini?",
+      "en": "Are you sure you want to delete this event?"
+    },
+    {
+      "key": "Yakin ingin menghapus orang tua ini?",
+      "id": "Yakin ingin menghapus orang tua ini?",
+      "en": "Are you sure you want to delete this parent?"
+    },
+    {
+      "key": "Yakin ingin menghapus paket \"{{name}}\"?",
+      "id": "Yakin ingin menghapus paket \"{{name}}\"?",
+      "en": "Delete package \"{{name}}\"?"
+    },
+    {
+      "key": "Yakin ingin menghapus paket ini?",
+      "id": "Yakin ingin menghapus paket ini?",
+      "en": "Are you sure you want to delete this package?"
+    },
+    {
+      "key": "Yakin ingin menghapus pengumuman ini?",
+      "id": "Yakin ingin menghapus pengumuman ini?",
+      "en": "Are you sure you want to delete this announcement?"
+    },
+    {
+      "key": "Yakin ingin menghapus penilaian ini?",
+      "id": "Yakin ingin menghapus penilaian ini?",
+      "en": "Are you sure you want to delete this assessment?"
+    },
+    {
+      "key": "Yakin ingin menghapus voucher \"{{code}}\"?",
+      "id": "Yakin ingin menghapus voucher \"{{code}}\"?",
+      "en": "Delete voucher \"{{code}}\"?"
+    },
+    {
+      "key": "Yakin ingin menghapus voucher ini?",
+      "id": "Yakin ingin menghapus voucher ini?",
+      "en": "Are you sure you want to delete this voucher?"
+    },
+    {
+      "key": "Yakin ingin mengubah status ke \"{{status}}\"?",
+      "id": "Yakin ingin mengubah status ke \"{{status}}\"?",
+      "en": "Are you sure you want to change status to \"{{status}}\"?"
+    },
+    {
+      "key": "YYYY-MM-DD",
+      "id": "YYYY-MM-DD",
+      "en": "YYYY-MM-DD"
+    },
+    {
+      "key": "YYYY-MM-DD (default: hari ini)",
+      "id": "YYYY-MM-DD (default: hari ini)",
+      "en": "YYYY-MM-DD (default: today)"
+    },
+    {
+      "key": "Bahasa & Terjemahan",
+      "id": "Bahasa & Terjemahan",
+      "en": "Language & Translations"
+    },
+    {
+      "key": "Belum Lengkap",
+      "id": "Belum Lengkap",
+      "en": "Incomplete"
+    },
+    {
+      "key": "Belum diisi",
+      "id": "Belum diisi",
+      "en": "Not filled in"
+    },
+    {
+      "key": "Cari key atau teks...",
+      "id": "Cari key atau teks...",
+      "en": "Search key or text..."
+    },
+    {
+      "key": "Gagal memuat data terjemahan.",
+      "id": "Gagal memuat data terjemahan.",
+      "en": "Failed to load translations."
+    },
+    {
+      "key": "Gagal menyimpan terjemahan.",
+      "id": "Gagal menyimpan terjemahan.",
+      "en": "Failed to save translation."
+    },
+    {
+      "key": "Hanya admin_master yang dapat mengelola terjemahan.",
+      "id": "Hanya admin_master yang dapat mengelola terjemahan.",
+      "en": "Only admin_master can manage translations."
+    },
+    {
+      "key": "Hanya lihat",
+      "id": "Hanya lihat",
+      "en": "View only"
+    },
+    {
+      "key": "Kelola wording system UI dan notifikasi. Perubahan terlihat setelah reload/refetch client.",
+      "id": "Kelola wording system UI dan notifikasi. Perubahan terlihat setelah reload/refetch client.",
+      "en": "Manage system UI and notification wording. Changes appear after clients reload/refetch."
+    },
+    {
+      "key": "Klik teks untuk mengedit",
+      "id": "Klik teks untuk mengedit",
+      "en": "Click text to edit"
+    },
+    {
+      "key": "Klik untuk mengedit",
+      "id": "Klik untuk mengedit",
+      "en": "Click to edit"
+    },
+    {
+      "key": "Lengkap",
+      "id": "Lengkap",
+      "en": "Complete"
+    },
+    {
+      "key": "Nilai terjemahan tidak boleh kosong.",
+      "id": "Nilai terjemahan tidak boleh kosong.",
+      "en": "Translation value cannot be empty."
+    },
+    {
+      "key": "Terjemahan berhasil disimpan.",
+      "id": "Terjemahan berhasil disimpan.",
+      "en": "Translation saved successfully."
+    }
+  ]
+}

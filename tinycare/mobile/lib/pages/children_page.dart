@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/currency.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import 'child_detail_page.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
@@ -20,37 +23,24 @@ class ChildrenPage extends StatefulWidget {
   State<ChildrenPage> createState() => _ChildrenPageState();
 }
 
-class _ChildrenPageState extends State<ChildrenPage> {
+class _ChildrenPageState extends State<ChildrenPage> with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list (admin or parent, scoped to the signed-in user).
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _children => _res.data ?? const [];
+
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadChildren();
   }
 
-  Future<void> _loadChildren() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final children = await _api.getChildren();
-      setState(() {
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data anak. Silakan coba lagi.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadChildren() => _repo.loadChildren(_res);
 
   List<dynamic> get _filteredChildren {
     if (_searchQuery.isEmpty) return _children;
@@ -167,6 +157,8 @@ class _ChildrenPageState extends State<ChildrenPage> {
       ),
       body: Column(
         children: [
+          OfflineBanner(resource: _res, onRetry: _loadChildren),
+
           // Search bar
           if (_children.isNotEmpty)
             Padding(
@@ -199,10 +191,13 @@ class _ChildrenPageState extends State<ChildrenPage> {
 
           // List
           Expanded(
-            child: _isLoading
+            child: _res.isLoading
                 ? AppWidgets.loadingIndicator()
-                : _error != null
-                    ? AppWidgets.errorState(message: _error!, onRetry: _loadChildren)
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadChildren,
+                      )
                     : _filteredChildren.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.child_care,

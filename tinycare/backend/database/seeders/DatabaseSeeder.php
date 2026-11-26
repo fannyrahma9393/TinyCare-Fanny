@@ -39,5 +39,8 @@ class DatabaseSeeder extends Seeder
 
         // Seed sample data
         $this->call(SampleDataSeeder::class);
+
+        // Seed translation baseline (idempotent: existing rows are preserved)
+        $this->call(TranslationsSeeder::class);
     }
 }

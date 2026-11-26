@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'l10n/register.dart';
+import 'l10n/app_strings.dart';
 import 'services/api_service.dart';
 import 'services/fcm_service.dart';
+import 'services/translation_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
@@ -45,6 +47,12 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   registerLocalizations();
   ApiService().init();
+
+  // Restore any persisted remote translation overlay (offline-safe), then
+  // opportunistically refresh it in the background. Never blocks startup:
+  // static catalogs already render the full UI.
+  TranslationService.instance.restoreCache();
+  TranslationService.instance.refresh();
 
   // Initialize Firebase Messaging (guarded: never crashes if not configured).
   FcmService.instance.initialize();
@@ -145,7 +153,11 @@ class TinyCareApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           final localeProvider = context.watch<LocaleProvider>();
-          return MaterialApp(
+          // Rebuild MaterialApp whenever a new remote translation overlay is
+          // applied so visible text switches to the admin-edited wording.
+          return ValueListenableBuilder<int>(
+            valueListenable: AppStrings.instance.overlayVersion,
+            builder: (context, _, _) => MaterialApp(
             title: 'TinyCare',
             navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
@@ -188,6 +200,7 @@ class TinyCareApp extends StatelessWidget {
             '/reports': (context) => const _AuthGuard(child: ReportsPage()),
 
           },
+          ),
         );
         },
       ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -12,43 +14,29 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _profileData;
-  bool _isLoading = true;
-  String? _error;
+class _ProfilePageState extends State<ProfilePage> with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first profile. The API response shape is {success,data,...};
+  /// we store that whole envelope in cache so last-known profile remains
+  /// available offline. Loading reads the envelope's data for display.
+  late final CachedResource<Map<String, dynamic>> _res;
+  Map<String, dynamic>? get _profileEnvelope => _res.data;
+  Map<String, dynamic>? get _profileData =>
+      _profileEnvelope != null ? _profileEnvelope!['data'] as Map<String, dynamic>? : null;
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty || (data['data'] == null),
+    );
     _loadProfile();
   }
 
-  Future<void> _loadProfile() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final response = await _api.getMe();
-      if (response['success'] == true) {
-        setState(() {
-          _profileData = response['data'];
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _error = response['message'] ?? tr('Gagal memuat profil.');
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = tr('Tidak dapat memuat profil. Silakan coba lagi.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadProfile() => _repo.loadProfile(_res);
+
 
   @override
   Widget build(BuildContext context) {
@@ -85,11 +73,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadProfile)
-              : _buildProfile(),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadProfile),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadProfile,
+                      )
+                    : _buildProfile(),
+          ),
+        ],
+      ),
     );
   }
 

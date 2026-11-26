@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PickupController;
 use App\Http\Controllers\Api\RegistrationController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\TranslationController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\VoucherController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,9 @@ Route::get('/v1/media/stream', [MediaController::class, 'stream'])->name('media.
 
 // Payment webhook (no auth required)
 Route::post('/v1/payments/webhook', [PaymentController::class, 'webhook']);
+
+// Public translation catalog (client overlay source for Web + Mobile, cached)
+Route::get('/v1/translations', [TranslationController::class, 'index'])->middleware('throttle:60,1');
 
 // Authenticated routes
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
@@ -158,6 +162,13 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'adminDashboard']);
+
+        // Translation management (read: admin + admin_master, write: admin_master only)
+        Route::get('/translations', [TranslationController::class, 'adminIndex']);
+        Route::post('/translations', [TranslationController::class, 'adminStore'])
+            ->middleware('role:admin_master');
+        Route::put('/translations/{translation}', [TranslationController::class, 'adminUpdate'])
+            ->middleware('role:admin_master');
 
         // Reports management
         Route::get('/reports/weekly', [ReportController::class, 'weeklyIndex']);

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Parent view: activities for one child (mirrors web ParentActivitiesDetail).
@@ -15,71 +17,84 @@ class ActivitiesDetailPage extends StatefulWidget {
   State<ActivitiesDetailPage> createState() => _ActivitiesDetailPageState();
 }
 
-class _ActivitiesDetailPageState extends State<ActivitiesDetailPage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _child;
-  List<dynamic> _activities = [];
-  bool _isLoading = true;
-  String? _error;
+class _ActivitiesDetailPageState extends State<ActivitiesDetailPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first child header + activity list.
+  late final CachedResource<Map<String, dynamic>> _childRes;
+  late final CachedResource<List<dynamic>> _activitiesRes;
+
+  Map<String, dynamic>? get _child => _childRes.data;
+  List<dynamic> get _activities => _activitiesRes.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _childRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
+    _activitiesRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadData();
   }
 
   Future<void> _loadData() async {
-    try {
-      final child = await _api.getChild(widget.childId);
-      final activities = await _api.getChildActivities(widget.childId);
-      setState(() {
-        _child = child;
-        _activities = activities;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat data aktivitas.'); _isLoading = false; });
-    }
+    await Future.wait([
+      _repo.loadChildDetail(widget.childId, _childRes),
+      _repo.loadChildActivities(widget.childId, _activitiesRes),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Aktivitas Anak'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: () {
-                  setState(() { _isLoading = true; _error = null; });
-                  _loadData();
-                })
-              : _child == null
-                  ? AppWidgets.emptyState(icon: Icons.child_care, title: tr('Anak tidak ditemukan.'))
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: AppColors.primary,
-                      child: ListView(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        children: [
-                          ChildHeader(
-                            child: _child,
-                            subtitle: tr('Aktivitas yang diikuti anak Anda.'),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _childRes, onRetry: _loadData),
+          Expanded(
+            child: _childRes.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _childRes.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_childRes.error!),
+                        onRetry: _loadData,
+                      )
+                    : _child == null
+                        ? AppWidgets.emptyState(
+                            icon: Icons.child_care,
+                            title: tr('Anak tidak ditemukan.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadData,
+                            color: AppColors.primary,
+                            child: ListView(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              children: [
+                                ChildHeader(
+                                  child: _child,
+                                  subtitle: tr('Aktivitas yang diikuti anak Anda.'),
+                                ),
+                                const SizedBox(height: 20),
+                                if (_activities.isEmpty)
+                                  AppWidgets.emptyState(
+                                    icon: Icons.emoji_events_outlined,
+                                    title: tr('Belum ada aktivitas'),
+                                    subtitle: tr('Aktivitas akan muncul ketika ada kegiatan terbaru.'),
+                                  )
+                                else
+                                  ..._activities.map((a) => _ActivityCard(item: a)),
+                              ],
+                            ),
                           ),
-                          const SizedBox(height: 20),
-                          if (_activities.isEmpty)
-                            AppWidgets.emptyState(
-                              icon: Icons.emoji_events_outlined,
-                              title: tr('Belum ada aktivitas'),
-                              subtitle: tr('Aktivitas akan muncul ketika ada kegiatan terbaru.'),
-                            )
-                          else
-                            ..._activities.map((a) => _ActivityCard(item: a)),
-                        ],
-                      ),
-                    ),
+          ),
+        ],
+      ),
     );
   }
 }
+
 
 class _ActivityCard extends StatelessWidget {
   const _ActivityCard({required this.item});

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 import '../services/fcm_service.dart';
+import '../services/offline_cache_service.dart';
+import '../services/translation_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ApiService _api = ApiService();
@@ -51,6 +53,10 @@ class AuthProvider extends ChangeNotifier {
             _api.setAdminStatus(role == 'admin' || role == 'admin_master');
             _isLoggedIn = true;
 
+            // Scope the offline cache to this account: only data this user is
+            // allowed to see is ever written or read on this device.
+            await _bindCacheScope(userData['id']);
+
             // Session restored without a fresh login: re-arm FCM so push
             // listeners and token registration keep working after the app is
             // reopened. setupForLoggedInUser() is idempotent, so calling it
@@ -73,6 +79,7 @@ class AuthProvider extends ChangeNotifier {
               final role = savedUser['role'];
               _api.setAdminStatus(role == 'admin' || role == 'admin_master');
               _isLoggedIn = true;
+              await _bindCacheScope(savedUser['id']);
               _setupFcm();
             }
             // If we have a token but no cached user and no network, the
@@ -87,6 +94,19 @@ class AuthProvider extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  /// Point the offline cache at the signed-in account. Passing null (missing
+  /// id) leaves the cache unbound so nothing can be read or written.
+  ///
+  /// Awaited on every call site: pages load their cached resources as soon as
+  /// the session is restored, and an unbound scope would silently read nothing.
+  Future<void> _bindCacheScope(Object? userId) async {
+    try {
+      await OfflineCacheService.instance.bindUser(userId);
+    } catch (e) {
+      debugPrint('[AuthProvider] bindUser failed: $e');
+    }
   }
 
   /// Login with email and password. Supports both parent and admin roles.
@@ -116,6 +136,12 @@ class AuthProvider extends ChangeNotifier {
         
         // Set admin status for role-based API routing
         _api.setAdminStatus(role == 'admin' || role == 'admin_master');
+
+        // A fresh login is a new session: drop whatever cache belonged to the
+        // previous scope, then bind the cache to this account so a different
+        // parent can never read the previous user's data.
+        await OfflineCacheService.instance.clearCurrentUser();
+        await _bindCacheScope(userData['id']);
         
         _isLoggedIn = true;
         _user = userData;
@@ -127,6 +153,10 @@ class AuthProvider extends ChangeNotifier {
         // feedback events; admins receive payment_submitted + feedback_created.
         // Best-effort: never blocks login or throws.
         _setupFcm();
+
+        // Refresh the remote translation overlay after login (best-effort;
+        // cached/static translations are used when the network fails).
+        TranslationService.instance.refresh();
         return true;
       } else {
         _error = response['message'] ?? 'Login gagal. Silakan coba lagi.';
@@ -183,6 +213,14 @@ class AuthProvider extends ChangeNotifier {
       await _api.logout();
     } catch (e) {
       debugPrint('[AuthProvider] Logout API error (non-critical): $e');
+    }
+    // Belt and braces: the cache is bound to the session, so it is wiped and
+    // unbound even if the token removal above failed for any reason.
+    try {
+      await OfflineCacheService.instance.clearCurrentUser();
+      await OfflineCacheService.instance.unbindUser();
+    } catch (e) {
+      debugPrint('[AuthProvider] Cache cleanup error (non-critical): $e');
     }
     _isLoggedIn = false;
     _user = null;

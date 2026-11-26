@@ -1,8 +1,10 @@
 // components strings. Keys are the Indonesian source text; values are English.
 const Map<String, String> componentsEn = {
+  'Aktifkan/nonaktifkan admin': 'Activate/deactivate admins',
   'Baik': 'Good',
   'Batal': 'Cancel',
   'Batalkan': 'Cancel',
+  'Catatan/informasi khusus': 'Special notes/information',
   'Coba Lagi': 'Try Again',
   'Detail': 'Details',
   'Edit': 'Edit',
@@ -41,10 +43,10 @@ const Map<String, String> componentsEn = {
   'Tanggal': 'Date',
   'Tanggal (YYYY-MM-DD)': 'Date (YYYY-MM-DD)',
   'Tanggal Berakhir *': 'End Date *',
-  'Tanggal jatuh tempo tidak boleh kosong': 'Due date cannot be empty',
-  'Tanggal lahir tidak boleh kosong': 'Date of birth cannot be empty',
   'Tanggal Mulai *': 'Start Date *',
   'Tanggal Publikasi': 'Publication Date',
+  'Tanggal jatuh tempo tidak boleh kosong': 'Due date cannot be empty',
+  'Tanggal lahir tidak boleh kosong': 'Date of birth cannot be empty',
   'Tanggal tidak boleh kosong': 'Date cannot be empty',
   'Tanggal: ': 'Date: ',
   'Tidak dapat membuka dokumen.': 'Unable to open the document.',

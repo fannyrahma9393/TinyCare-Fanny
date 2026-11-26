@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 class PackagePage extends StatefulWidget {
@@ -14,41 +16,34 @@ class PackagePage extends StatefulWidget {
   State<PackagePage> createState() => _PackagePageState();
 }
 
-class _PackagePageState extends State<PackagePage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _active;
-  List<dynamic> _history = [];
-  bool _isLoading = true;
-  String? _error;
+class _PackagePageState extends State<PackagePage> with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first active package + package history. History is optional in the
+  /// original code (a failure there was swallowed), so it gets its own resource
+  /// and never blocks the active package card.
+  late final CachedResource<Map<String, dynamic>?> _activeRes;
+  late final CachedResource<List<dynamic>> _historyRes;
+
+  Map<String, dynamic>? get _active => _activeRes.data;
+  List<dynamic> get _history => _historyRes.data ?? const [];
+
+  String? get _error => _activeRes.error ?? _historyRes.error;
+  bool get _isLoading => _activeRes.isLoading;
 
   @override
   void initState() {
     super.initState();
+    _activeRes = CachedResource<Map<String, dynamic>?>(onChanged: onResourceChanged);
+    _historyRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _load();
   }
 
   Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final active = await _api.getParentChildPackage(widget.childId);
-      List<dynamic> history = [];
-      try {
-        history = await _api.getParentChildPackageHistory(widget.childId);
-      } catch (_) {}
-      setState(() {
-        _active = active;
-        _history = history;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat paket.');
-        _isLoading = false;
-      });
-    }
+    await Future.wait([
+      _repo.loadChildPackage(widget.childId, _activeRes),
+      _repo.loadChildPackageHistory(widget.childId, _historyRes),
+    ]);
   }
 
   String _statusLabel(String? status) {
@@ -77,42 +72,43 @@ class _PackagePageState extends State<PackagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Paket'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!,
-                  onRetry: () {
-                    setState(() {
-                      _isLoading = true;
-                      _error = null;
-                    });
-                    _load();
-                  },
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  color: AppColors.primary,
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    children: [
-                      _buildActivePackageCard(),
-                      const SizedBox(height: 24),
-                      AppWidgets.sectionHeader(
-                        tr('Riwayat Paket'),
-                        context: context,
+      body: Column(
+        children: [
+          OfflineBanner(resource: _activeRes, onRetry: _load),
+          Expanded(
+            child: _isLoading
+                ? AppWidgets.loadingIndicator()
+                : _error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_error!),
+                        onRetry: _load,
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _load,
+                        color: AppColors.primary,
+                        child: ListView(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          children: [
+                            _buildActivePackageCard(),
+                            const SizedBox(height: 24),
+                            AppWidgets.sectionHeader(
+                              tr('Riwayat Paket'),
+                              context: context,
+                            ),
+                            const SizedBox(height: 12),
+                            if (_history.isEmpty)
+                              AppWidgets.emptyState(
+                                icon: Icons.history,
+                                title: tr('Belum ada riwayat paket'),
+                              )
+                            else
+                              ..._history.map((item) => _buildHistoryItem(item)),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      if (_history.isEmpty)
-                        AppWidgets.emptyState(
-                          icon: Icons.history,
-                          title: tr('Belum ada riwayat paket'),
-                        )
-                      else
-                        ..._history.map((item) => _buildHistoryItem(item)),
-                    ],
-                  ),
-                ),
+          ),
+        ],
+      ),
     );
   }
 

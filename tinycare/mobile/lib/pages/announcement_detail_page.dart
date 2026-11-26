@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Full-screen detail of a single announcement, opened from a push/in-app
@@ -16,43 +18,27 @@ class AnnouncementDetailPage extends StatefulWidget {
   State<AnnouncementDetailPage> createState() => _AnnouncementDetailPageState();
 }
 
-class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _announcement;
-  bool _isLoading = true;
-  String? _error;
+class _AnnouncementDetailPageState extends State<AnnouncementDetailPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first announcement detail. An unreadable/not-visible announcement
+  /// is a real API error, so the cached copy is never shown in that case.
+  late final CachedResource<Map<String, dynamic>> _res;
+  Map<String, dynamic>? get _announcement => _res.data;
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final data = await _api.getAnnouncement(widget.announcementId);
-      if (data == null) {
-        setState(() {
-          _error = tr('Pengumuman tidak ditemukan.');
-          _isLoading = false;
-        });
-        return;
-      }
-      setState(() {
-        _announcement = data;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat pengumuman.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _load() => _repo.loadAnnouncementDetail(widget.announcementId, _res);
+
 
   Color _priorityColor(String? priority) {
     switch (priority) {
@@ -86,11 +72,21 @@ class _AnnouncementDetailPageState extends State<AnnouncementDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Pengumuman'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _load)
-              : _buildDetail(),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _load),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _load,
+                      )
+                    : _buildDetail(),
+          ),
+        ],
+      ),
     );
   }
 

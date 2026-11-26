@@ -26,7 +26,7 @@ export default function Attendance() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try { await attendanceAPI.create({ ...formData, date: selectedDate }); setShowModal(false); setFormData({ child_id: '', status: 'hadir', check_in_time: '', check_out_time: '', notes: '' }); loadAttendance(); }
-    catch (error) { alert(error.response?.data?.message || 'Gagal mencatat kehadiran.'); }
+    catch (error) { alert(error.response?.data?.message || t('Gagal mencatat kehadiran.')); }
   };
 
   const statusConfig = {

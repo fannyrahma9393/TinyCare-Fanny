@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 class PaymentsPage extends StatefulWidget {
@@ -13,11 +16,14 @@ class PaymentsPage extends StatefulWidget {
   State<PaymentsPage> createState() => _PaymentsPageState();
 }
 
-class _PaymentsPageState extends State<PaymentsPage> {
+class _PaymentsPageState extends State<PaymentsPage> with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _payments = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first payment list. Each status filter has its own cache key, so
+  /// switching tabs offline still shows the last list fetched for that filter.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _payments => _res.data ?? const [];
   String _filter = '';
 
   static final _filters = [
@@ -30,29 +36,14 @@ class _PaymentsPageState extends State<PaymentsPage> {
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadPayments();
   }
 
-  Future<void> _loadPayments() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final payments = await _api.getAdminPayments(
+  Future<void> _loadPayments() => _repo.loadAdminPayments(
+        _res,
         status: _filter.isEmpty ? null : _filter,
       );
-      setState(() {
-        _payments = payments;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data pembayaran. Silakan coba lagi.');
-        _isLoading = false;
-      });
-    }
-  }
 
   void _setFilter(String value) {
     if (_filter == value) return;
@@ -398,13 +389,14 @@ class _PaymentsPageState extends State<PaymentsPage> {
       ),
       body: Column(
         children: [
+          OfflineBanner(resource: _res, onRetry: _loadPayments),
           _buildFilterTabs(),
           Expanded(
-            child: _isLoading
+            child: _res.isLoading
                 ? AppWidgets.loadingIndicator()
-                : _error != null
+                : _res.error != null
                     ? AppWidgets.errorState(
-                        message: _error!,
+                        message: tr(_res.error!),
                         onRetry: _loadPayments,
                       )
                     : _payments.isEmpty

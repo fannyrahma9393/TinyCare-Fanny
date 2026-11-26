@@ -8,6 +8,7 @@ use App\Models\DevelopmentAssessment;
 use App\Models\DevelopmentCategory;
 use App\Models\DevelopmentNote;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -146,16 +147,16 @@ class DevelopmentController extends Controller
             $child,
             [
                 'type' => 'development',
-                'title' => 'Perkembangan '.($child->name ?? 'Anak'),
-                'message' => 'Penilaian perkembangan baru: '.$validated['indicator'],
+                'title' => TransKey::t('notif.development.db_title', ['child_name' => $child->name ?? ''], 'Perkembangan '.($child->name ?? 'Anak')),
+                'message' => TransKey::t('notif.development.db_body', ['indicator' => $validated['indicator']], 'Penilaian perkembangan baru: '.$validated['indicator']),
                 'link' => '/parent/children/'.$child->id.'/development',
                 'data' => [
                     'type' => 'development',
                     'child_id' => $child->id,
                 ],
             ],
-            'Perkembangan Anak',
-            'Ada perkembangan baru untuk '.($child->name ?? 'anak Anda').'.',
+            TransKey::t('notif.development.title', [], 'Perkembangan Anak'),
+            TransKey::t('notif.development.body', ['child_name' => $child->name ?? 'anak Anda'], 'Ada perkembangan baru untuk '.($child->name ?? 'anak Anda').'.'),
             '/parent/development',
             [
                 'type' => 'development',

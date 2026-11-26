@@ -1,0 +1,13 @@
+{
+  "name": "tinycare",
+  "private": true,
+  "description": "TinyCare monorepo root — translation catalog tooling. Web (React/Vite), Mobile (Flutter), Backend (Laravel) live in their own folders.",
+  "scripts": {
+    "sync:baseline": "node scripts/sync-baseline.mjs",
+    "generate:langs": "node scripts/generate-static-langs.mjs",
+    "generate:all": "npm run sync:baseline && npm run generate:langs"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Daily Story detail for a child — matches web DailyStoryDetail.jsx.
@@ -24,12 +27,15 @@ class DailyStoryDetailPage extends StatefulWidget {
   State<DailyStoryDetailPage> createState() => _DailyStoryDetailPageState();
 }
 
-class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
-  final ApiService _api = ApiService();
+class _DailyStoryDetailPageState extends State<DailyStoryDetailPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first daily stories for this child.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _stories => _res.data ?? const [];
+
   Map<String, dynamic>? _child;
-  List<dynamic> _stories = [];
-  bool _isLoading = true;
-  String? _error;
   late String _selectedDate;
 
   // A getter (not a `static final` field) so the labels follow the active
@@ -45,6 +51,7 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _selectedDate = widget.date;
     _child = widget.child;
     _loadData();
@@ -52,31 +59,14 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
 
   Future<void> _loadChild() async {
     try {
-      final child = await _api.getChild(widget.childId);
+      final child = await _repo.loadChildDetailOnce(widget.childId);
+      if (child == null) return;
+      if (!mounted) return;
       setState(() => _child = child);
     } catch (_) {}
   }
 
-  Future<void> _loadStories() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      // Admin: GET /admin/daily-stories?child_id=X
-      // Parent: GET /parent/children/X/daily-stories
-      final stories = await _api.getDailyStories(widget.childId);
-      setState(() {
-        _stories = stories;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat Daily Stories.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadStories() => _repo.loadDailyStories(widget.childId, _res);
 
   Future<void> _loadData() async {
     if (_child == null) _loadChild();
@@ -163,20 +153,16 @@ class _DailyStoryDetailPageState extends State<DailyStoryDetailPage> {
             ),
           ),
 
+          OfflineBanner(resource: _res, onRetry: _loadStories),
+
           // Content
           Expanded(
-            child: _isLoading
+            child: _res.isLoading
                 ? AppWidgets.loadingIndicator()
-                : _error != null
+                : _res.error != null
                     ? AppWidgets.errorState(
-                        message: _error!,
-                        onRetry: () {
-                          setState(() {
-                            _isLoading = true;
-                            _error = null;
-                          });
-                          _loadStories();
-                        },
+                        message: tr(_res.error!),
+                        onRetry: _loadStories,
                       )
                     : _stories.isEmpty
                         ? AppWidgets.emptyState(

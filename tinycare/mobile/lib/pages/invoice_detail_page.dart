@@ -4,8 +4,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Parent invoice detail with payment flow (VA instructions, copy amount,
@@ -19,12 +22,18 @@ class InvoiceDetailPage extends StatefulWidget {
   State<InvoiceDetailPage> createState() => _InvoiceDetailPageState();
 }
 
-class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
+class _InvoiceDetailPageState extends State<InvoiceDetailPage>
+    with ResourceBinding {
   final ApiService _api = ApiService();
-  Map<String, dynamic>? _invoice;
-  List<dynamic> _payments = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first invoice + payment history so the last known state stays
+  /// readable when the backend is down.
+  late final CachedResource<Map<String, dynamic>> _invoiceRes;
+  late final CachedResource<List<dynamic>> _paymentsRes;
+
+  Map<String, dynamic>? get _invoice => _invoiceRes.data;
+  List<dynamic> get _payments => _paymentsRes.data ?? const [];
 
   bool _paying = false;
   Map<String, dynamic>? _paymentInfo;
@@ -38,6 +47,12 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   @override
   void initState() {
     super.initState();
+    _invoiceRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
+    _paymentsRes =
+        CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadData();
   }
 
@@ -48,31 +63,28 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   }
 
   Future<void> _loadData() async {
-    try {
-      final invoice = await _api.getInvoice(widget.invoiceId);
-      List<dynamic> payments = [];
-      try {
-        payments = await _api.getPayments(widget.invoiceId);
-      } catch (_) {}
-      setState(() {
-        _invoice = invoice;
-        _payments = payments;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat detail invoice.'); _isLoading = false; });
-    }
+    await Future.wait([
+      _repo.loadInvoiceDetail(widget.invoiceId, _invoiceRes),
+      _repo.loadInvoicePayments(widget.invoiceId, _paymentsRes),
+    ]);
   }
 
+  /// Start a payment. A failed attempt never reports success: when the backend
+  /// is unreachable the parent is told the request was not sent.
   Future<void> _handleInitiatePayment() async {
     setState(() => _paying = true);
     try {
       final data = await _api.initiatePayment('${widget.invoiceId}');
+      if (!mounted) return;
       setState(() => _paymentInfo = data);
     } catch (e) {
-      _showToast(tr('Gagal memulai pembayaran.'), isError: true);
+      if (!mounted) return;
+      _showToast(
+        tr(ParentDataRepository.writeFailureMessage(e)),
+        isError: true,
+      );
     } finally {
-      setState(() => _paying = false);
+      if (mounted) setState(() => _paying = false);
     }
   }
 
@@ -81,6 +93,8 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
     if (picked != null) setState(() => _proofFile = picked);
   }
 
+  /// Upload the payment proof. Success is only ever shown after the backend
+  /// confirmed the upload; offline the parent gets "data belum dikirim".
   Future<void> _handleSubmitProof() async {
     if (_proofFile == null) {
       _showToast(tr('Pilih bukti pembayaran terlebih dahulu.'), isError: true);
@@ -88,12 +102,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
     }
     setState(() => _submittingProof = true);
     try {
-      final response = await _api.submitPayment(
-        widget.invoiceId,
-        _proofFile!.path,
+      final response = await _repo.submitPaymentProof(
+        invoiceId: widget.invoiceId,
+        filePath: _proofFile!.path,
         amount: (_invoice?['total'] ?? 0).toString(),
         paymentMethod: _proofMethod,
       );
+      if (!mounted) return;
       if (response['success'] == true) {
         _showToast(tr('Bukti pembayaran berhasil dikirim! Menunggu verifikasi admin.'));
         setState(() => _showProofForm = false);
@@ -104,9 +119,13 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
         _showToast(response['message'] ?? tr('Gagal mengirim bukti pembayaran.'), isError: true);
       }
     } catch (e) {
-      _showToast(tr('Gagal mengirim bukti pembayaran.'), isError: true);
+      if (!mounted) return;
+      _showToast(
+        tr(ParentDataRepository.writeFailureMessage(e)),
+        isError: true,
+      );
     } finally {
-      setState(() => _submittingProof = false);
+      if (mounted) setState(() => _submittingProof = false);
     }
   }
 
@@ -134,23 +153,30 @@ class _InvoiceDetailPageState extends State<InvoiceDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Detail Tagihan'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: () {
-                  setState(() { _isLoading = true; _error = null; });
-                  _loadData();
-                })
-              : _invoice == null
-                  ? AppWidgets.emptyState(icon: Icons.receipt_long, title: tr('Invoice tidak ditemukan.'))
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: AppColors.primary,
-                      child: ListView(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        children: _buildBody(),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _invoiceRes, onRetry: _loadData),
+          Expanded(
+            child: _invoiceRes.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _invoiceRes.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_invoiceRes.error!),
+                        onRetry: _loadData,
+                      )
+                    : _invoice == null
+                        ? AppWidgets.emptyState(icon: Icons.receipt_long, title: tr('Invoice tidak ditemukan.'))
+                        : RefreshIndicator(
+                            onRefresh: _loadData,
+                            color: AppColors.primary,
+                            child: ListView(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              children: _buildBody(),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 

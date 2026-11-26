@@ -1,19 +1,19 @@
 ﻿// Filled in by localization subagent. Keys are the Indonesian source text; 'en' maps each Indonesian string to English.
 export default {
   id: {
-    'Beranda': 'Beranda',
     'Anak Saya': 'Anak Saya',
-    'Informasi': 'Informasi',
-    'Tagihan': 'Tagihan',
+    'Beranda': 'Beranda',
     'Foto anak': 'Foto anak',
+    'Informasi': 'Informasi',
     'Parent Area': 'Parent Area',
+    'Tagihan': 'Tagihan',
   },
   en: {
-    'Beranda': 'Home',
     'Anak Saya': 'My Children',
-    'Informasi': 'Information',
-    'Tagihan': 'Invoices',
+    'Beranda': 'Home',
     'Foto anak': 'Child photo',
+    'Informasi': 'Information',
     'Parent Area': 'Parent Area',
+    'Tagihan': 'Invoices',
   },
 };

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 
@@ -12,27 +15,24 @@ class AnnouncementsPage extends StatefulWidget {
   State<AnnouncementsPage> createState() => _AnnouncementsPageState();
 }
 
-class _AnnouncementsPageState extends State<AnnouncementsPage> {
+class _AnnouncementsPageState extends State<AnnouncementsPage>
+    with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _announcements = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first announcement list. Deleting/creating re-fetches from the API
+  /// so the cache always mirrors what the backend accepted.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _announcements => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadAnnouncements();
   }
 
-  Future<void> _loadAnnouncements() async {
-    setState(() { _isLoading = true; _error = null; });
-    try {
-      final data = await _api.getAnnouncements();
-      setState(() { _announcements = data; _isLoading = false; });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat pengumuman.'); _isLoading = false; });
-    }
-  }
+  Future<void> _loadAnnouncements() => _repo.loadAnnouncements(_res);
 
   void _showToast(String message, {bool isError = false}) {
     if (!mounted) return;
@@ -126,25 +126,38 @@ class _AnnouncementsPageState extends State<AnnouncementsPage> {
             ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadAnnouncements)
-              : _announcements.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.campaign_outlined,
-                      title: tr('Tidak ada pengumuman'),
-                      subtitle: isAdmin ? tr('Tekan tombol + untuk membuat pengumuman.') : null,
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadAnnouncements,
-                      color: AppColors.primary,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _announcements.length,
-                        itemBuilder: (context, index) => _buildCard(_announcements[index], isAdmin),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadAnnouncements),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadAnnouncements,
+                      )
+                    : _announcements.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.campaign_outlined,
+                            title: tr('Tidak ada pengumuman'),
+                            subtitle: isAdmin
+                                ? tr('Tekan tombol + untuk membuat pengumuman.')
+                                : null,
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadAnnouncements,
+                            color: AppColors.primary,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _announcements.length,
+                              itemBuilder: (context, index) =>
+                                  _buildCard(_announcements[index], isAdmin),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 

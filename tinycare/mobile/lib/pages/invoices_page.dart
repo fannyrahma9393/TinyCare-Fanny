@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/api_error.dart';
 import '../utils/currency.dart';
+import '../widgets/offline_banner.dart';
 import 'invoice_detail_page.dart';
 import '../l10n/app_strings.dart';
 
@@ -15,36 +18,23 @@ class InvoicesPage extends StatefulWidget {
   State<InvoicesPage> createState() => _InvoicesPageState();
 }
 
-class _InvoicesPageState extends State<InvoicesPage> {
+class _InvoicesPageState extends State<InvoicesPage> with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _invoices = [];
-  bool _isLoading = true;
-  String? _errorMessage;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first invoices: shows the last payload instantly, then refreshes.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _invoices => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadInvoices();
   }
 
-  Future<void> _loadInvoices() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-    try {
-      final invoices = await _api.getInvoices();
-      setState(() {
-        _invoices = invoices;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = tr('Gagal memuat tagihan. Silakan coba lagi.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadInvoices() => _repo.loadInvoices(_res);
+
 
   Color _statusColor(String status) {
     switch (status) {
@@ -133,24 +123,31 @@ class _InvoicesPageState extends State<InvoicesPage> {
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ) : null,
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _errorMessage != null
-              ? AppWidgets.errorState(
-                  message: _errorMessage!,
-                  onRetry: _loadInvoices,
-                )
-              : RefreshIndicator(
-                  onRefresh: _loadInvoices,
-                  color: AppColors.primary,
-                  child: _invoices.isEmpty
-                      ? AppWidgets.emptyState(
-                          icon: Icons.receipt_long,
-                          title: tr('Belum ada tagihan'),
-                          subtitle: tr('Tagihan akan muncul ketika ada invoice baru.'),
-                        )
-                      : _buildList(),
-                ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadInvoices),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadInvoices,
+                      )
+                    : RefreshIndicator(
+                        onRefresh: _loadInvoices,
+                        color: AppColors.primary,
+                        child: _invoices.isEmpty
+                            ? AppWidgets.emptyState(
+                                icon: Icons.receipt_long,
+                                title: tr('Belum ada tagihan'),
+                                subtitle: tr('Tagihan akan muncul ketika ada invoice baru.'),
+                              )
+                            : _buildList(),
+                      ),
+          ),
+        ],
+      ),
     );
   }
 

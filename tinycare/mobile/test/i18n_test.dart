@@ -11,6 +11,8 @@ import 'package:tinycare_mobile/l10n/partials/common.dart';
 import 'package:tinycare_mobile/l10n/partials/components.dart';
 import 'package:tinycare_mobile/l10n/partials/parent.dart';
 import 'package:tinycare_mobile/l10n/partials/scaffolds.dart';
+import 'package:tinycare_mobile/l10n/partials/misc.dart';
+import 'package:tinycare_mobile/l10n/partials/offline.dart';
 import 'package:tinycare_mobile/l10n/register.dart';
 
 /// Every English catalog partial, keyed by its file name under
@@ -25,6 +27,8 @@ const Map<String, Map<String, String>> _partials = {
   'parent': parentEn,
   'components': componentsEn,
   'scaffolds': scaffoldsEn,
+  'misc': miscEn,
+  'offline': offlineEn,
 };
 
 void main() {

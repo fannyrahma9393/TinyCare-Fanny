@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\TransKey;
 use App\Models\Feedback;
 use App\Services\FcmNotificationService;
 use Illuminate\Http\JsonResponse;
@@ -140,16 +141,16 @@ class FeedbackController extends Controller
         $fcm->notifyAdmins(
             [
                 'type' => 'feedback_created',
-                'title' => 'Feedback Baru',
-                'message' => "{$parentName} mengirim feedback: {$feedback->subject}",
+                'title' => TransKey::t('notif.feedback.created.title', [], 'Feedback Baru'),
+                'message' => TransKey::t('notif.feedback.created', ['parent_name' => $parentName, 'subject' => $feedback->subject], "{$parentName} mengirim feedback: {$feedback->subject}"),
                 'link' => '/feedback',
                 'data' => [
                     'type' => 'feedback_created',
                     'feedback_id' => (string) $feedback->id,
                 ],
             ],
-            'Feedback Baru',
-            "{$parentName} mengirim feedback: {$feedback->subject}",
+            TransKey::t('notif.feedback.created.title', [], 'Feedback Baru'),
+            TransKey::t('notif.feedback.created', ['parent_name' => $parentName, 'subject' => $feedback->subject], "{$parentName} mengirim feedback: {$feedback->subject}"),
             '/feedback',
             [
                 'type' => 'feedback_created',
@@ -174,16 +175,16 @@ class FeedbackController extends Controller
             $user,
             [
                 'type' => 'feedback_replied',
-                'title' => 'Feedback Dibalas',
-                'message' => "Admin menjawab feedback Anda: {$feedback->subject}",
+                'title' => TransKey::t('notif.feedback.replied.title', [], 'Feedback Dibalas'),
+                'message' => TransKey::t('notif.feedback.replied', ['subject' => $feedback->subject], "Admin menjawab feedback Anda: {$feedback->subject}"),
                 'link' => '/feedback',
                 'data' => [
                     'type' => 'feedback_replied',
                     'feedback_id' => (string) $feedback->id,
                 ],
             ],
-            'Feedback Dibalas',
-            "Admin menjawab feedback Anda: {$feedback->subject}",
+            TransKey::t('notif.feedback.replied.title', [], 'Feedback Dibalas'),
+            TransKey::t('notif.feedback.replied', ['subject' => $feedback->subject], "Admin menjawab feedback Anda: {$feedback->subject}"),
             '/feedback',
             [
                 'type' => 'feedback_replied',

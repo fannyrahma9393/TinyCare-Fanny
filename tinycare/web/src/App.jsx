@@ -28,6 +28,7 @@ import Feedback from './pages/Feedback';
 import Reports from './pages/Reports';
 import UserManagement from './pages/UserManagement';
 import AdminManagement from './pages/AdminManagement';
+import TranslationsAdminPage from './pages/TranslationsAdminPage';
 import Profile from './pages/Profile';
 import ChildInformation from './pages/ChildInformation';
 import ChildInformationDetail from './pages/ChildInformationDetail';
@@ -64,6 +65,14 @@ function AdminRoute({ children }) {
   if (loading) return <LoadingScreen />;
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== 'admin' && user.role !== 'admin_master') return <Navigate to="/parent" replace />;
+  return <Layout>{children}</Layout>;
+}
+
+function MasterRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingScreen />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'admin_master') return <Navigate to="/dashboard" replace />;
   return <Layout>{children}</Layout>;
 }
 
@@ -110,6 +119,7 @@ function AppRoutes() {
       <Route path="/reports" element={<AdminRoute><Reports /></AdminRoute>} />
       <Route path="/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
       <Route path="/admin-management" element={<AdminRoute><AdminManagement /></AdminRoute>} />
+      <Route path="/translations" element={<MasterRoute><TranslationsAdminPage /></MasterRoute>} />
       <Route path="/profile" element={<AdminRoute><Profile /></AdminRoute>} />
 
       {/* Parent Routes */}

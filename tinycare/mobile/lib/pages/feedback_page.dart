@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/offline_banner.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
 
@@ -12,20 +15,24 @@ class FeedbackPage extends StatefulWidget {
   State<FeedbackPage> createState() => _FeedbackPageState();
 }
 
-class _FeedbackPageState extends State<FeedbackPage> {
+class _FeedbackPageState extends State<FeedbackPage> with ResourceBinding {
   final ApiService _api = ApiService();
+  final ParentDataRepository _repo = ParentDataRepository();
   final _formKey = GlobalKey<FormState>();
   final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
   int _rating = 5;
-  List<dynamic> _feedbacks = [];
-  bool _isLoading = true;
+
+  /// Cache-first feedback list.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _feedbacks => _res.data ?? const [];
+
   bool _isSubmitting = false;
-  String? _error;
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadFeedbacks();
   }
 
@@ -36,26 +43,21 @@ class _FeedbackPageState extends State<FeedbackPage> {
     super.dispose();
   }
 
-  Future<void> _loadFeedbacks() async {
-    setState(() { _isLoading = true; _error = null; });
-    try {
-      final data = await _api.getFeedback();
-      setState(() { _feedbacks = data; _isLoading = false; });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat feedback.'); _isLoading = false; });
-    }
-  }
+  Future<void> _loadFeedbacks() => _repo.loadFeedback(_res);
 
+  /// Send feedback. Success is only reported after the backend confirmed it;
+  /// an offline attempt tells the parent the message was NOT sent.
   Future<void> _submitFeedback() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSubmitting = true);
     try {
-      await _api.submitFeedback(
+      final response = await _repo.sendFeedback(
         subject: _subjectController.text,
         message: _messageController.text,
         rating: _rating,
       );
-      if (mounted) {
+      if (!mounted) return;
+      if (response['success'] == true) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -66,22 +68,23 @@ class _FeedbackPageState extends State<FeedbackPage> {
           ),
         );
         _loadFeedbacks();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(tr('Gagal mengirim feedback.')),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
-          ),
+      } else {
+        _showToast(
+          response['message'] ?? tr('Gagal mengirim feedback.'),
+          isError: true,
         );
       }
+    } catch (e) {
+      if (!mounted) return;
+      _showToast(
+        tr(ParentDataRepository.writeFailureMessage(e)),
+        isError: true,
+      );
     } finally {
-      setState(() => _isSubmitting = false);
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
+
 
   void _showToast(String message, {bool isError = false}) {
     if (!mounted) return;
@@ -170,25 +173,35 @@ class _FeedbackPageState extends State<FeedbackPage> {
         elevation: 2,
         child: const Icon(Icons.add),
       ) : null,
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _loadFeedbacks)
-              : _feedbacks.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.rate_review_outlined,
-                      title: tr('Belum ada feedback'),
-                      subtitle: !isAdmin ? tr('Ketuk tombol + untuk mengirim feedback.') : null,
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadFeedbacks,
-                      color: AppColors.primary,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _feedbacks.length,
-                        itemBuilder: (context, index) => _buildFeedbackCard(_feedbacks[index], isAdmin),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadFeedbacks),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadFeedbacks,
+                      )
+                    : _feedbacks.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.rate_review_outlined,
+                            title: tr('Belum ada feedback'),
+                            subtitle: !isAdmin ? tr('Ketuk tombol + untuk mengirim feedback.') : null,
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadFeedbacks,
+                            color: AppColors.primary,
+                            child: ListView.builder(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _feedbacks.length,
+                              itemBuilder: (context, index) => _buildFeedbackCard(_feedbacks[index], isAdmin),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 

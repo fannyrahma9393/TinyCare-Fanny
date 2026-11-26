@@ -6,6 +6,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\FcmNotificationService;
+use App\Support\TransKey;
 use Illuminate\Support\Facades\Log;
 
 class PaymentService
@@ -113,10 +114,12 @@ class PaymentService
         ]);
 
         // Notify the parent that their payment was verified (DB + FCM)
-        $this->notifyParent($payment, 'payment_verified', 'Pembayaran Diverifikasi',
-            'Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.',
-            'Pembayaran Diverifikasi',
-            'Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.');
+        $verifiedTitle = TransKey::t('notif.payment.verified.title', [], 'Pembayaran Diverifikasi');
+        $verifiedBody = TransKey::t('notif.payment.verified', [], 'Pembayaran Anda telah diverifikasi. Tagihan sudah lunas.');
+        $this->notifyParent($payment, 'payment_verified', $verifiedTitle,
+            $verifiedBody,
+            $verifiedTitle,
+            $verifiedBody);
     }
 
     /**
@@ -142,11 +145,14 @@ class PaymentService
         ]);
 
         // Notify the parent that their payment was rejected (DB + FCM)
-        $note = $reason ? " Alasan: {$reason}" : '';
-        $this->notifyParent($payment, 'payment_rejected', 'Pembayaran Ditolak',
-            "Pembayaran Anda ditolak dan belum diverifikasi.{$note}",
-            'Pembayaran Ditolak',
-            "Pembayaran Anda ditolak dan belum diverifikasi.{$note}");
+        $rejectedTitle = TransKey::t('notif.payment.rejected.title', [], 'Pembayaran Ditolak');
+        $rejectedBody = TransKey::t('notif.payment.rejected', [
+            'reason' => $reason ? TransKey::t('notif.payment.rejected.reason', ['reason' => $reason], " Alasan: {$reason}") : '',
+        ], 'Pembayaran Anda ditolak dan belum diverifikasi.{reason}');
+        $this->notifyParent($payment, 'payment_rejected', $rejectedTitle,
+            $rejectedBody,
+            $rejectedTitle,
+            $rejectedBody);
     }
 
     /**

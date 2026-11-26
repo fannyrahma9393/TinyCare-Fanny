@@ -6,8 +6,9 @@ import adminDaily from './partials/admin-daily.js';
 import adminMgmt from './partials/admin-mgmt.js';
 import parent from './partials/parent.js';
 import components from './partials/components.js';
+import misc from './partials/misc.js';
 
-const groups = [common, auth, adminCore, adminFinance, adminDaily, adminMgmt, parent, components];
+const groups = [common, auth, adminCore, adminFinance, adminDaily, adminMgmt, parent, components, misc];
 
 const resources = {
   id: Object.assign({}, ...groups.map((g) => g.id)),

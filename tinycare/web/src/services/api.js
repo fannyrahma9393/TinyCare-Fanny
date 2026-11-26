@@ -276,4 +276,12 @@ export const parentAPI = {
   childMonthlyReports: (childId) => api.get(`/parent/children/${childId}/reports/monthly`),
 };
 
+// Translations API (remote overlay source + admin management)
+export const translationsAPI = {
+  catalog: (locale) => api.get('/translations', { params: { locale } }),
+  list: (params) => api.get('/admin/translations', { params }),
+  update: (id, data) => api.put(`/admin/translations/${id}`, data),
+  addMissingLocale: (data) => api.post('/admin/translations', data),
+};
+
 export default api;

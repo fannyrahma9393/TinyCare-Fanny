@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../widgets/offline_banner.dart';
 import 'package_page.dart';
 import 'pickups_page.dart';
 import '../l10n/app_strings.dart';
@@ -19,75 +21,85 @@ class ChildDetailPage extends StatefulWidget {
   State<ChildDetailPage> createState() => _ChildDetailPageState();
 }
 
-class _ChildDetailPageState extends State<ChildDetailPage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _child;
-  Map<String, dynamic>? _development;
-  List<dynamic> _attendance = [];
-  List<dynamic> _activities = [];
-  bool _isLoading = true;
-  String? _error;
+class _ChildDetailPageState extends State<ChildDetailPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first resources: the child profile drives the page, the tabs are
+  /// best-effort and keep their last payload when the API is unreachable.
+  late final CachedResource<Map<String, dynamic>> _childRes;
+  late final CachedResource<Map<String, dynamic>> _developmentRes;
+  late final CachedResource<List<dynamic>> _attendanceRes;
+  late final CachedResource<List<dynamic>> _activitiesRes;
+
+  Map<String, dynamic>? get _child => _childRes.data;
+  Map<String, dynamic>? get _development => _developmentRes.data;
+  List<dynamic> get _attendance => _attendanceRes.data ?? const [];
+  List<dynamic> get _activities => _activitiesRes.data ?? const [];
+
   String _tab = 'overview';
 
   @override
   void initState() {
     super.initState();
+    _childRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
+    _developmentRes = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
+    _attendanceRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
+    _activitiesRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadData();
   }
 
   Future<void> _loadData() async {
-    try {
-      final child = await _api.getChild(widget.childId);
-      Map<String, dynamic>? development;
-      List<dynamic> attendance = [];
-      List<dynamic> activities = [];
-      try {
-        development = await _api.getDevelopment(widget.childId);
-      } catch (_) {}
-      try {
-        final att = await _api.getAttendance(widget.childId);
-        final inner = att['attendance'];
-        if (inner is List) {
-          attendance = inner;
-        } else if (inner is Map) {
-          final items = inner['data'];
-          attendance = items is List ? items : [];
-        }
-      } catch (_) {}
-      try {
-        activities = await _api.getChildActivities(widget.childId);
-      } catch (_) {}
-      setState(() {
-        _child = child;
-        _development = development;
-        _attendance = attendance;
-        _activities = activities;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() { _error = tr('Gagal memuat data anak.'); _isLoading = false; });
-    }
+    await Future.wait([
+      _repo.loadChildDetail(widget.childId, _childRes),
+      _repo.loadDevelopment(widget.childId, _developmentRes),
+      _repo.loadChildAttendance(widget.childId, _attendanceRes),
+      _repo.loadChildActivities(widget.childId, _activitiesRes),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Detail Anak'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: () {
-                  setState(() { _isLoading = true; _error = null; });
-                  _loadData();
-                })
-              : _child == null
-                  ? AppWidgets.emptyState(icon: Icons.child_care, title: tr('Anak tidak ditemukan.'))
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: AppColors.primary,
-                      child: ListView(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        children: [
+      body: Column(
+        children: [
+          OfflineBanner(resource: _childRes, onRetry: _loadData),
+          Expanded(
+            child: _childRes.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _childRes.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_childRes.error!),
+                        onRetry: _loadData,
+                      )
+                    : _child == null
+                        ? AppWidgets.emptyState(
+                            icon: Icons.child_care,
+                            title: tr('Anak tidak ditemukan.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadData,
+                            color: AppColors.primary,
+                            child: ListView(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              children: _buildContent(context),
+                            ),
+                          ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildContent(BuildContext context) {
+    return [
                           ChildHeader(child: _child),
                           const SizedBox(height: 16),
                           Row(
@@ -135,10 +147,7 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
                           _buildTabBar(),
                           const SizedBox(height: 16),
                           _buildTabContent(),
-                        ],
-                      ),
-                    ),
-    );
+                        ];
   }
 
   Widget _buildTabBar() {

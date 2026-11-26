@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Parent view: child information.
@@ -14,76 +16,58 @@ class ParentInformationPage extends StatefulWidget {
   State<ParentInformationPage> createState() => _ParentInformationPageState();
 }
 
-class _ParentInformationPageState extends State<ParentInformationPage> {
-  final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  List<dynamic> _informations = [];
+class _ParentInformationPageState extends State<ParentInformationPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list and the selected child's information entries.
+  /// The information resource is keyed by child id inside the cache, so moving
+  /// between children never mixes payloads.
+  late final CachedResource<List<dynamic>> _childrenRes;
+  CachedResource<List<dynamic>>? _infoRes;
+
+  List<dynamic> get _children => _childrenRes.data ?? const [];
+  List<dynamic> get _informations => _infoRes?.data ?? const [];
   int? _selectedChildId;
-  bool _isLoading = true;
-  bool _isLoadingInfo = false;
-  String? _error;
+  bool get _isLoadingInfo => _infoRes?.isLoading ?? false;
+
+  String? get _error => _childrenRes.error ?? _infoRes?.error;
+  bool get _isLoading => _childrenRes.isLoading;
 
   @override
   void initState() {
     super.initState();
+    _childrenRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadChildren();
   }
 
-  Future<void> _loadChildren() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final children = await _api.getChildren();
-      if (!mounted) return;
-      setState(() {
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = tr('Gagal memuat data anak.');
-        _isLoading = false;
-      });
-    }
+  Future<void> _loadChildren() => _repo.loadChildren(_childrenRes);
+
+  /// Each child selection gets a fresh [CachedResource] so the detail pane
+  /// never renders one child's cached entries under another child's header.
+  CachedResource<List<dynamic>> _newInfoResource() {
+    return CachedResource<List<dynamic>>(onChanged: onResourceChanged);
   }
 
-  Future<void> _loadInformation(int childId) async {
-    setState(() {
-      _isLoadingInfo = true;
-      _error = null;
-    });
-    try {
-      final informations = await _api.getChildInformation(childId: childId);
-      if (!mounted) return;
-      setState(() {
-        _informations = informations;
-        _isLoadingInfo = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = tr('Gagal memuat informasi.');
-        _informations = [];
-        _isLoadingInfo = false;
-      });
-    }
+  Future<void> _loadInformation(int childId) {
+    final resource = _infoRes;
+    if (resource == null) return Future.value();
+    return _repo.loadChildInformationFor(childId, resource, isAdmin: false);
   }
 
   void _selectChild(int? childId) {
+    if (childId == null) {
+      setState(() {
+        _selectedChildId = null;
+        _infoRes = null;
+      });
+      return;
+    }
     setState(() {
       _selectedChildId = childId;
-      _error = null;
+      _infoRes = _newInfoResource();
     });
-    if (childId != null) {
-      _loadInformation(childId);
-    } else {
-      setState(() {
-        _informations = [];
-      });
-    }
+    _loadInformation(childId);
   }
 
   String _formatDate(String? dateStr) {
@@ -114,20 +98,26 @@ class _ParentInformationPageState extends State<ParentInformationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('Informasi Anak'))),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!,
-                  onRetry: () {
-                    setState(() {
-                      _isLoading = true;
-                      _error = null;
-                    });
-                    _loadChildren();
-                  },
-                )
-              : _buildBody(context),
+      body: Column(
+        children: [
+          OfflineBanner(
+            resource: _infoRes ?? _childrenRes,
+            onRetry: _selectedChildId != null
+                ? () => _loadInformation(_selectedChildId!)
+                : _loadChildren,
+          ),
+          Expanded(
+            child: _isLoading
+                ? AppWidgets.loadingIndicator()
+                : _error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_error!),
+                        onRetry: _loadChildren,
+                      )
+                    : _buildBody(context),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_strings.dart';
+
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -57,7 +59,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       }
     } catch (e) {
       setState(() {
-        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
+        _error = tr(ParentDataRepository.writeFailureMessage(e));
         _isSubmitting = false;
       });
     }

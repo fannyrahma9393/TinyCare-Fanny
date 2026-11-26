@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import 'daily_story_detail_page.dart';
 import '../l10n/app_strings.dart';
 
@@ -16,36 +19,22 @@ class DailyStoriesPage extends StatefulWidget {
   State<DailyStoriesPage> createState() => _DailyStoriesPageState();
 }
 
-class _DailyStoriesPageState extends State<DailyStoriesPage> {
-  final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  bool _isLoading = true;
-  String? _error;
+class _DailyStoriesPageState extends State<DailyStoriesPage>
+    with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list used to pick whose story to read.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _children => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadChildren();
   }
 
-  Future<void> _loadChildren() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final children = await _api.getChildren();
-      setState(() {
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data anak.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadChildren() => _repo.loadChildren(_res);
 
   @override
   Widget build(BuildContext context) {
@@ -66,26 +55,30 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
             ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!,
-                  onRetry: _loadChildren,
-                )
-              : _children.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.auto_stories,
-                      title: tr('Belum ada data anak'),
-                      subtitle:
-                          tr('Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadChildren,
-                      color: AppColors.primary,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadChildren),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadChildren,
+                      )
+                    : _children.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.auto_stories,
+                            title: tr('Belum ada data anak'),
+                            subtitle:
+                                tr('Tambahkan data anak terlebih dahulu untuk melihat Daily Stories.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadChildren,
+                            color: AppColors.primary,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                           // Page header subtitle
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -215,6 +208,9 @@ class _DailyStoriesPageState extends State<DailyStoriesPage> {
                         ],
                       ),
                     ),
+          ),
+        ],
+      ),
     );
   }
 

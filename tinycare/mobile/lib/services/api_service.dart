@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'network_status_service.dart';
+import 'offline_cache_service.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -84,12 +86,19 @@ class ApiService {
         return handler.next(options);
       },
       onResponse: (response, handler) {
+        // The API answered, so the backend is reachable (whatever the code was).
+        NetworkStatusService.instance.reportSuccess();
         debugPrint('[ApiService] RESPONSE: ${response.statusCode} ${response.requestOptions.uri}');
         return handler.next(response);
       },
       onError: (error, handler) {
+        // Transport failures / 5xx mark the backend unreachable. A 4xx is a
+        // normal answer and must never be reported as an offline state.
+        NetworkStatusService.instance.reportFailure(error);
         debugPrint('[ApiService] ERROR: ${error.response?.statusCode} ${error.requestOptions.uri} ${error.message}');
         if (error.response?.statusCode == 401) {
+          // Only a real 401/expired token ends the session. Network errors,
+          // timeouts and 5xx keep the user signed in with cached data.
           logout();
         }
         return handler.next(error);
@@ -195,6 +204,13 @@ class ApiService {
     return response.data;
   }
 
+  /// Fetch the admin-editable translation catalog for one locale ('id'/'en').
+  /// Used by TranslationService to overlay the static localizations.
+  Future<Map<String, dynamic>> getTranslations(String locale) async {
+    final response = await _dio.get('/v1/translations', queryParameters: {'locale': locale});
+    return Map<String, dynamic>.from(response.data as Map);
+  }
+
   Future<void> setToken(String token) async {
     _token = token;
     final prefs = await SharedPreferences.getInstance();
@@ -220,6 +236,12 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
     await prefs.remove('user_data');
+    // Security policy: cached parent data belongs to the session that fetched
+    // it. Once the session is destroyed the entries are wiped, so a later login
+    // (possibly a different account) can never read the previous user's data.
+    await OfflineCacheService.instance.clearCurrentUser();
+    await OfflineCacheService.instance.unbindUser();
+    NetworkStatusService.instance.reset();
   }
 
   Future<void> saveUser(Map<String, dynamic> user) async {

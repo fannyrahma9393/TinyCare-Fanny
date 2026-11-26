@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../utils/currency.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import 'child_detail_page.dart';
 import 'invoice_detail_page.dart';
 import '../l10n/app_strings.dart';
@@ -16,43 +18,25 @@ class DashboardPage extends StatefulWidget {
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  final ApiService _api = ApiService();
-  Map<String, dynamic>? _dashboardData;
-  bool _isLoading = true;
-  String? _error;
+class _DashboardPageState extends State<DashboardPage> with ResourceBinding {
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first dashboard: the last snapshot renders immediately, then the
+  /// API refreshes it when the backend is reachable.
+  late final CachedResource<Map<String, dynamic>> _res;
+  Map<String, dynamic>? get _dashboardData => _res.data;
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<Map<String, dynamic>>(
+      onChanged: onResourceChanged,
+      isEmptyData: (data) => data.isEmpty,
+    );
     _loadDashboard();
   }
 
-  Future<void> _loadDashboard() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final response = await _api.getDashboard();
-      if (response['success'] == true) {
-        setState(() {
-          _dashboardData = response['data'];
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _error = response['message'] ?? tr('Gagal memuat dashboard');
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _error = tr('Tidak dapat terhubung ke server. Silakan coba lagi.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _loadDashboard() => _repo.loadDashboard(_res);
 
   @override
   Widget build(BuildContext context) {
@@ -72,12 +56,21 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(
-                  message: _error!, onRetry: _loadDashboard)
-              : _buildDashboard(),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _loadDashboard),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _loadDashboard,
+                      )
+                    : _buildDashboard(),
+          ),
+        ],
+      ),
     );
   }
 

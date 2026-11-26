@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_select.dart';
+import '../widgets/offline_banner.dart';
 import 'activities_detail_page.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_strings.dart';
@@ -14,40 +17,49 @@ class ActivitiesPage extends StatefulWidget {
   State<ActivitiesPage> createState() => _ActivitiesPageState();
 }
 
-class _ActivitiesPageState extends State<ActivitiesPage> {
+class _ActivitiesPageState extends State<ActivitiesPage> with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _activities = [];
-  List<dynamic> _children = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children (for the parent picker) and activities (admin list).
+  late final CachedResource<List<dynamic>> _childrenRes;
+  late final CachedResource<List<dynamic>> _activitiesRes;
+
+  List<dynamic> get _children => _childrenRes.data ?? const [];
+  List<dynamic> get _activities => _activitiesRes.data ?? const [];
+
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
+    _childrenRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
+    _activitiesRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadData();
   }
 
   Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final auth = context.read<AuthProvider>();
-      final children = await _api.getChildren();
-      final activities = auth.isAdmin ? await _api.getActivities() : <dynamic>[];
-      setState(() {
-        _activities = activities;
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data aktivitas. Silakan coba lagi.');
-        _isLoading = false;
-      });
+    final auth = context.read<AuthProvider>();
+    await _repo.loadChildren(_childrenRes);
+    // Parents navigate to a per-child detail page instead of a flat list.
+    if (auth.isAdmin) {
+      await _repo.loadActivities(_activitiesRes);
     }
+  }
+
+  /// Error to surface, prioritising the list the user is actually looking at.
+  String? get _error {
+    if (context.read<AuthProvider>().isAdmin) {
+      return _activitiesRes.error ?? _childrenRes.error;
+    }
+    return _childrenRes.error;
+  }
+
+  bool get _isLoading {
+    if (context.read<AuthProvider>().isAdmin) {
+      return _activitiesRes.isLoading && _childrenRes.isLoading;
+    }
+    return _childrenRes.isLoading;
   }
 
   List<dynamic> get _filteredActivities {
@@ -66,38 +78,46 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () {
-                setState(() { _isLoading = true; _error = null; });
                 _loadData();
               },
             ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: () {
-                  setState(() { _isLoading = true; _error = null; });
-                  _loadData();
-                })
-              : _children.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.emoji_events_outlined,
-                      title: tr('Belum ada data anak'),
-                      subtitle: tr('Data akan muncul ketika anak sudah terdaftar di daycare.'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadData,
-                      color: AppColors.primary,
-                      child: ChildPickerGrid(
-                        children: _children,
-                        actionLabel: tr('Lihat Aktivitas'),
-                        onTap: (child) {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (_) => ActivitiesDetailPage(childId: child['id']),
-                          ));
-                        },
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _childrenRes, onRetry: _loadData),
+          Expanded(
+            child: _isLoading
+                ? AppWidgets.loadingIndicator()
+                : _error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_error!),
+                        onRetry: _loadData,
+                      )
+                    : _children.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.emoji_events_outlined,
+                            title: tr('Belum ada data anak'),
+                            subtitle: tr(
+                                'Data akan muncul ketika anak sudah terdaftar di daycare.'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _loadData,
+                            color: AppColors.primary,
+                            child: ChildPickerGrid(
+                              children: _children,
+                              actionLabel: tr('Lihat Aktivitas'),
+                              onTap: (child) {
+                                Navigator.push(context, MaterialPageRoute(
+                                  builder: (_) => ActivitiesDetailPage(
+                                      childId: child['id']),
+                                ));
+                              },
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -197,7 +217,8 @@ class _ActivitiesPageState extends State<ActivitiesPage> {
       ),
       body: Column(
         children: [
-if (_activities.isNotEmpty)
+          OfflineBanner(resource: _activitiesRes, onRetry: _loadData),
+          if (_activities.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: TextField(
@@ -229,7 +250,10 @@ if (_activities.isNotEmpty)
             child: _isLoading
                 ? AppWidgets.loadingIndicator()
                 : _error != null
-                    ? AppWidgets.errorState(message: _error!, onRetry: _loadData)
+                    ? AppWidgets.errorState(
+                        message: tr(_error!),
+                        onRetry: _loadData,
+                      )
                     : _filteredActivities.isEmpty
                         ? AppWidgets.emptyState(
                             icon: Icons.emoji_events_outlined,

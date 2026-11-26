@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/child_photo.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 /// Child Information — mirrors web ChildInformation.jsx + ParentInformation.jsx.
@@ -17,63 +20,51 @@ class ChildInformationPage extends StatefulWidget {
   State<ChildInformationPage> createState() => _ChildInformationPageState();
 }
 
-class _ChildInformationPageState extends State<ChildInformationPage> {
+class _ChildInformationPageState extends State<ChildInformationPage>
+    with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _children = [];
-  List<dynamic> _informations = [];
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first children list plus a per-selection information resource.
+  late final CachedResource<List<dynamic>> _childrenRes;
+  CachedResource<List<dynamic>>? _infoRes;
+
+  List<dynamic> get _children => _childrenRes.data ?? const [];
+  List<dynamic> get _informations => _infoRes?.data ?? const [];
   int? _selectedChildId;
-  bool _isLoading = true;
-  String? _error;
+  bool get _isAdmin => context.read<AuthProvider>().isAdmin;
+
+  /// State of whichever pane is currently on screen.
+  String? get _error =>
+      _selectedChildId == null ? _childrenRes.error : _infoRes?.error;
+  bool get _isLoading => _selectedChildId == null
+      ? _childrenRes.isLoading
+      : (_infoRes?.isLoading ?? false);
 
   @override
   void initState() {
     super.initState();
+    _childrenRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final children = await _api.getChildren();
-      setState(() {
-        _children = children;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat data.');
-        _isLoading = false;
-      });
-    }
+  Future<void> _loadData() => _repo.loadChildren(_childrenRes);
+
+  /// Refreshes the currently selected child's information entries.
+  Future<void> _selectChild(int childId) {
+    final resource = _infoRes;
+    if (resource == null) return Future.value();
+    return _repo.loadChildInformationFor(childId, resource, isAdmin: _isAdmin);
   }
 
-  Future<void> _selectChild(int childId) async {
+  /// Opens a child's information pane. A fresh resource per selection keeps one
+  /// child's cached entries from flashing under another child's header.
+  void _openChild(int childId) {
     setState(() {
       _selectedChildId = childId;
-      _isLoading = true;
-      _error = null;
+      _infoRes = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     });
-    try {
-      final auth = context.read<AuthProvider>();
-      List<dynamic> informations;
-      if (auth.isAdmin) {
-        informations = await _api.getAdminChildInformation(childId: childId);
-      } else {
-        informations = await _api.getChildInformation(childId: childId);
-      }
-      setState(() {
-        _informations = informations;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat informasi.');
-        _isLoading = false;
-      });
-    }
+    _selectChild(childId);
   }
 
   void _showToast(String message, {bool isError = false}) {
@@ -150,9 +141,21 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
             ),
         ],
       ),
-      body: _selectedChildId == null
-          ? _buildChildGrid(context, textColor, mutedColor)
-          : _buildInfoList(context, textColor, mutedColor),
+      body: Column(
+        children: [
+          OfflineBanner(
+            resource: _infoRes ?? _childrenRes,
+            onRetry: _selectedChildId != null
+                ? () => _selectChild(_selectedChildId!)
+                : _loadData,
+          ),
+          Expanded(
+            child: _selectedChildId == null
+                ? _buildChildGrid(context, textColor, mutedColor)
+                : _buildInfoList(context, textColor, mutedColor),
+          ),
+        ],
+      ),
     );
   }
 
@@ -162,7 +165,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
     if (_isLoading) return AppWidgets.loadingIndicator();
     if (_error != null) {
       return AppWidgets.errorState(
-          message: _error!, onRetry: _loadData);
+          message: tr(_error!), onRetry: _loadData);
     }
     if (_children.isEmpty) {
       return AppWidgets.emptyState(
@@ -188,7 +191,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
           final child = _children[index];
           final isActive = child['status'] == 'active';
           return GestureDetector(
-            onTap: () => _selectChild(child['id']),
+            onTap: () => _openChild(child['id']),
             child: Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
@@ -287,7 +290,7 @@ class _ChildInformationPageState extends State<ChildInformationPage> {
                 icon: const Icon(Icons.arrow_back, size: 20),
                 onPressed: () => setState(() {
                   _selectedChildId = null;
-                  _informations = [];
+                  _infoRes = null;
                 }),
               ),
               const SizedBox(width: 4),

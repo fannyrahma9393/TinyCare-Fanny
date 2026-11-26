@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../services/cached_resource.dart';
+import '../services/parent_data_repository.dart';
 import '../theme/app_theme.dart';
 import 'announcement_detail_page.dart';
 import 'invoice_detail_page.dart';
+import '../widgets/offline_banner.dart';
 import '../l10n/app_strings.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -12,36 +15,25 @@ class NotificationsPage extends StatefulWidget {
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage> {
+class _NotificationsPageState extends State<NotificationsPage>
+    with ResourceBinding {
   final ApiService _api = ApiService();
-  List<dynamic> _items = [];
-  bool _isLoading = true;
-  String? _error;
+  final ParentDataRepository _repo = ParentDataRepository();
+
+  /// Cache-first notifications list. Marking read/mark-all-read are write
+  /// operations that hit the API (write guard applies when offline) and the
+  /// local list is optimistically updated on success.
+  late final CachedResource<List<dynamic>> _res;
+  List<dynamic> get _items => _res.data ?? const [];
 
   @override
   void initState() {
     super.initState();
+    _res = CachedResource<List<dynamic>>(onChanged: onResourceChanged);
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-    try {
-      final items = await _api.getNotifications();
-      setState(() {
-        _items = items;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = tr('Gagal memuat notifikasi.');
-        _isLoading = false;
-      });
-    }
-  }
+  Future<void> _load() => _repo.loadNotifications(_res);
 
   Future<void> _markAllRead() async {
     try {
@@ -51,7 +43,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
       AppWidgets.showSnackBar(context, tr('Semua notifikasi ditandai sudah dibaca.'));
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, tr('Gagal menandai notifikasi.'), isError: true);
+      AppWidgets.showSnackBar(
+        context,
+        tr(ParentDataRepository.writeFailureMessage(e)),
+        isError: true,
+      );
     }
   }
 
@@ -135,7 +131,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      AppWidgets.showSnackBar(context, tr('Gagal memperbarui notifikasi.'), isError: true);
+      AppWidgets.showSnackBar(
+        context,
+        tr(ParentDataRepository.writeFailureMessage(e)),
+        isError: true,
+      );
     }
   }
 
@@ -212,26 +212,36 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
         ],
       ),
-      body: _isLoading
-          ? AppWidgets.loadingIndicator()
-          : _error != null
-              ? AppWidgets.errorState(message: _error!, onRetry: _load)
-              : _items.isEmpty
-                  ? AppWidgets.emptyState(
-                      icon: Icons.notifications_outlined,
-                      title: tr('Belum ada notifikasi'),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      color: AppColors.primary,
-                      child: ListView.separated(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        itemCount: _items.length,
-                        separatorBuilder: (_, _) => const SizedBox(height: 10),
-                        itemBuilder: (context, index) =>
-                            _buildNotificationCard(_items[index]),
-                      ),
-                    ),
+      body: Column(
+        children: [
+          OfflineBanner(resource: _res, onRetry: _load),
+          Expanded(
+            child: _res.isLoading
+                ? AppWidgets.loadingIndicator()
+                : _res.error != null
+                    ? AppWidgets.errorState(
+                        message: tr(_res.error!),
+                        onRetry: _load,
+                      )
+                    : _items.isEmpty
+                        ? AppWidgets.emptyState(
+                            icon: Icons.notifications_outlined,
+                            title: tr('Belum ada notifikasi'),
+                          )
+                        : RefreshIndicator(
+                            onRefresh: _load,
+                            color: AppColors.primary,
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(AppSpacing.lg),
+                              itemCount: _items.length,
+                              separatorBuilder: (_, _) => const SizedBox(height: 10),
+                              itemBuilder: (context, index) =>
+                                  _buildNotificationCard(_items[index]),
+                            ),
+                          ),
+          ),
+        ],
+      ),
     );
   }
 
